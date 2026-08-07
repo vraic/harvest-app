@@ -108,7 +108,7 @@ gem "ahoy_email"
 gem "refer"
 gem "matrix"
 
-gem "prawn", "~> 2.4"
+gem "prawn", "~> 2.5"
 gem "prawn-table", "~> 0.2.2"
 gem "barby", "~> 0.7.0"
 

@@ -21,7 +21,7 @@ We're at **proof-of-concept stage** (pre-alpha). The codebase is live, the CI pi
 
 ## Technologies
 
-* [Ruby on Rails](https://rubyonrails.org)
+* [Ruby on Rails](https://rubyonrails.org) and a wide-range of open source gems
 * [Rubocop](https://github.com/rubocop/rubocop), [Brakeman](https://brakemanscanner.org)
 * [Tailwind](https://tailwindcss.com)
 * [Github](https://github.com)
@@ -35,26 +35,28 @@ Vraic is built on [Rails](https://rubyonrails.org) following the [Rails Doctrine
 
 **Completed:**
 
-✅ Core application scaffold (Rails, Docker, CI/CD pipeline)
-✅ Tailwind design system baseline
-✅ Test suite, RuboCop, linter all passing
-✅ DevContainer for contributor onboarding
-✅ Kamal deployment configuration
-✅ Authentication and user management
-✅ Customer and supplier profiles
-✅ Task management
-✅ Full inventory management
-✅ Multi-store/location support
-✅ Loyalty programmes
-✅ Newsletters and mailing lists
-✅ Basic reports
+* Core application scaffold (Rails, Docker, CI/CD pipeline)
+* Tailwind design system baseline
+* Test suite, RuboCop, linter all passing
+* DevContainer for contributor onboarding
+* Kamal deployment configuration
+* Authentication and user management
+* Customer and supplier profiles
+* Task management
+* Inventory management
+* Multi-store/location support
+* Loyalty programmes
+* Newsletters and mailing lists
+* Basic reports
 
 **Next:**
 
-🔲 Workshops with local farmers to provide further insights into needs
-🔲 On-island server deployment for production POC
-🔲 Staging launch
-🔲 Production launch
+* Workshops with local farmers to provide further insights into needs
+* On-island server deployment for production POC
+* Infrastrucutre, servers, networking, security tooling & web application firewalls, CI/CD pipelines
+* Launch into production
+* Documentation
+* Education
 
 ## Why Vraic?
 

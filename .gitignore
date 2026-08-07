@@ -33,6 +33,9 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Local-only development rake tasks
+/lib/tasks/dev.local.rake
+
 # Ignore IDE related files
 /.idea
 /app/assets/builds/*

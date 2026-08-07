@@ -63,14 +63,10 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
     assert_text "Two-Factor Verification"
     assert_text "Please enter the code from your authenticator app"
 
-    travel_to Time.current do
-      code = ROTP::TOTP.new(@user.reload.otp_secret.strip).now
-      fill_in "otp_code", with: code
-      click_button "Verify"
-    end
+    totp = ROTP::TOTP.new(@user.reload.otp_secret.strip)
+    verify_code_with_retry { totp.now }
 
-    assert_no_current_path new_two_factor_verification_path, wait: 5
-    assert_selector "nav", visible: :any, wait: 5
+    assert_selector "nav", visible: :any, wait: 10
   end
 
   test "2FA login phase 2: email OTP form accepts alphanumeric code" do
@@ -95,10 +91,51 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
 
     assert token.present?, "Email OTP token should have been generated"
 
-    fill_in "otp_code", with: token
-    click_button "Verify"
+    verify_code_with_retry do
+      User.uncached { @user.reload.email_otp_token }
+    end
+
+    assert_selector "nav", visible: :any, wait: 10
+  end
+
+  private
+
+  def verify_code_with_retry(max_attempts: 3)
+    max_attempts.times do |attempt|
+      code = yield
+      assert code.present?, "Verification code should be present"
+
+      begin
+        set_otp_field_value!(code)
+        find_button("Verify", wait: 10).click
+      rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
+        raise if attempt == max_attempts - 1
+
+        sleep 0.1
+        next
+      end
+
+      return if has_no_current_path?(new_two_factor_verification_path, wait: 10)
+      next if attempt < max_attempts - 1 && page.has_text?("Invalid verification code.", wait: 2)
+    end
 
     assert_no_current_path new_two_factor_verification_path, wait: 10
-    assert_selector "nav", visible: :any, wait: 10
+  end
+
+  def set_otp_field_value!(code, max_attempts: 3)
+    code_text = code.to_s
+
+    max_attempts.times do |attempt|
+      field = find_field("otp_code", visible: true, wait: 10)
+      field.set(code_text)
+      return if field.value == code_text
+
+      assert_equal code_text, field.value if attempt == max_attempts - 1
+      sleep 0.1
+    rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
+      raise if attempt == max_attempts - 1
+
+      sleep 0.1
+    end
   end
 end

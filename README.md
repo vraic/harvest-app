@@ -4,6 +4,8 @@ Vraic (pronounced *wrak*) is the Jèrriais word for seaweed. For centuries, Jers
 
 This project takes that ethic and applies it to software.
 
+![CI](https://github.com/vraic/vraic-core/actions/workflows/ci.yml/badge.svg?branch=main)
+
 ## What Is Vraic?
 
 Vraic is an open source technology platform built for Jersey's agricultural community. It's designed to provide practical digital tools for local farmers shaped by their direct input, be respectful of everyone's data and deployed on island-based infrastructure.

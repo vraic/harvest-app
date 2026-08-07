@@ -14,13 +14,13 @@
 
       <div class="text-center">
         <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Manual Entry Token:</p>
-        <code class="mt-1 block p-2 bg-gray-100 dark:bg-gray-800 rounded text-lg font-mono tracking-widest text-indigo-600 dark:text-indigo-400">
+        <code id="otp-secret" class="mt-1 block p-2 bg-gray-100 dark:bg-gray-800 rounded text-lg font-mono tracking-widest text-indigo-600 dark:text-indigo-400">
           <%= @user.otp_secret %>
         </code>
       </div>
     </div>
 
-    <%= form_with url: two_factor_auth_path, method: :post, class: "space-y-6" do |f| %>
+    <%= form_with url: two_factor_auth_path, method: :post, class: "space-y-6", data: { turbo: false } do |f| %>
       <div>
         <%= f.label :otp_code, "Enter verification code from app", class: label_class %>
         <div class="mt-2">

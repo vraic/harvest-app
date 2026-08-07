@@ -11,3 +11,9 @@ two:
   location: two
   quantity: 50
   account: one
+
+three:
+  inventory_item: banana
+  location: three
+  quantity: 100
+  account: two

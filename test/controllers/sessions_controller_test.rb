@@ -8,12 +8,28 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "create with valid credentials redirects to 2FA" do
+  test "create with valid credentials and 2FA required redirects to 2FA" do
+    @user.update!(otp_required_for_login: true)
     post session_path, params: { email_address: @user.email_address, password: "password" }
 
     assert_redirected_to new_two_factor_verification_path
     assert_equal @user.id, session[:otp_user_id]
     assert_nil cookies[:session_id]
+  end
+
+  test "create with valid credentials and 2FA not required signs in directly" do
+    @user.update!(otp_required_for_login: false, prefers_email_login: false)
+    post session_path, params: { email_address: @user.email_address, password: "password" }
+
+    # Users are now redirected to dashboard or shop based on role
+    if @user.admin?
+      assert_redirected_to dashboard_path
+    elsif @user.account_users.any? && @user.account_users.all?(&:customer?)
+      assert_redirected_to shop_path
+    else
+      assert_redirected_to dashboard_path
+    end
+    assert_not_nil cookies[:session_id]
   end
 
   test "create with invalid credentials" do

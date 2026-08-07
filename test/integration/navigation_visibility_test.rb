@@ -8,8 +8,12 @@ class NavigationVisibilityTest < ActionDispatch::IntegrationTest
   end
 
   test "global admin sees all links" do
+    grant_support_access(accounts(:one))
     sign_in_as(@admin)
-    get dashboard_path
+    # Select an account so manager? becomes true and settings shows up
+    patch managed_account_path, params: { account_id: accounts(:one).id }
+    follow_redirect!
+
     assert_select "nav" do
       assert_select "a", text: /Tasks/
       assert_select "a", text: /Customers/
@@ -34,6 +38,8 @@ class NavigationVisibilityTest < ActionDispatch::IntegrationTest
   test "customer user sees only limited links" do
     sign_in_as(@customer)
     get dashboard_path
+    assert_response :success
+
     assert_select "nav" do
       assert_select "a", text: /Dashboard/
       assert_select "a", text: /Orders/
@@ -41,7 +47,7 @@ class NavigationVisibilityTest < ActionDispatch::IntegrationTest
       assert_select "a", text: /Customers/, count: 0
       assert_select "a", text: /Inventory/, count: 0
       assert_select "a", text: /Reports/, count: 0
-      assert_select "a", text: /Settings/
+      assert_select "a", text: /Settings/, count: 0
     end
   end
 end

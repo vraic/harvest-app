@@ -14,7 +14,9 @@ class SupplierSearchTest < ApplicationSystemTestCase
     visit suppliers_url
 
     fill_in "query", with: "Supplier One"
-    click_on "Search"
+    within "#supplier-search-form" do
+      click_on "Search"
+    end
 
     assert_text "Supplier One"
     assert_no_text "Supplier Two"
@@ -26,7 +28,9 @@ class SupplierSearchTest < ApplicationSystemTestCase
     visit suppliers_url
 
     fill_in "query", with: @supplier_one.email_address
-    click_on "Search"
+    within "#supplier-search-form" do
+      click_on "Search"
+    end
 
     assert_text @supplier_one.name
     assert_no_text "Supplier Two"
@@ -38,7 +42,9 @@ class SupplierSearchTest < ApplicationSystemTestCase
     visit suppliers_url
 
     fill_in "query", with: @supplier_one.phone
-    click_on "Search"
+    within "#supplier-search-form" do
+      click_on "Search"
+    end
 
     assert_text @supplier_one.name
     assert_no_text "Supplier Two"
@@ -50,7 +56,9 @@ class SupplierSearchTest < ApplicationSystemTestCase
     visit suppliers_url
 
     fill_in "query", with: "Supplier One"
-    click_on "Search"
+    within "#supplier-search-form" do
+      click_on "Search"
+    end
 
     assert_no_text "Supplier Two"
 

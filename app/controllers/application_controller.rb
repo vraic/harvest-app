@@ -21,6 +21,11 @@ class ApplicationController < ActionController::Base
     Current.user
   end
 
+  def current_cart
+    @current_cart ||= Cart.new(session)
+  end
+  helper_method :current_cart
+
   def require_account!
     return if Current.user&.admin? # Admins can have nil account (Global view)
 

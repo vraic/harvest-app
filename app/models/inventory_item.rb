@@ -12,6 +12,7 @@ class InventoryItem < ApplicationRecord
   end
 
   belongs_to :inventory_group, optional: true
+  has_one_attached :image
   belongs_to :parent, class_name: "InventoryItem", optional: true
   has_many :variants, class_name: "InventoryItem", foreign_key: "parent_id", dependent: :destroy
   has_many :inventory_levels, dependent: :destroy

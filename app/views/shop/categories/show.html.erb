@@ -1,0 +1,38 @@
+<div class="bg-white dark:bg-gray-900">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <div class="mb-12 bg-gray-50 dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+      <%= form_with url: shop_category_path(@category), method: :get, class: "grid grid-cols-1 md:grid-cols-3 gap-6 items-end" do |f| %>
+        <div>
+          <%= f.label :min_price, "Min Price (£)", class: label_class %>
+          <%= f.number_field :min_price, value: params[:min_price], step: 0.01, class: input_class, placeholder: "0.00" %>
+        </div>
+        <div>
+          <%= f.label :max_price, "Max Price (£)", class: label_class %>
+          <%= f.number_field :max_price, value: params[:max_price], step: 0.01, class: input_class, placeholder: "Any" %>
+        </div>
+        <div>
+          <%= f.label :min_quantity, "Min Qty Available", class: label_class %>
+          <div class="flex gap-2">
+            <%= f.number_field :min_quantity, value: params[:min_quantity], class: input_class, placeholder: "0" %>
+            <%= f.submit "Filter", class: primary_button_class %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><%= @category.name %></h2>
+      <%= link_to "Back to Shop", shop_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+    </div>
+
+    <div class="-mx-px grid grid-cols-2 border-l border-t border-gray-200 dark:border-gray-700 sm:mx-0 md:grid-cols-3 lg:grid-cols-4">
+      <% @products.each do |product| %>
+        <%= render "shops/product_card", product: product %>
+      <% end %>
+    </div>
+    
+    <div class="mt-8">
+      <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+    </div>
+  </div>
+</div>

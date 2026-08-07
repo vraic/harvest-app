@@ -18,13 +18,21 @@ export default class extends Controller {
   dismiss() {
     if (this.timeout) {
       clearTimeout(this.timeout)
+      this.timeout = null
     }
 
-    this.element.classList.add("opacity-0", "-translate-y-2", "sm:translate-x-2")
+    if (!this.element) return
+
+    // Use a more robust way to hide before removal
+    this.element.style.opacity = '0'
+    this.element.style.transform = 'translateY(-0.5rem)'
+    this.element.style.transition = 'opacity 300ms, transform 300ms'
     
     // Wait for transition to finish before removing
     setTimeout(() => {
-      this.element.remove()
+      if (this.element) {
+        this.element.remove()
+      }
     }, 300)
   }
 }

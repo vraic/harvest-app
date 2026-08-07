@@ -14,7 +14,9 @@ class InventorySearchTest < ApplicationSystemTestCase
     visit inventory_items_url
 
     fill_in "query", with: "Ribeye"
-    click_on "Search"
+    within "#inventory-search-form" do
+      click_on "Search"
+    end
 
     assert_text "Ribeye Steak"
     assert_no_text "Braeburn Apple"
@@ -26,7 +28,9 @@ class InventorySearchTest < ApplicationSystemTestCase
     visit inventory_items_url
 
     fill_in "query", with: "Apple"
-    click_on "Search"
+    within "#inventory-search-form" do
+      click_on "Search"
+    end
 
     assert_text "Braeburn Apple"
     assert_no_text "Ribeye Steak"
@@ -38,7 +42,9 @@ class InventorySearchTest < ApplicationSystemTestCase
     visit inventory_items_url
 
     fill_in "query", with: "grass-fed"
-    click_on "Search"
+    within "#inventory-search-form" do
+      click_on "Search"
+    end
 
     assert_text "Ribeye Steak"
     assert_no_text "Braeburn Apple"
@@ -50,7 +56,9 @@ class InventorySearchTest < ApplicationSystemTestCase
     visit inventory_items_url
 
     fill_in "query", with: "Fruit"
-    click_on "Search"
+    within "#inventory-search-form" do
+      click_on "Search"
+    end
 
     assert_text "Braeburn Apple"
     assert_no_text "Ribeye Steak"
@@ -62,7 +70,9 @@ class InventorySearchTest < ApplicationSystemTestCase
     visit inventory_items_url
 
     fill_in "query", with: "Ribeye"
-    click_on "Search"
+    within "#inventory-search-form" do
+      click_on "Search"
+    end
 
     assert_no_text "Braeburn Apple"
 
@@ -78,7 +88,9 @@ class InventorySearchTest < ApplicationSystemTestCase
     visit inventory_items_url
 
     fill_in "query", with: "500g"
-    click_on "Search"
+    within "#inventory-search-form" do
+      click_on "Search"
+    end
 
     assert_text "Ribeye Steak"
   end

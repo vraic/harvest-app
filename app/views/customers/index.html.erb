@@ -8,7 +8,7 @@
   </div>
 
   <div class="mt-8">
-    <%= form_with url: customers_path, method: :get, class: "flex gap-2" do |f| %>
+    <%= form_with url: customers_path, method: :get, class: "flex gap-2", id: "customer-search-form" do |f| %>
       <div class="grow">
         <%= f.text_field :query, value: params[:query], placeholder: "Search customers by name, email or phone...", class: input_class %>
       </div>

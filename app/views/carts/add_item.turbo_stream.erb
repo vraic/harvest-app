@@ -1,0 +1,3 @@
+<%= turbo_stream.prepend "flash-container", partial: "layouts/flash" %>
+<%= turbo_stream.update "mobile-cart-count", current_cart.count %>
+<%= turbo_stream.update "desktop-cart-count", current_cart.count %>

@@ -11,7 +11,7 @@
   </div>
 
   <div class="mt-8">
-    <%= form_with url: suppliers_path, method: :get, class: "flex gap-2" do |f| %>
+    <%= form_with url: suppliers_path, method: :get, class: "flex gap-2", id: "supplier-search-form" do |f| %>
       <div class="grow">
         <%= f.text_field :query, value: params[:query], placeholder: "Search suppliers by name, email or phone...", class: input_class %>
       </div>

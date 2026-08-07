@@ -13,11 +13,11 @@
 
 <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
   <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 dark:bg-gray-800">
-    <%= form_with url: two_factor_verification_path, method: :post, class: "space-y-6" do |f| %>
+    <%= form_with url: two_factor_verification_path, method: :post, class: "space-y-6", data: { turbo: false } do |f| %>
       <div>
         <%= f.label :otp_code, "Verification Code", class: label_class %>
         <div class="mt-2">
-          <%= f.text_field :otp_code, autofocus: true, autocomplete: "one-time-code", inputmode: "numeric", class: input_class, required: true %>
+          <%= f.text_field :otp_code, autofocus: true, autocomplete: "one-time-code", inputmode: @user.otp_enabled? ? "numeric" : "text", class: input_class %>
         </div>
       </div>
 

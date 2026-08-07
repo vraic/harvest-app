@@ -1,0 +1,82 @@
+<div class="bg-white dark:bg-gray-900">
+  <div id="shop-categories" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <div class="mb-12 bg-gray-50 dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+      <%= form_with url: shop_path, method: :get, class: "grid grid-cols-1 md:grid-cols-4 gap-6 items-end" do |f| %>
+        <div>
+          <%= f.label :account_id, "Store", class: label_class %>
+          <%= f.select :account_id, options_from_collection_for_select(@accounts, :id, :name, params[:account_id]), { include_blank: "All Stores" }, class: input_class %>
+        </div>
+        <div>
+          <%= f.label :min_price, "Min Price (£)", class: label_class %>
+          <%= f.number_field :min_price, value: params[:min_price], step: 0.01, class: input_class, placeholder: "0.00" %>
+        </div>
+        <div>
+          <%= f.label :max_price, "Max Price (£)", class: label_class %>
+          <%= f.number_field :max_price, value: params[:max_price], step: 0.01, class: input_class, placeholder: "Any" %>
+        </div>
+        <div>
+          <%= f.label :min_quantity, "Min Qty Available", class: label_class %>
+          <div class="flex gap-2">
+            <%= f.number_field :min_quantity, value: params[:min_quantity], class: input_class, placeholder: "0" %>
+            <%= f.submit "Filter", class: primary_button_class %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @show_all_results %>
+      <div id="search-results" class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Search Results</h2>
+        <%= link_to "Clear Filters", shop_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+      </div>
+      <div class="-mx-px grid grid-cols-2 border-l border-t border-gray-200 dark:border-gray-700 sm:mx-0 md:grid-cols-3 lg:grid-cols-4">
+        <% @products.each do |product| %>
+          <%= render "shops/product_card", product: product %>
+        <% end %>
+      </div>
+      <div class="mt-8">
+        <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Shop by Category</h2>
+      </div>
+
+      <div class="-mx-px grid grid-cols-2 border-l border-t border-gray-200 dark:border-gray-700 sm:mx-0 md:grid-cols-3 lg:grid-cols-4">
+        <% @categories.each do |category| %>
+          <div class="group relative border-r border-b border-gray-200 p-4 sm:p-6 dark:border-gray-700">
+            <div class="aspect-square overflow-hidden rounded-lg bg-gray-200 group-hover:opacity-75">
+              <% if category.image.attached? %>
+                <%= image_tag category.image, class: "h-full w-full object-cover object-center" %>
+              <% else %>
+                <div class="flex h-full w-full items-center justify-center bg-gray-100 dark:bg-gray-800">
+                  <span class="text-gray-400 text-2xl"><%= category.name[0] %></span>
+                </div>
+              <% end %>
+            </div>
+            <div class="pt-10 pb-4 text-center">
+              <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                <%= link_to shop_category_path(category) do %>
+                  <span aria-hidden="true" class="absolute inset-0"></span>
+                  <%= category.name %>
+                <% end %>
+              </h3>
+              <p class="mt-2 text-xs text-gray-500 dark:text-gray-400"><%= category.account.name %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <% unless @show_all_results %>
+    <div id="featured-products" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-8">Featured Products</h2>
+      <div class="-mx-px grid grid-cols-2 border-l border-t border-gray-200 dark:border-gray-700 sm:mx-0 md:grid-cols-3 lg:grid-cols-4">
+        <% @featured_products.each do |product| %>
+          <%= render "shops/product_card", product: product %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

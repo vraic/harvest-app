@@ -4,14 +4,20 @@ class LoyaltyCardsController < ApplicationController
 
   def index
     authorize LoyaltyCard
-    @customer = Customer.find_by(user_id: Current.user.id)
-    @loyalty_card = @customer&.loyalty_card
-
-    if @loyalty_card
-      redirect_to loyalty_card_path(@loyalty_card)
-    else
+    if staff?
       @loyalty_program = Current.account&.loyalty_program
-      render :index
+      @loyalty_cards = policy_scope(LoyaltyCard).includes(:customer).order("customers.name")
+      render :staff_index
+    else
+      @customer = Customer.find_by(user_id: Current.user.id)
+      @loyalty_card = @customer&.loyalty_card
+
+      if @loyalty_card
+        redirect_to loyalty_card_path(@loyalty_card)
+      else
+        @loyalty_program = Current.account&.loyalty_program
+        render :index
+      end
     end
   end
 

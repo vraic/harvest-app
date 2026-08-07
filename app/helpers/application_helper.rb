@@ -22,6 +22,8 @@ module ApplicationHelper
       controller_name == "tasks"
     when :inventory
       [ "inventory_items", "locations", "inventory_groups", "inventory_levels" ].include?(controller_name)
+    when :shop
+      controller_name == "shops" || controller_path.start_with?("shop/")
     when :orders
       controller_name == "orders"
     when :reports
@@ -31,7 +33,7 @@ module ApplicationHelper
     when :customer_newsletters
       controller_path == "customer/newsletters"
     when :loyalty
-      controller_name == "loyalty_cards"
+      controller_name == "loyalty_cards" || controller_path == "customer/loyalty_programs"
     when :accounts
       controller_name == "accounts" || controller_name == "supplier_requests"
     when :support_requests
@@ -168,8 +170,23 @@ module ApplicationHelper
         end
       end
 
-      (accounts + b2b_accounts).uniq { |a| a[:id] }
+      all_accounts = (accounts + b2b_accounts)
+
+      if Current.user.admin?
+        authorized_accounts = SupportRequest.unscoped.active.includes(:account).map do |sr|
+          { id: sr.account.id, name: sr.account.name, role: "Admin Authorization" }
+        end
+        all_accounts += authorized_accounts
+      end
+
+      all_accounts.uniq { |a| a[:id] }
     end
+  end
+
+  def show_account_switcher?
+    return false unless Current.user
+    return true if Current.user.admin? && switchable_accounts.any?
+    !customer_only? && switchable_accounts.size > 1
   end
 
   def loyalty_card

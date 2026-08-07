@@ -66,7 +66,9 @@ class User < ApplicationRecord
   end
 
   def generate_email_otp!
-    token = SecureRandom.alphanumeric(8).upcase
+    numbers = Array.new(3) { rand(0..9) }.join
+    letters = Array.new(3) { ("A".."Z").to_a.sample }.join
+    token = "#{numbers}#{letters}"
     self.email_otp_token = token
     self.email_otp_sent_at = Time.current
     save!(validate: false)

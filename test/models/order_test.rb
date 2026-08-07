@@ -11,7 +11,7 @@ class OrderTest < ActiveSupport::TestCase
 
   test "sends email on creation" do
     assert_enqueued_emails 1 do
-      Order.create!(account: accounts(:one), customer: customers(:one), status: :ordered)
+      Order.create!(account: accounts(:one), customer: customers(:one), location: locations(:one), status: :ordered)
     end
   end
 

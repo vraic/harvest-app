@@ -26,4 +26,12 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.update(password: "password", password_confirmation: "password")
     assert_includes user.errors[:password], "is too weak. Please use a longer password with mixed characters."
   end
+
+  test "generate_email_otp! generates a token with 3 numbers then 3 letters" do
+    user = users(:one)
+    user.generate_email_otp!
+    token = user.email_otp_token
+
+    assert_match /\A\d{3}[A-Z]{3}\z/, token, "Token #{token} does not match the required format: 3 numbers then 3 letters (uppercase)"
+  end
 end

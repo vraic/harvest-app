@@ -20,6 +20,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     today_order = Order.create!(
       account: account,
       customer: customer,
+      location: locations(:one),
       total_amount_cents: 1000,
       status: :ordered,
       created_at: Time.current
@@ -29,6 +30,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     yesterday_order = Order.create!(
       account: account,
       customer: customer,
+      location: locations(:one),
       total_amount_cents: 2000,
       status: :ordered,
       created_at: 1.day.ago

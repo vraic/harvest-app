@@ -4,13 +4,8 @@ namespace :db do
     puts "Clearing database..."
 
     ActiveRecord::Base.connection.execute("PRAGMA foreign_keys = OFF;")
-    [
-      "order_items", "orders", "inventory_levels", "inventory_items",
-      "locations", "inventory_group_suppliers", "inventory_group_customers",
-      "inventory_groups", "supplier_prices", "supplier_requests",
-      "suppliers", "customers", "account_users", "accounts",
-      "sessions", "tasks", "users"
-    ].each do |table_name|
+    tables = ActiveRecord::Base.connection.tables - [ "schema_migrations", "ar_internal_metadata" ]
+    tables.each do |table_name|
       ActiveRecord::Base.connection.execute("DELETE FROM #{table_name}")
     end
     ActiveRecord::Base.connection.execute("PRAGMA foreign_keys = ON;")
@@ -30,7 +25,9 @@ namespace :db do
     account_one = Account.create!(
       name: "Vraic Farms",
       address: "123 Farm Road, Jersey",
-      owner_id: admin.id
+      owner_id: admin.id,
+      is_b2c: true,
+      is_b2b: true
     )
 
     LoyaltyProgram.create!(
@@ -53,7 +50,14 @@ namespace :db do
       password: "ThisIsAVeryLongAndSecurePassword123!"
     )
     AccountUser.create!(account: account_one, user: account_one_staff, user_role: :store_staff)
-    puts "Created Vraic Farms with store manager (account-one@example.com) and staff (account-one-staff@example.com)"
+
+    account_one_customer = User.create!(
+      name: "Jane Customer",
+      email_address: "account-one-customer@example.com",
+      password: "ThisIsAVeryLongAndSecurePassword123!"
+    )
+    AccountUser.create!(account: account_one, user: account_one_customer, user_role: :customer)
+    puts "Created Vraic Farms with store manager (account-one@example.com), staff (account-one-staff@example.com) and customer (account-one-customer@example.com)"
 
     # 3. Suppliers
     supplier_names = [ "Paradise Veg", "Jolly Hoggs", "Dark Shrooms", "Coastal Fish" ]
@@ -86,6 +90,15 @@ namespace :db do
       req.approved!
     end
 
+    # Inter-supplier relationships
+    # Paradise Veg (suppliers[0]) supplies Jolly Hoggs (suppliers[1])
+    # This makes Jolly Hoggs a customer of Paradise Veg
+    SupplierRequest.create!(sender_account: suppliers[0], receiver_account: suppliers[1]).approved!
+
+    # Coastal Fish (suppliers[3]) supplies Paradise Veg (suppliers[0])
+    # This makes Paradise Veg a customer of Coastal Fish
+    SupplierRequest.create!(sender_account: suppliers[3], receiver_account: suppliers[0]).approved!
+
     puts "Established relationships via Supplier Requests"
 
     # 6. Inventory and Content for Account One
@@ -102,7 +115,7 @@ namespace :db do
       }
 
       locations = [
-        Location.create!(name: "Farm Shop"),
+        Location.create!(name: "Farm Shop", collection_point: true),
         Location.create!(name: "Cold Store"),
         Location.create!(name: "Roadside Stall")
       ]
@@ -112,8 +125,20 @@ namespace :db do
 
       regular_customers = [
         Customer.create!(name: FFaker::Name.name, email_address: FFaker::Internet.email),
-        Customer.create!(name: FFaker::Name.name, email_address: FFaker::Internet.email)
+        Customer.create!(name: FFaker::Name.name, email_address: FFaker::Internet.email),
+        Customer.create!(name: "Jane Customer", email_address: "account-one-customer@example.com", user: account_one_customer)
       ]
+
+      # Add more variety of customers
+      15.times do
+        Customer.create!(
+          name: FFaker::Name.name,
+          email_address: FFaker::Internet.email,
+          phone: FFaker::PhoneNumber.phone_number,
+          subscribed_to_newsletter: [ true, false ].sample
+        )
+      end
+      puts "Created #{Customer.count} customers in Account 1"
 
       group_data.each do |group_name, item_names|
         ig = InventoryGroup.create!(name: group_name)
@@ -128,12 +153,35 @@ namespace :db do
             InventoryLevel.create!(
               inventory_item: item,
               location: loc,
-              quantity: rand(10..100)
+              quantity: rand(100..500)
             )
           end
         end
       end
       puts "Created 5 inventory groups with 10 products each, stocked in all 3 locations"
+
+      # Newsletters
+      Newsletter.create!(
+        subject: "Welcome to Vraic Farms!",
+        content: "<h1>Welcome</h1><p>Thanks for joining our newsletter list. We have fresh veg every week!</p>",
+        target: :everyone,
+        sent_at: 2.days.ago
+      )
+
+      Newsletter.create!(
+        subject: "Special Offer on Meat",
+        content: "<h1>Meat Special</h1><p>Get 20% off all ribeye steaks this weekend.</p>",
+        target: :customers,
+        sent_at: 1.day.ago
+      )
+
+      Newsletter.create!(
+        subject: "New Harvest Coming Soon",
+        content: "<h1>Upcoming Harvest</h1><p>We are expecting a bumper crop of potatoes next week.</p>",
+        target: :everyone,
+        # Draft
+      )
+      puts "Created sample newsletters"
 
       # Tasks
       Task.create!(
@@ -149,28 +197,57 @@ namespace :db do
         responsible_user: account_one_staff,
         assigned_by: account_one_admin
       )
+
+      Task.create!(
+        title: "Order more packaging",
+        description: "We are running low on paper bags",
+        responsible_user: account_one_staff,
+        assigned_by: account_one_admin,
+        due_date: 1.day.from_now
+      )
+
+      Task.create!(
+        title: "Review supplier prices",
+        description: "Paradise Veg has updated their wholesale price list",
+        responsible_user: account_one_admin,
+        assigned_by: account_one_admin,
+        due_date: 2.days.from_now
+      )
+
+      Task.create!(
+        title: "Clean the cold store",
+        description: "Deep clean scheduled for Monday morning",
+        responsible_user: account_one_staff,
+        assigned_by: account_one_admin,
+        completed_at: 1.hour.ago
+      )
       puts "Created sample tasks"
 
       # Orders
-      regular_customers.each do |customer|
-        order = Order.new(
-          customer: customer,
-          user: account_one_staff,
-          status: :complete,
-          notes: "Sample seed order"
-        )
-
-        InventoryItem.all.sample(rand(2..4)).each do |item|
-          order.order_items.build(
-            inventory_item: item,
-            location: locations.sample,
-            quantity: rand(1..3),
-            price: item.price
+      Customer.all.each do |customer|
+        # 1-3 orders per customer
+        rand(1..3).times do
+          status = [ :ordered, :awaiting_collection, :complete ].sample
+          order = Order.new(
+            customer: customer,
+            user: account_one_staff,
+            status: status,
+            notes: "Sample seed order - #{status}",
+            location: locations.sample
           )
+
+          InventoryItem.all.sample(rand(1..5)).each do |item|
+            order.order_items.build(
+              inventory_item: item,
+              location: order.location,
+              quantity: rand(1..5),
+              price: item.price
+            )
+          end
+          order.save!
         end
-        order.save!
       end
-      puts "Created sample orders"
+      puts "Created sample orders for all customers"
 
       # Custom pricing for suppliers
       Supplier.all.each do |supplier_rec|
@@ -189,7 +266,7 @@ namespace :db do
     suppliers.each do |s_acc|
       ActsAsTenant.with_tenant(s_acc) do
         s_group = InventoryGroup.create!(name: "#{s_acc.name} Wholesale")
-        loc = Location.create!(name: "Main Warehouse")
+        loc = Location.create!(name: "Main Warehouse", collection_point: true)
         [ "Bulk Item A", "Bulk Item B", "Bulk Item C", "Special Resource" ].each do |name|
           item = InventoryItem.create!(
             name: "#{s_acc.name} #{name}",
@@ -199,20 +276,20 @@ namespace :db do
           InventoryLevel.create!(inventory_item: item, location: loc, quantity: 500)
         end
 
-        # Grant visibility to Account 1 (if it's a customer of this supplier)
-        customer_rec = Customer.find_by(customer_account_id: account_one.id)
-        if customer_rec
+        # Grant visibility to all customers (including other accounts/suppliers)
+        Customer.all.each do |customer_rec|
           InventoryGroupCustomer.create!(inventory_group: s_group, customer: customer_rec)
-          puts "Created #{s_acc.name}'s inventory and shared it with Account 1"
-        else
-          puts "Created #{s_acc.name}'s inventory"
         end
+        puts "Created #{s_acc.name}'s inventory and shared it with #{Customer.count} customers"
       end
     end
 
     # 8. Pending Request for realism
     pending_name = "#{FFaker::Company.name} (Pending)"
     pending_acc = Account.create!(name: pending_name, owner_id: admin.id)
+    ActsAsTenant.with_tenant(pending_acc) do
+      Location.create!(name: "Collection Point", collection_point: true)
+    end
     SupplierRequest.create!(sender_account: pending_acc, receiver_account: account_one)
     puts "Added a pending Supplier Request from #{pending_name}"
 

@@ -1,0 +1,111 @@
+<div id="cart-content">
+  <% if @cart.empty? %>
+    <div class="mt-12 text-center py-20 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
+      <p class="text-gray-500 dark:text-gray-400">Your cart is empty.</p>
+      <div class="mt-6">
+        <%= link_to "Continue Shopping", shop_path, class: "text-indigo-600 hover:text-indigo-500 font-medium" %>
+      </div>
+    </div>
+  <% else %>
+    <div class="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+      <section aria-labelledby="cart-heading" class="lg:col-span-7">
+        <h2 id="cart-heading" class="sr-only">Items in your shopping cart</h2>
+
+        <% @cart.grouped_items.each do |account, items| %>
+          <div class="mb-12 bg-white dark:bg-gray-800 shadow sm:rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div class="px-4 py-5 sm:px-6 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+              <h3 class="text-lg font-bold leading-6 text-gray-900 dark:text-white"><%= account.name %></h3>
+            </div>
+            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+              <% items.each do |item| %>
+                <li class="flex py-6 px-4 sm:px-6">
+                  <div class="shrink-0">
+                    <% if item.product.image.attached? %>
+                      <%= image_tag item.product.image, class: "size-16 rounded-md object-cover" %>
+                    <% else %>
+                      <div class="size-16 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-md text-gray-400 text-lg font-bold">
+                        <%= item.product.name[0] %>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <div class="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
+                    <div class="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
+                      <div>
+                        <div class="flex justify-between">
+                          <h4 class="text-sm">
+                            <%= link_to item.product.display_name, shop_product_path(item.product), class: "font-bold text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-white" %>
+                          </h4>
+                        </div>
+                        <p class="mt-1 text-sm font-medium text-gray-900 dark:text-white"><%= humanized_money_with_symbol item.product.price %></p>
+                      </div>
+
+                      <div class="mt-4 sm:mt-0 sm:pr-9">
+                        <div class="flex items-center gap-3">
+                          <%= form_with url: cart_path, method: :patch, data: { turbo_stream: true, controller: "autosubmit", action: "change->autosubmit#submit" }, class: "flex items-center" do |f| %>
+                            <%= f.hidden_field :product_id, value: item.product.id %>
+                            <div class="relative">
+                              <select name="quantity" id="quantity_<%= item.product.id %>" aria-label="Quantity, <%= item.product.display_name %>" 
+                                      class="<%= input_class(false, "pr-8 py-1") %> w-20">
+                                <% (1..99).each do |q| %>
+                                  <option value="<%= q %>" <%= 'selected' if item.quantity == q %>><%= q %></option>
+                                <% end %>
+                              </select>
+                            </div>
+                            <%= f.submit "Update", id: "update_quantity_#{item.product.id}", class: "hidden" %>
+                          <% end %>
+
+                          <%= button_to remove_item_cart_path(product_id: item.product.id), method: :post, class: "text-gray-400 hover:text-red-500 transition-colors", title: "Remove item" do %>
+                            <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
+                              <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                            </svg>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p class="mt-4 flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+                      <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-4 shrink-0 text-green-500">
+                        <path d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" fill-rule="evenodd" />
+                      </svg>
+                      <span>In stock & available</span>
+                    </p>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </section>
+
+      <!-- Order summary -->
+      <section aria-labelledby="summary-heading" class="mt-16 rounded-lg bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
+        <h2 id="summary-heading" class="text-lg font-bold text-gray-900 dark:text-white">Order Summary</h2>
+
+        <dl class="mt-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <dt class="text-sm text-gray-600 dark:text-gray-400">Subtotal</dt>
+            <dd class="text-sm font-medium text-gray-900 dark:text-white"><%= humanized_money_with_symbol @cart.total_price %></dd>
+          </div>
+          <div class="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
+            <dt class="text-lg font-bold text-gray-900 dark:text-white">Order total</dt>
+            <dd class="text-lg font-bold text-indigo-600"><%= humanized_money_with_symbol @cart.total_price %></dd>
+          </div>
+        </dl>
+
+        <div class="mt-6">
+          <%= link_to "Checkout", checkout_path, class: primary_button_class("w-full py-3 text-lg flex items-center justify-center") %>
+        </div>
+
+        <div class="mt-6 text-center">
+          <%= link_to shop_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500 flex items-center justify-center gap-1" do %>
+            <svg viewBox="0 0 20 20" fill="currentColor" class="size-4">
+              <path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.612l4.158 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.612 9.25H16.25A.75.75 0 0 1 17 10Z" clip-rule="evenodd" />
+            </svg>
+            Continue Shopping
+          <% end %>
+        </div>
+      </section>
+    </div>
+  <% end %>
+</div>

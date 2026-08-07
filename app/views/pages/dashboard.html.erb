@@ -79,11 +79,24 @@
     <% end %>
 
     <% if !Current.account || customer? || Current.user.admin? %>
-      <% if @customer_orders.any? %>
-        <%= render "pages/customer_orders", orders: @customer_orders %>
-      <% end %>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
+        <% if @top_products.any? %>
+          <div id="top-products-container">
+            <%= render "pages/top_products", products: @top_products %>
+          </div>
+        <% end %>
 
-      <%= render "pages/stores_grid" %>
+        <% if @customer_orders.any? %>
+          <div id="customer-orders-container">
+            <%= render "pages/customer_orders", orders: @customer_orders %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="mt-10 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h2 class="text-xl font-bold mb-4">Our Stores</h2>
+        <%= render "pages/stores_grid" %>
+      </div>
     <% end %>
   </div>
 </div>

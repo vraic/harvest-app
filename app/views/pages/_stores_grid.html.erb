@@ -1,13 +1,10 @@
 <% 
-  # Combined Stores Logic for Customers and Admins
-  # 1. Personal accounts (Staff/Manager/Customer)
-  personal_accounts = ActsAsTenant.without_tenant { Current.user.account_users.includes(:account).to_a.map(&:account) }
+  v_ids = visible_account_ids
+  all_display_accounts = Account.unscoped.where(id: v_ids).to_a
   
-  # 2. Available accounts (Not joined)
-  my_ids = personal_accounts.map(&:id).uniq
-  other_accounts = Account.where.not(id: my_ids).to_a
-  
-  all_display_accounts = (personal_accounts + other_accounts).uniq
+  # Sort to put personal accounts first
+  personal_ids = ActsAsTenant.without_tenant { Current.user.account_users.pluck(:account_id) }
+  all_display_accounts.sort_by! { |a| personal_ids.include?(a.id) ? 0 : 1 }
 %>
 
 <% if all_display_accounts.any? %>
@@ -78,12 +75,15 @@
               <span class="inline-flex items-center rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-700 mt-2">Active</span>
             <% end %>
           </div>
-          <div class="p-4 bg-gray-50 border-t border-gray-200 dark:bg-gray-700/50 dark:border-gray-700">
-            <% if is_active %>
-              <span class="w-full inline-flex justify-center rounded-md bg-indigo-100 px-3 py-2 text-sm font-semibold text-indigo-700">Current Store</span>
-            <% elsif is_joined %>
-              <%= button_to managed_account_path(account_id: account.id), method: :patch, class: "w-full inline-flex justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:ring-0 dark:hover:bg-white/20" do %>
-                <%= (is_customer || is_business) ? "Visit Shop" : "Manage Store" %>
+          <div class="p-4 bg-gray-50 border-t border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 flex flex-col gap-2">
+            <% if is_personal && !is_customer && !is_active %>
+              <%= button_to managed_account_path(account_id: account.id), method: :patch, class: primary_button_class("w-full") do %>
+                Manage Store
+              <% end %>
+            <% end %>
+            <% if is_joined %>
+              <%= link_to shop_path(account_id: account.id), class: "w-full inline-flex justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:ring-0 dark:hover:bg-white/20" do %>
+                Visit Shop
               <% end %>
             <% else %>
               <%= button_to store_memberships_path(account_id: account.id), method: :post, class: "w-full inline-flex justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:ring-0 dark:hover:bg-white/20" do %>

@@ -20,11 +20,15 @@ class TwoFactorVerificationsController < ApplicationController
       @user.clear_email_otp!
       start_new_session_for @user
       session.delete(:otp_user_id)
-      if session.delete(:security_setup_user_id) == @user.id && !@user.security_choice_made?
-        redirect_to security_setup_path
+
+      target_url = if session[:security_setup_user_id] == @user.id && !@user.security_choice_made?
+        session.delete(:security_setup_user_id)
+        security_setup_url
       else
-        redirect_to after_authentication_url
+        after_authentication_url(@user)
       end
+
+      redirect_to target_url, notice: "Signed in successfully.", status: :see_other
     else
       flash.now[:alert] = "Invalid verification code."
       render :new, status: :unprocessable_content
@@ -40,9 +44,13 @@ class TwoFactorVerificationsController < ApplicationController
 
   def verify_otp
     if @user.otp_enabled?
-      @user.validate_otp(params[:otp_code])
+      result = @user.validate_otp(params[:otp_code])
+      logger.info "TOTP verification for User #{@user.id}: #{result ? 'SUCCESS' : 'FAILED'}"
+      result
     else
-      @user.validate_email_otp(params[:otp_code])
+      result = @user.validate_email_otp(params[:otp_code])
+      logger.info "Email OTP verification for User #{@user.id}: #{result ? 'SUCCESS' : 'FAILED'}"
+      result
     end
   end
 end

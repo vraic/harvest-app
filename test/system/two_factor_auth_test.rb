@@ -2,83 +2,140 @@ require "application_system_test_case"
 
 class TwoFactorAuthTest < ApplicationSystemTestCase
   setup do
+    Capybara.reset_sessions!
     @user = users(:one)
-    login_as @user
+    @user.update!(security_choice_made: true, onboarded: true)
   end
 
-  test "can setup and disable 2FA via OTP" do
+  test "2FA setup: enabling authenticator app" do
+    login_as(@user)
     visit settings_path
+
     click_on "Setup Authenticator App"
-
     assert_text "Setup Two-Factor Authentication"
-    assert_text "Manual Entry Token"
 
-    # Get the secret from the page
-    secret = find("code").text.strip
+    # Extract secret from the page
+    secret = find("code#otp-secret").text.strip
     totp = ROTP::TOTP.new(secret)
 
-    fill_in "Enter verification code from app", with: totp.now
-    click_on "Verify and Enable 2FA"
+    # Use deterministic time for code generation and verification.
+    # This is a best practice to avoid flakiness in CI caused by TOTP window expiry.
+    travel_to Time.current do
+      fill_in "otp_code", with: totp.now
+      click_on "Verify and Enable 2FA"
+    end
 
     assert_text "2FA has been enabled via OTP"
-    assert_text "2FA is currently enabled via Authenticator App"
+    assert @user.reload.otp_enabled?
 
-    # Now test login with OTP
-    visit dashboard_path
-    logout
+    # Cleanup: disable 2FA
+    visit settings_path
+    click_on "Disable 2FA"
+    assert_text "2FA has been disabled"
+    refute @user.reload.otp_enabled?
+  end
 
-    # We expect 2FA after signing in if enabled
+  test "2FA login phase 1: entering credentials redirects to 2FA prompt" do
+    @user.update!(otp_required_for_login: true)
+
     visit new_session_path
     fill_in "Email", with: @user.email_address
     click_button "Sign in with password"
-    fill_in "Password", with: "password"
+    execute_script("document.querySelectorAll('[data-password-login-target=\"passwordFields\"]').forEach(el => el.classList.remove('hidden'))")
+    fill_in "Password (optional)", with: "password"
+    click_button "Continue"
+
+    assert_current_path new_two_factor_verification_path, wait: 10
+    assert_text "Two-Factor Verification"
+  end
+
+  test "2FA login phase 2: TOTP form accepts a 6-digit code" do
+    @user.generate_otp_secret!
+    @user.update!(otp_required_for_login: true)
+
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    click_button "Sign in with password"
+    execute_script("document.querySelectorAll('[data-password-login-target=\"passwordFields\"]').forEach(el => el.classList.remove('hidden'))")
+    fill_in "Password (optional)", with: "password"
     click_button "Continue"
 
     assert_text "Two-Factor Verification"
     assert_text "Please enter the code from your authenticator app"
 
-    fill_in "Verification Code", with: totp.now
-    click_button "Verify"
+    totp = ROTP::TOTP.new(@user.reload.otp_secret.strip)
+    verify_code_with_retry { totp.now }
 
-    assert_current_path dashboard_path, wait: 10
-    assert_text "Séyiz les beinv'nus"
-    assert_text @user.name
-
-    # Disable 2FA
-    visit settings_path
-    click_on "Disable 2FA"
-    assert_text "2FA has been disabled"
+    assert_selector "nav", visible: :any, wait: 10
   end
 
-  test "uses email fallback when OTP is not setup" do
-    # 2FA is now forced in my implementation of login_as if we are on that page
-    # But let's verify the email part
-
-    visit dashboard_path
-    logout
+  test "2FA login phase 2: email OTP form accepts alphanumeric code" do
+    @user.update!(otp_required_for_login: true, otp_secret: nil)
 
     visit new_session_path
     fill_in "Email", with: @user.email_address
     click_button "Sign in with password"
-    fill_in "Password", with: "password"
+    execute_script("document.querySelectorAll('[data-password-login-target=\"passwordFields\"]').forEach(el => el.classList.remove('hidden'))")
+    fill_in "Password (optional)", with: "password"
     click_button "Continue"
 
     assert_text "Two-Factor Verification"
     assert_text "We've sent a verification code to your email address"
 
-    # Use a robust way to get the token
     token = nil
     50.times do
-      token = User.uncached { User.find(@user.id).email_otp_token }
+      token = User.uncached { @user.reload.email_otp_token }
       break if token.present?
-      sleep 0.2
+      sleep 0.1
     end
 
-    assert token.present?, "Expected email OTP token to be generated"
+    assert token.present?, "Email OTP token should have been generated"
 
-    fill_in "Verification Code", with: token.to_s.strip.upcase
-    click_button "Verify"
+    verify_code_with_retry do
+      User.uncached { @user.reload.email_otp_token }
+    end
 
-    assert_current_path dashboard_path, wait: 10
+    assert_selector "nav", visible: :any, wait: 10
+  end
+
+  private
+
+  def verify_code_with_retry(max_attempts: 3)
+    max_attempts.times do |attempt|
+      code = yield
+      assert code.present?, "Verification code should be present"
+
+      begin
+        set_otp_field_value!(code)
+        find_button("Verify", wait: 10).click
+      rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
+        raise if attempt == max_attempts - 1
+
+        sleep 0.1
+        next
+      end
+
+      return if has_no_current_path?(new_two_factor_verification_path, wait: 10)
+      next if attempt < max_attempts - 1 && page.has_text?("Invalid verification code.", wait: 2)
+    end
+
+    assert_no_current_path new_two_factor_verification_path, wait: 10
+  end
+
+  def set_otp_field_value!(code, max_attempts: 3)
+    code_text = code.to_s
+
+    max_attempts.times do |attempt|
+      field = find_field("otp_code", visible: true, wait: 10)
+      field.set(code_text)
+      return if field.value == code_text
+
+      assert_equal code_text, field.value if attempt == max_attempts - 1
+      sleep 0.1
+    rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
+      raise if attempt == max_attempts - 1
+
+      sleep 0.1
+    end
   end
 end

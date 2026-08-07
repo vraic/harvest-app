@@ -88,11 +88,13 @@ class AccountsController < ApplicationController
   # PATCH/PUT /accounts/1 or /accounts/1.json
   def update
     authorize @account
+    @tab = params[:tab] || "general"
     respond_to do |format|
       if @account.update(account_params)
         format.html { redirect_to @account, notice: "Account was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @account }
       else
+        @account.build_loyalty_program unless @account.loyalty_program
         format.html { render :edit, status: :unprocessable_content }
         format.json { render json: @account.errors, status: :unprocessable_content }
       end
@@ -118,7 +120,8 @@ class AccountsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def account_params
-      params.require(:account).permit(:name, :address, :owner_id, :header_image,
+      params.require(:account).permit(:name, :address, :owner_id, :header_image, :is_b2c, :is_b2b, :is_internal,
+        :gocardless_access_token, :gocardless_mode,
         loyalty_program_attributes: [ :id, :points_to_currency_ratio, :currency_to_points_ratio, :active ])
     end
 end

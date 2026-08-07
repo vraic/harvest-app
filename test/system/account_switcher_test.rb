@@ -20,6 +20,7 @@ class AccountSwitcherTest < ApplicationSystemTestCase
     # Since user has multiple accounts, Current.account is nil initially
     # Open switcher
     click_button "Switch Account", match: :first
+    assert_selector "#account-switcher", visible: true, wait: 10
 
     within "#account-switcher" do
       assert_text "Switch Account"
@@ -45,6 +46,7 @@ class AccountSwitcherTest < ApplicationSystemTestCase
 
     # Switch to account one
     click_button "Switch Account", match: :first
+    assert_selector "#account-switcher", visible: true, wait: 10
     within "#account-switcher" do
       within("li", text: @account_one.name) do
         click_button "Switch"
@@ -55,6 +57,7 @@ class AccountSwitcherTest < ApplicationSystemTestCase
 
     # Open switcher again
     click_button "Switch Account", match: :first
+    assert_selector "#account-switcher", visible: true, wait: 10
 
     within "#account-switcher" do
       assert_text @account_one.name
@@ -71,6 +74,7 @@ class AccountSwitcherTest < ApplicationSystemTestCase
 
     # Open switcher
     click_button "Switch Account"
+    assert_selector "#account-switcher", visible: true, wait: 10
 
     within "#account-switcher" do
       within("li", text: @account_one.name) do
@@ -97,6 +101,7 @@ class AccountSwitcherTest < ApplicationSystemTestCase
     visit dashboard_path
 
     click_button "Switch Account", match: :first
+    assert_selector "#account-switcher", visible: true, wait: 10
 
     within "#account-switcher" do
       assert_text @account_four.name

@@ -11,8 +11,10 @@ class Order < ApplicationRecord
   end
 
   belongs_to :customer
+  belongs_to :location, optional: true
   belongs_to :user, optional: true
   has_many :order_items, dependent: :destroy
+  has_one :payment, dependent: :destroy
   has_many :staff_notes, as: :notable, class_name: "Note", dependent: :destroy
   has_many :loyalty_transactions, dependent: :nullify
 
@@ -24,9 +26,11 @@ class Order < ApplicationRecord
 
   validates :status, presence: true
   validates :number, presence: true, uniqueness: true
+  validates :location_id, presence: true, if: :customer_order?
 
   before_validation :generate_number, on: :create
   before_validation :calculate_total
+  before_validation :sync_item_locations
   after_create :process_loyalty_redemption
   after_create :send_received_email
   after_update :process_loyalty_accrual, if: -> { saved_change_to_status? && complete? }
@@ -36,7 +40,19 @@ class Order < ApplicationRecord
     Money.new(loyalty_discount_amount_cents, Money.default_currency)
   end
 
+  def customer_order?
+    user.nil?
+  end
+
   private
+
+  def sync_item_locations
+    return unless location_id
+
+    order_items.each do |item|
+      item.location_id = location_id if item.location_id.blank? || customer_order?
+    end
+  end
 
   def process_loyalty_accrual
     return unless account.loyalty_program&.active?

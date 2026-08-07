@@ -27,12 +27,11 @@ class OrderPolicy < ApplicationPolicy
         scope.all
       else
         user_account_ids = AccountUser.unscoped.where(user: user, user_role: [ :store_manager, :store_staff ]).pluck(:account_id)
-        customer_ids = Customer.unscoped.where(account: Current.account)
-                              .where("user_id = ? OR customer_account_id IN (?)", user.id, user_account_ids)
-                              .pluck(:id)
+        customer_ids = Customer.unscoped.where("user_id = ? OR customer_account_id IN (?)", user.id, user_account_ids).pluck(:id)
 
         if customer_ids.any?
-          scope.where(customer_id: customer_ids)
+          # Customers should see their orders across all stores they are joined to
+          scope.unscoped.where(customer_id: customer_ids)
         else
           scope.none
         end
@@ -43,21 +42,22 @@ class OrderPolicy < ApplicationPolicy
   private
 
   def admin_or_staff?
+    return false unless Current.account
     user.admin? || user.account_users.exists?(account: Current.account, user_role: [ :store_manager, :store_staff ])
   end
 
   def customer?
-    user.account_users.exists?(account: Current.account, user_role: :customer)
+    user.account_users.where(user_role: :customer).exists?
   end
 
   def record_belongs_to_customer?
     # Personal customer record
-    customer_record = Customer.find_by(user: user, account: Current.account)
-    return true if customer_record && record.customer_id == customer_record.id
+    customer_records = Customer.unscoped.where(user: user)
+    return true if customer_records.pluck(:id).include?(record.customer_id)
 
     # B2B customer record
     user_account_ids = AccountUser.unscoped.where(user: user, user_role: [ :store_manager, :store_staff ]).pluck(:account_id)
-    b2b_customer_ids = Customer.unscoped.where(account: Current.account, customer_account_id: user_account_ids).pluck(:id)
+    b2b_customer_ids = Customer.unscoped.where(customer_account_id: user_account_ids).pluck(:id)
     b2b_customer_ids.include?(record.customer_id)
   end
 end

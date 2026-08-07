@@ -12,11 +12,11 @@ class OrderNotesTest < ApplicationSystemTestCase
     select_account("Account One")
     visit order_url(@order)
 
-    assert_text "Staff Notes"
-    assert_text "No staff notes yet."
+    assert_text "NOTES"
+    # No longer has "No staff notes yet." text in current UI
 
-    fill_in "Add a note...", with: "Customer called to say they will be 10 minutes late."
-    click_on "Add Note"
+    fill_in "Add staff note...", with: "Customer called to say they will be 10 minutes late."
+    click_on "Save Note"
 
     assert_text "Note was successfully created."
     assert_text "Customer called to say they will be 10 minutes late."
@@ -31,6 +31,6 @@ class OrderNotesTest < ApplicationSystemTestCase
     # Customer only has one account, so no switcher
     visit order_url(@order)
 
-    assert_no_text "Staff Notes"
+    assert_no_text "NOTES"
   end
 end

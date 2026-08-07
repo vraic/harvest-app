@@ -15,7 +15,9 @@ class CustomerSearchTest < ApplicationSystemTestCase
     visit customers_url
 
     fill_in "query", with: "Customer One"
-    click_on "Search"
+    within "#customer-search-form" do
+      click_on "Search"
+    end
 
     assert_text "Customer One"
     assert_no_text "Customer Two"
@@ -27,7 +29,9 @@ class CustomerSearchTest < ApplicationSystemTestCase
     visit customers_url
 
     fill_in "query", with: @customer_one.email_address
-    click_on "Search"
+    within "#customer-search-form" do
+      click_on "Search"
+    end
 
     assert_text @customer_one.name
     assert_no_text "Customer Two"
@@ -39,7 +43,9 @@ class CustomerSearchTest < ApplicationSystemTestCase
     visit customers_url
 
     fill_in "query", with: @customer_one.phone
-    click_on "Search"
+    within "#customer-search-form" do
+      click_on "Search"
+    end
 
     assert_text @customer_one.name
     assert_no_text "Customer Two"
@@ -51,7 +57,9 @@ class CustomerSearchTest < ApplicationSystemTestCase
     visit customers_url
 
     fill_in "query", with: "Customer One"
-    click_on "Search"
+    within "#customer-search-form" do
+      click_on "Search"
+    end
 
     assert_no_text "Customer Two"
 
@@ -68,7 +76,9 @@ class CustomerSearchTest < ApplicationSystemTestCase
     visit customers_url
 
     fill_in "query", with: "Account One"
-    click_on "Search"
+    within "#customer-search-form" do
+      click_on "Search"
+    end
 
     assert_text "Business Customer"
   end

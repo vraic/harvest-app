@@ -12,7 +12,7 @@
   </div>
 
   <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm mb-6 flex flex-wrap gap-4 items-end border border-gray-200 dark:border-gray-700 mt-5">
-    <%= form_with url: inventory_items_path, method: :get, class: "contents" do |f| %>
+    <%= form_with url: inventory_items_path, method: :get, class: "contents", id: "inventory-search-form" do |f| %>
       <div class="flex-1 min-w-[200px]">
         <%= f.label :query, "Search", class: label_class %>
         <div class="mt-1">

@@ -3,7 +3,13 @@
 one:
   name: Shop Floor
   account: one
+  collection_point: true
 
 two:
   name: Storage Room
   account: one
+
+three:
+  name: Main Warehouse
+  account: two
+  collection_point: true

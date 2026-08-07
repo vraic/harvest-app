@@ -24,18 +24,24 @@ class SessionsController < ApplicationController
     if user&.authenticate(params[:password])
       session[:otp_user_id] = user.id
       session.delete(:security_setup_user_id)
-      user.generate_email_otp! unless user.otp_enabled?
-      user.password = user.password_confirmation = nil
-      redirect_to new_two_factor_verification_path
+
+      if user.otp_required_for_login? || user.prefers_email_login?
+        user.generate_email_otp! unless user.otp_enabled?
+        user.password = user.password_confirmation = nil
+        redirect_to new_two_factor_verification_path, status: :see_other
+      else
+        start_new_session_for user
+        redirect_to after_authentication_url(user), notice: "Signed in successfully.", status: :see_other
+      end
     elsif params[:password].present?
-      redirect_to new_session_path, alert: "Try another email address or password."
+      redirect_to new_session_path, alert: "Try another email address or password.", status: :see_other
     else
       user = find_or_create_email_login_user(email_address)
       session[:otp_user_id] = user.id
       session[:security_setup_user_id] = user.id unless user.security_choice_made?
       user.generate_email_otp!
       user.password = user.password_confirmation = nil
-      redirect_to new_two_factor_verification_path, notice: "We emailed you a one-time code."
+      redirect_to new_two_factor_verification_path, notice: "We emailed you a one-time code.", status: :see_other
     end
   end
 

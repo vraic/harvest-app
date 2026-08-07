@@ -1,0 +1,70 @@
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+  <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-8">Checkout</h1>
+
+  <%= form_with url: checkout_path, method: :post, class: "space-y-12" do |f| %>
+    <% @orders_data.each do |data| %>
+      <% account = data[:account] %>
+      <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div class="px-4 py-5 sm:px-6 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+          <h2 class="text-lg font-bold leading-6 text-gray-900 dark:text-white"><%= account.name %></h2>
+          <span class="text-lg font-bold text-indigo-600"><%= humanized_money_with_symbol data[:total_price] %></span>
+        </div>
+        <div class="px-4 py-5 sm:p-6 space-y-6">
+          <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+            <% data[:items].each do |item| %>
+              <li class="py-4 flex">
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white"><%= item.product.display_name %></p>
+                  <p class="text-sm text-gray-500">Qty: <%= item.quantity %> &times; <%= humanized_money_with_symbol item.product.price %></p>
+                </div>
+                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                  <%= humanized_money_with_symbol item.total_price %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div>
+              <%= label_tag "checkout[#{account.id}][location_id]", "Collection point", class: label_class %>
+              <%= select_tag "checkout[#{account.id}][location_id]", 
+                             options_from_collection_for_select(data[:collection_points], :id, :name), 
+                             prompt: "Select Collection Point", 
+                             class: input_class, 
+                             required: true %>
+            </div>
+          </div>
+          
+          <div>
+            <%= label_tag "checkout[#{account.id}][notes]", "Order notes (optional)", class: label_class %>
+            <%= text_area_tag "checkout[#{account.id}][notes]", nil, rows: 2, class: input_class %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <h2 class="text-lg font-bold leading-6 text-gray-900 dark:text-white mb-4"><%= label_tag :payment_method, "Payment Method", class: label_class %></h2>
+      <div class="max-w-xs">
+        <%= select_tag :payment_method, 
+                       options_for_select([["Cash on collection", "cash_on_collection"], ["GoCardless", "gocardless"]]), 
+                       class: input_class %>
+      </div>
+      
+      <% missing_gocardless = @orders_data.select { |d| c = Customer.unscoped.find_by(user: Current.user, account: d[:account]); c.nil? || !c.gocardless_configured? }.map { |d| d[:account].name } %>
+      <% if missing_gocardless.any? %>
+        <p class="text-xs text-gray-500 mt-4">GoCardless setup is required for: <%= missing_gocardless.join(", ") %>.</p>
+      <% end %>
+    </div>
+
+    <div class="flex justify-between items-center pt-8 border-t border-gray-200 dark:border-gray-700">
+      <div class="text-2xl font-bold text-gray-900 dark:text-white">
+        Total: <%= humanized_money_with_symbol @cart.total_price %>
+      </div>
+      <div class="flex gap-4">
+        <%= link_to "Back to Cart", cart_path, class: secondary_button_class %>
+        <%= f.submit "Place Orders", class: primary_button_class("px-8 py-3 text-lg") %>
+      </div>
+    </div>
+  <% end %>
+</div>

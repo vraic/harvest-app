@@ -1,11 +1,11 @@
 class OrdersController < ApplicationController
-  before_action :require_account!
+  before_action :require_account!, except: %i[ index show ]
   before_action :set_order, only: %i[ show edit update destroy awaiting_collection complete ]
 
   # GET /orders or /orders.json
   def index
     @query = params[:query]
-    scope = policy_scope(Order).order(created_at: :desc)
+    scope = policy_scope(Order).includes(:account, :order_items, order_items: { inventory_item: { image_attachment: :blob } }).order(created_at: :desc)
 
     if params[:filter] == "today"
       scope = scope.where(created_at: Time.current.all_day)
@@ -67,7 +67,19 @@ class OrdersController < ApplicationController
   # GET /orders/new
   def new
     @order = Order.new
-    @order.order_items.build
+
+    if customer? && !current_cart.empty?
+      current_cart.items.each do |item|
+        @order.order_items.build(
+          inventory_item: item.product,
+          quantity: item.quantity,
+          price: item.product.price
+        )
+      end
+    else
+      @order.order_items.build
+    end
+
     authorize @order
     prepare_loyalty_data
   end
@@ -101,7 +113,8 @@ class OrdersController < ApplicationController
     authorize @order
 
     respond_to do |format|
-      if @order.save
+      if persist_order_with_payment
+        session[:cart] = nil if customer?
         format.html { redirect_to @order, notice: "Order was successfully created." }
         format.json { render :show, status: :created, location: @order }
       else
@@ -140,7 +153,7 @@ class OrdersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_order
-      @order = Order.find(params[:id])
+      @order = Order.unscoped.find(params[:id])
     end
 
     def prepare_loyalty_data
@@ -152,11 +165,63 @@ class OrdersController < ApplicationController
       end
     end
 
+    def persist_order_with_payment
+      return false unless @order.valid?
+
+      payment = build_payment
+      return false if payment.nil?
+
+      Order.transaction do
+        @order.save!
+        payment.order = @order
+        payment.save!
+      end
+
+      true
+    rescue ActiveRecord::RecordInvalid
+      payment&.errors&.full_messages&.each { |message| @order.errors.add(:base, message) }
+      false
+    end
+
+    def build_payment
+      selected_method = selected_payment_method
+
+      unless Payment.payment_methods.key?(selected_method)
+        @order.errors.add(:base, "Payment method is invalid")
+        return nil
+      end
+
+      if selected_method == "gocardless" && !@order.customer&.gocardless_configured?
+        @order.errors.add(:base, "GoCardless setup is required before using this payment option")
+        return nil
+      end
+
+      @order.build_payment(
+        account: @order.account,
+        customer: @order.customer,
+        payment_method: selected_method,
+        status: :pending,
+        amount_cents: @order.total_amount_cents,
+        currency: @order.total_amount.currency.iso_code,
+        provider_reference: provider_reference_for(selected_method)
+      )
+    end
+
+    def provider_reference_for(selected_method)
+      return @order.customer.gocardless_mandate_id if selected_method == "gocardless"
+
+      nil
+    end
+
     # Only allow a list of trusted parameters through.
     def order_params
-      permitted_attributes = [ :customer_id, :notes, :status, :loyalty_points_redeemed,
+      permitted_attributes = [ :customer_id, :location_id, :notes, :status, :loyalty_points_redeemed,
                                order_items_attributes: [ :id, :inventory_item_id, :location_id, :quantity, :price, :_destroy ] ]
 
       params.require(:order).permit(permitted_attributes)
+    end
+
+    def selected_payment_method
+      params.dig(:order, :payment_method).presence || "cash_on_collection"
     end
 end

@@ -14,11 +14,16 @@ Rails.application.routes.draw do
     end
   end
   namespace :customer do
+    resource :gocardless_setup, only: [ :create ]
     resources :newsletters, only: [ :index, :show ] do
       collection do
         post :subscribe
       end
+      member do
+        post :unsubscribe
+      end
     end
+    resources :loyalty_programs, only: [ :index, :show, :create ]
   end
   resources :suppliers do
     member do
@@ -41,6 +46,16 @@ Rails.application.routes.draw do
       patch :incomplete
     end
   end
+  resource :shop, only: [ :show ] do
+    resources :categories, only: [ :show ], controller: "shop/categories"
+    resources :products, only: [ :show ], controller: "shop/products"
+  end
+  resource :cart, only: [ :show, :update, :destroy ] do
+    post :add_item
+    post :remove_item
+  end
+  resource :checkout, only: [ :show, :create ]
+
   resources :inventory_items do
     resources :supplier_prices, only: [ :create, :destroy ]
     member do

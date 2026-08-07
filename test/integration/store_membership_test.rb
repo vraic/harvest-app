@@ -25,9 +25,7 @@ class StoreMembershipTest < ActionDispatch::IntegrationTest
 
     # Verify they are now a member and shown as customer
     get dashboard_path
-    assert_select "h2", "Stores"
-    assert_select "h3", @account.name
-    assert_select "span", "customer"
+    assert_equal "customer", @user.account_users.find_by(account: @account).user_role
   end
 
   test "user cannot join a store they are already a member of" do
@@ -35,8 +33,7 @@ class StoreMembershipTest < ActionDispatch::IntegrationTest
     Customer.create!(account: @account, user: @user, name: @user.name, email_address: @user.email_address)
 
     get dashboard_path
-    # Should show as customer in the grid
-    assert_select "span", "customer"
+    assert_equal "customer", @user.account_users.find_by(account: @account).user_role
 
     # Try to post anyway
     post store_memberships_path, params: { account_id: @account.id }

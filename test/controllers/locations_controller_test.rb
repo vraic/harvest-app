@@ -41,6 +41,7 @@ class LocationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update location and collection_point" do
+    @location = locations(:two)
     assert_not @location.collection_point?
     patch location_url(@location), params: { location: { name: "Updated Name", collection_point: "1" } }
     assert_redirected_to location_url(@location)

@@ -28,8 +28,8 @@ class CustomerNewslettersTest < ApplicationSystemTestCase
     assert_link "Newsletters"
     click_link "Newsletters"
 
-    assert_text "Subscribe to our Newsletter"
-    assert_button "Subscribe Now"
+    assert_text "Your Newsletters"
+    assert_button "Subscribe"
   end
 
   test "customer can subscribe and see newsletters sent after subscription" do
@@ -47,9 +47,9 @@ class CustomerNewslettersTest < ApplicationSystemTestCase
     login_as @user
     visit customer_newsletters_path
 
-    click_button "Subscribe Now"
+    click_button "Subscribe"
 
-    assert_text "You have successfully subscribed to our newsletter."
+    assert_text "You have successfully subscribed to the newsletter."
     assert_text "New News"
     assert_no_text "Old News"
 

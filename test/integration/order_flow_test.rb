@@ -33,9 +33,11 @@ class OrderFlowTest < ActionDispatch::IntegrationTest
   test "customer can create their own order" do
     sign_in_as(@customer_user)
 
-    assert_difference -> { Order.count } => 1, -> { OrderItem.count } => 1 do
+    assert_difference -> { Order.count } => 1, -> { OrderItem.count } => 1, -> { Payment.count } => 1 do
       post orders_url, params: {
         order: {
+          payment_method: "cash_on_collection",
+          location_id: @location.id,
           order_items_attributes: [
             { inventory_item_id: @item.id, location_id: @location.id, quantity: 1, price: 15.00 }
           ]
@@ -46,6 +48,49 @@ class OrderFlowTest < ActionDispatch::IntegrationTest
     order = Order.last
     assert_equal @customer_record, order.customer
     assert_nil order.user # No staff assigned initially
+    assert_equal "cash_on_collection", order.payment.payment_method
+    assert_equal "pending", order.payment.status
+  end
+
+  test "customer can pay via gocardless once they have configured mandate" do
+    sign_in_as(@customer_user)
+    @customer_record.update!(gocardless_customer_id: "GC-CUST-001", gocardless_mandate_id: "MD0001", gocardless_configured_at: Time.current)
+
+    assert_difference -> { Order.count } => 1, -> { OrderItem.count } => 1, -> { Payment.count } => 1 do
+      post orders_url, params: {
+        order: {
+          payment_method: "gocardless",
+          location_id: @location.id,
+          order_items_attributes: [
+            { inventory_item_id: @item.id, location_id: @location.id, quantity: 1, price: 15.00 }
+          ]
+        }
+      }
+    end
+
+    order = Order.last
+    assert_equal "gocardless", order.payment.payment_method
+    assert_equal "pending", order.payment.status
+    assert_equal "MD0001", order.payment.provider_reference
+  end
+
+  test "customer cannot pay via gocardless before mandate setup" do
+    sign_in_as(@customer_user)
+
+    assert_no_difference [ "Order.count", "OrderItem.count", "Payment.count" ] do
+      post orders_url, params: {
+        order: {
+          payment_method: "gocardless",
+          location_id: @location.id,
+          order_items_attributes: [
+            { inventory_item_id: @item.id, location_id: @location.id, quantity: 1, price: 15.00 }
+          ]
+        }
+      }
+    end
+
+    assert_response :unprocessable_content
+    assert_match "GoCardless setup is required", response.body
   end
 
   test "unauthorized user cannot see orders" do

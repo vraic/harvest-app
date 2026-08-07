@@ -30,3 +30,10 @@
 en:
   hello: "Hello world"
   unauthorized: "You are not authorized to perform this action."
+  number:
+    currency:
+      format:
+        unit: "£"
+        separator: "."
+        delimiter: ","
+        format: "%u%n"

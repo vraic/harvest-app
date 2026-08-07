@@ -1,0 +1,4 @@
+<%= turbo_stream.prepend "flash-container", partial: "layouts/flash" %>
+<%= turbo_stream.update "mobile-cart-count", current_cart.count %>
+<%= turbo_stream.update "desktop-cart-count", current_cart.count %>
+<%= turbo_stream.replace "cart-content", partial: "carts/cart_content" if controller_name == "carts" && action_name == "remove_item" %>

@@ -1,37 +1,41 @@
-<div id="customer-orders" class="mt-10 border-t border-gray-200 dark:border-gray-700 pt-6">
-  <h2 class="text-xl font-bold mb-4">My Orders</h2>
-  <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-    <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
-      <thead class="bg-gray-50 dark:bg-gray-800">
-        <tr>
-          <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white sm:pl-6">Store</th>
-          <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Order #</th>
-          <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Date</th>
-          <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Total</th>
-          <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Status</th>
-          <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-            <span class="sr-only">View</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200 bg-white dark:bg-gray-900 dark:divide-gray-800">
-        <% orders.each do |order| %>
-          <tr>
-            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6"><%= order.account.name %></td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400"><%= order.number %></td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400"><%= order.created_at.strftime("%b %d, %Y") %></td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400"><%= humanized_money_with_symbol order.total_amount %></td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset <%= order.ordered? ? 'bg-blue-50 text-blue-700 ring-blue-700/10' : order.awaiting_collection? ? 'bg-yellow-50 text-yellow-700 ring-yellow-700/10' : 'bg-green-50 text-green-700 ring-green-700/10' %>">
-                <%= order.status.titleize %>
-              </span>
-            </td>
-            <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-              <%= link_to "View", order_path(order), class: "text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+<div id="customer-orders">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-bold">Recent Orders</h2>
+    <%= link_to "View all", orders_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+  </div>
+  <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+    <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+      <% orders.each do |order| %>
+        <li class="px-4 py-4 sm:px-6 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
+          <%= link_to order_path(order), class: "block" do %>
+            <div class="flex items-center justify-between">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between sm:justify-start sm:gap-4">
+                  <p class="text-sm font-bold text-gray-900 dark:text-white truncate">
+                    Order <%= order.number %>
+                  </p>
+                  <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset <%= order.ordered? ? 'bg-blue-50 text-blue-700 ring-blue-700/10' : order.awaiting_collection? ? 'bg-yellow-50 text-yellow-700 ring-yellow-700/10' : 'bg-green-50 text-green-700 ring-green-700/10' %>">
+                    <%= order.status.titleize %>
+                  </span>
+                </div>
+                <div class="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                  <span class="truncate"><%= order.account.name %></span>
+                  <span class="mx-1">&middot;</span>
+                  <span><%= order.created_at.strftime("%b %d, %Y") %></span>
+                </div>
+              </div>
+              <div class="ml-4 flex-shrink-0 text-right">
+                <p class="text-sm font-bold text-gray-900 dark:text-white">
+                  <%= humanized_money_with_symbol order.total_amount %>
+                </p>
+                <div class="mt-2 text-indigo-600 dark:text-indigo-400 text-sm font-medium">
+                  View details &rarr;
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
   </div>
 </div>

@@ -10,16 +10,15 @@
         data: { order_item_target: "itemSelect", action: "change->order-item#updateItem" } %>
   </div>
 
-  <div>
-    <%= f.label :location_id, staff? ? "Location" : "Collection Point", class: label_class %>
+  <div class="<%= 'hidden' unless staff? %>">
+    <%= f.label :location_id, "Location", class: label_class %>
     <% 
       locations = policy_scope(Location).order(:name)
-      locations = locations.collection_points unless staff?
     %>
     <%= f.collection_select :location_id, locations, :id, :name, 
-        { prompt: staff? ? "Select Location" : "Select Collection Point" }, 
+        { prompt: "Select Location" }, 
         class: input_class,
-        required: true,
+        required: staff?,
         data: { order_item_target: "locationSelect", action: "change->order-item#updateLocation" } %>
   </div>
 

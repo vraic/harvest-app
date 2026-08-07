@@ -22,6 +22,24 @@
     <%= form.text_area :address, rows: 4, class: input_class(account.errors[:address].any?, "h-auto") %>
   </div>
 
+  <div class="my-5 space-y-2">
+    <p class="<%= label_class %>">Classifications</p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2">
+        <%= form.check_box :is_b2c, class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
+        <%= form.label :is_b2c, "B2C", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= form.check_box :is_b2b, class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
+        <%= form.label :is_b2b, "B2B", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= form.check_box :is_internal, class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
+        <%= form.label :is_internal, "Internal", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
+      </div>
+    </div>
+  </div>
+
   <% if Current.user.admin? %>
     <div class="my-5">
       <%= form.label :owner_id, class: label_class %>

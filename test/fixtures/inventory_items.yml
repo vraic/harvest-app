@@ -24,3 +24,12 @@ apple:
   account: one
   inventory_group: two
   unit_type: 0
+
+banana:
+  name: Banana
+  description: Ripe bananas
+  price_cents: 30
+  price_currency: GBP
+  account: two
+  inventory_group: three
+  unit_type: 0

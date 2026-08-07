@@ -48,8 +48,12 @@ class GlobalAdminTest < ActionDispatch::IntegrationTest
   end
 
   test "admin can see all navigation links" do
+    grant_support_access(@account)
     sign_in_as(@admin)
-    get dashboard_path
+    # Select an account so manager? becomes true and settings shows up
+    patch managed_account_path, params: { account_id: @account.id }
+    follow_redirect!
+
     assert_select "nav" do
       assert_select "a", text: /Tasks/
       assert_select "a", text: /Customers/

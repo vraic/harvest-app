@@ -1,0 +1,66 @@
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="md:flex md:items-center md:justify-between mb-8">
+    <div class="min-w-0 flex-1">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">
+        Loyalty Cards
+      </h2>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"><%= Current.account.name %></p>
+    </div>
+  </div>
+
+  <% if @loyalty_program %>
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Enrolled</p>
+        <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white"><%= @loyalty_cards.count %></p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Points Distributed</p>
+        <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white"><%= @loyalty_cards.sum(:points_balance) %></p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Earn Rate</p>
+        <p class="mt-2 text-xl font-bold text-gray-900 dark:text-white"><%= @loyalty_program.currency_to_points_ratio %> pts / <%= Money.default_currency.symbol %>1</p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Redemption Rate</p>
+        <p class="mt-2 text-xl font-bold text-gray-900 dark:text-white">1 pt = <%= humanized_money_with_symbol Money.new(@loyalty_program.points_to_currency_ratio * 100, Money.default_currency) %></p>
+      </div>
+    </div>
+
+    <div class="<%= table_container_class %>">
+      <table class="<%= table_class %>">
+        <thead class="<%= thead_class %>">
+          <tr>
+            <th class="<%= th_class %>">Customer</th>
+            <th class="<%= th_class %>">Card Identifier</th>
+            <th class="<%= th_class %>">Points Balance</th>
+            <th class="<%= th_class %>">Enrolled</th>
+            <th class="<%= th_class %>">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="<%= tbody_class %>">
+          <% @loyalty_cards.each do |card| %>
+            <tr>
+              <td class="<%= td_class %>">
+                <div class="font-medium text-gray-900 dark:text-white"><%= card.customer.name %></div>
+                <div class="text-xs text-gray-500"><%= card.customer.email_address %></div>
+              </td>
+              <td class="<%= td_class %> font-mono text-xs"><%= card.identifier %></td>
+              <td class="<%= td_class %>"><%= card.points_balance %></td>
+              <td class="<%= td_class %>"><%= card.created_at.strftime("%b %d, %Y") %></td>
+              <td class="<%= td_class %> text-right">
+                <%= link_to "View Details", loyalty_card_path(card), class: "text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-2xl p-8 text-center border border-dashed border-gray-300 dark:border-gray-700">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">No Loyalty Program configured</h3>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">You can enable the loyalty program in Store Settings.</p>
+    </div>
+  <% end %>
+</div>

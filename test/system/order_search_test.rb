@@ -14,7 +14,9 @@ class OrderSearchTest < ApplicationSystemTestCase
     visit orders_url
 
     fill_in "query", with: "Customer One"
-    click_on "Search"
+    within "#order-search-form" do
+      click_on "Search"
+    end
 
     assert_text "Customer One"
   end
@@ -25,7 +27,9 @@ class OrderSearchTest < ApplicationSystemTestCase
     visit orders_url
 
     fill_in "query", with: "customer@example.com"
-    click_on "Search"
+    within "#order-search-form" do
+      click_on "Search"
+    end
 
     assert_text "Customer One"
   end
@@ -36,7 +40,9 @@ class OrderSearchTest < ApplicationSystemTestCase
     visit orders_url
 
     fill_in "query", with: @order_one.number
-    click_on "Search"
+    within "#order-search-form" do
+      click_on "Search"
+    end
 
     assert_text @order_one.number
     assert_no_text @order_two.number
@@ -48,7 +54,9 @@ class OrderSearchTest < ApplicationSystemTestCase
     visit orders_url
 
     fill_in "query", with: "1000"
-    click_on "Search"
+    within "#order-search-form" do
+      click_on "Search"
+    end
 
     assert_text "£10.00"
     assert_no_text "£20.00"
@@ -60,7 +68,9 @@ class OrderSearchTest < ApplicationSystemTestCase
     visit orders_url
 
     fill_in "query", with: "10.00"
-    click_on "Search"
+    within "#order-search-form" do
+      click_on "Search"
+    end
 
     assert_text "£10.00"
     assert_no_text "£20.00"
@@ -72,7 +82,9 @@ class OrderSearchTest < ApplicationSystemTestCase
     visit orders_url
 
     fill_in "query", with: @order_one.number
-    click_on "Search"
+    within "#order-search-form" do
+      click_on "Search"
+    end
 
     assert_no_text @order_two.number
 

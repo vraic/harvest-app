@@ -1,0 +1,45 @@
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+  <div class="md:flex md:items-center md:justify-between mb-8">
+    <div class="min-w-0 flex-1">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Loyalty Programmes</h2>
+      <p class="mt-1 text-sm text-gray-500">Manage your loyalty memberships and track your rewards across all stores.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <% @loyalty_programs.each do |program| %>
+      <% customer = @customers.find { |c| c.account_id == program.account_id } %>
+      <% card = customer&.loyalty_card %>
+      
+      <div class="flex flex-col overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow border border-gray-200 dark:border-gray-700">
+        <div class="flex-1 p-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white"><%= program.account.name %></h3>
+            <% if card %>
+              <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                Enrolled
+              </span>
+            <% end %>
+          </div>
+          
+          <div class="mt-4">
+            <% if card %>
+              <p class="text-3xl font-bold text-indigo-600"><%= card.points_balance %> pts</p>
+              <p class="text-sm text-gray-500 mt-1">Current Balance</p>
+            <% else %>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Earn points on every purchase and redeem them for discounts at <%= program.account.name %>.</p>
+            <% end %>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 dark:bg-gray-900/50 px-6 py-3 border-t border-gray-200 dark:border-gray-700">
+          <% if card %>
+            <%= link_to "View Stats", customer_loyalty_program_path(program), class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
+          <% else %>
+            <%= button_to "Enrol Now", customer_loyalty_programs_path(loyalty_program_id: program.id), class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500 bg-transparent border-none p-0 cursor-pointer" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

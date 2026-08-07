@@ -3,6 +3,7 @@ class InventoryGroup < ApplicationRecord
   has_prefix_id :igrp
 
   has_many :inventory_items, dependent: :nullify
+  has_one_attached :image
   has_many :inventory_group_suppliers, dependent: :destroy
   has_many :suppliers, through: :inventory_group_suppliers
   has_many :inventory_group_customers, dependent: :destroy

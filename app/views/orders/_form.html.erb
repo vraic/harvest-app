@@ -58,6 +58,29 @@
     <%= form.text_area :notes, rows: 3, class: input_class %>
   </div>
 
+  <div class="my-5">
+    <%= form.label :location_id, "Collection point", class: label_class %>
+    <%= form.collection_select :location_id, Location.where(collection_point: true), :id, :name, { prompt: "Select Collection Point" }, class: input_class, required: !staff? %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :payment_method, "Payment method", class: label_class %>
+    <%= form.select :payment_method,
+                    [["Cash on collection", "cash_on_collection"], ["GoCardless", "gocardless"]],
+                    { selected: params.dig(:order, :payment_method).presence || "cash_on_collection" },
+                    class: input_class %>
+
+    <% if customer? %>
+      <% customer = Customer.find_by(user: Current.user, account: Current.account) %>
+      <% unless customer&.gocardless_configured? %>
+        <p class="text-sm text-gray-600 mt-2">To use GoCardless, complete one-time setup first.</p>
+        <%= link_to "Set up GoCardless", customer_gocardless_setup_path(setup: { bank_account_token: "#{customer&.id}-setup" }),
+                      data: { turbo_method: :post },
+                      class: secondary_button_class %>
+      <% end %>
+    <% end %>
+  </div>
+
   <div class="my-10" data-controller="nested-form">
     <template data-nested-form-target="template">
       <%= form.fields_for :order_items, OrderItem.new, child_index: "NEW_RECORD" do |item_form| %>

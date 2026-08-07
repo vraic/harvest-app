@@ -34,8 +34,19 @@ module Authentication
       redirect_to new_session_path
     end
 
-    def after_authentication_url
-      session.delete(:return_to_after_authenticating) || root_url
+    def after_authentication_url(user = nil)
+      return_to = session.delete(:return_to_after_authenticating)
+      return return_to if return_to.present?
+
+      user ||= Current.session&.user || Current.user
+
+      if user&.admin?
+        dashboard_url
+      elsif user&.account_users&.any? && user.account_users.all?(&:customer?)
+        shop_url
+      else
+        dashboard_url
+      end
     end
 
     def start_new_session_for(user)

@@ -4,18 +4,26 @@ one:
   name: Account One
   address: 1 King Street
   owner: one
+  is_b2c: true
+  is_b2b: true
 
 two:
   name: Account Two
   address: 2 King Street
   owner: two
+  is_b2c: true
+  is_b2b: true
 
 three:
   name: Account Three
   address: 3 King Street
   owner: three
+  is_b2c: true
+  is_b2b: true
 
 four:
   name: Account Four
   address: 4 King Street
   owner: one
+  is_b2c: true
+  is_b2b: true

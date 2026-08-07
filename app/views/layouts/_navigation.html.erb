@@ -1,0 +1,140 @@
+<nav id="<%= mobile ? 'mobile-sidebar-main-nav' : 'desktop-sidebar-main-nav' %>" class="flex flex-1 flex-col">
+  <ul role="list" class="flex flex-1 flex-col gap-y-7">
+    <li>
+      <ul role="list" class="-mx-2 space-y-1">
+        <li>
+          <%= link_to shop_path, class: nav_link_classes(:shop) do %>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:shop) %>">
+              <path d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H22.25m-12.917-2.1c.6-.284 1.17-.565 1.717-.842m0 0a26.113 26.113 0 0 1 5.148-2.023m-5.148 2.023c-.453.228-.9.453-1.341.674M6.75 21v-6.75m6.75 6.75v-6.75M6.75 14.25h6.75M4.5 21V4.5a2.25 2.25 0 0 1 2.25-2.25h10.5A2.25 2.25 0 0 1 19.5 4.5V21" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Shop
+          <% end %>
+        </li>
+        <li>
+          <%= link_to dashboard_path, class: nav_link_classes(:dashboard) do %>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:dashboard) %>">
+              <path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Dashboard
+          <% end %>
+        </li>
+        <% if staff? %>
+          <li>
+            <%= link_to tasks_path, class: nav_link_classes(:tasks) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:tasks) %>">
+                <path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Tasks
+            <% end %>
+          </li>
+          <li>
+            <%= link_to customers_path, class: nav_link_classes(:customers) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:customers) %>">
+                <path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Customers
+            <% end %>
+          </li>
+          <li>
+            <%= link_to suppliers_path, class: nav_link_classes(:suppliers) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:suppliers) %>">
+                <path d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Suppliers
+            <% end %>
+          </li>
+          <li>
+            <%= link_to inventory_items_path, class: nav_link_classes(:inventory) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:inventory) %>">
+                <path d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Inventory
+            <% end %>
+          </li>
+        <% end %>
+        <li>
+          <%= link_to orders_path, class: nav_link_classes(:orders) do %>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:orders) %>">
+              <path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Orders
+          <% end %>
+        </li>
+        <% if staff? %>
+          <li>
+            <%= link_to reports_path, class: nav_link_classes(:reports) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:reports) %>">
+                <path d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Reports
+            <% end %>
+          </li>
+          <li>
+            <%= link_to newsletters_path, class: nav_link_classes(:newsletters) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:newsletters) %>">
+                <path d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Newsletters
+            <% end %>
+          </li>
+          <li>
+            <%= link_to loyalty_cards_path, class: nav_link_classes(:loyalty) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:loyalty) %>">
+                <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Loyalty
+            <% end %>
+          </li>
+        <% end %>
+        <% if authenticated? && !staff? %>
+          <li>
+            <%= link_to customer_newsletters_path, class: nav_link_classes(:customer_newsletters) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:customer_newsletters) %>">
+                <path d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Newsletters
+            <% end %>
+          </li>
+          <li>
+            <%= link_to customer_loyalty_programs_path, class: nav_link_classes(:loyalty) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:loyalty) %>">
+                <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Loyalty
+            <% end %>
+          </li>
+        <% end %>
+        <% if manager? %>
+          <li>
+            <%= link_to edit_account_path(Current.account), class: nav_link_classes(:accounts) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:accounts) %>">
+                <path d="M13.5 21V12.75H10.5V21M4.5 21H19.5M3 12.75H21M5.25 12.75V5.25C5.25 4.85218 5.40804 4.47064 5.68934 4.18934C5.97064 3.90804 6.35218 3.75 6.75 3.75H17.25C17.6478 3.75 18.0294 3.90804 18.3107 4.18934C18.592 4.47064 18.75 4.85218 18.75 5.25V12.75" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Store Settings
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </li>
+    <% if staff? %>
+      <li>
+        <div class="text-xs/6 font-semibold text-gray-400">Quick links</div>
+        <ul role="list" class="-mx-2 mt-2 space-y-1">
+          <li>
+            <%= link_to orders_path(filter: "today"), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white" do %>
+              <span class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">1</span>
+              <span class="truncate">Today's Orders</span>
+            <% end %>
+          </li>
+          <li>
+            <%= link_to customers_path(filter: "recent"), class: "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white" do %>
+              <span class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">2</span>
+              <span class="truncate">Recent Customers</span>
+            <% end %>
+          </li>
+        </ul>
+      </li>
+    <% end %>
+  </ul>
+</nav>

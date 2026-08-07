@@ -41,6 +41,7 @@ class OrderPrivacyTest < ActionDispatch::IntegrationTest
       # Create an order for Customer A
       @order_a = Order.create!(
         customer: @customer_record_a,
+        location: locations(:one),
         total_amount_cents: 1000,
         number: "111AAA"
       )

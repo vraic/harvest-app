@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_14_205908) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_17_165542) do
   create_table "account_users", force: :cascade do |t|
     t.integer "account_id"
     t.datetime "created_at", null: false
@@ -23,6 +23,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_205908) do
   create_table "accounts", force: :cascade do |t|
     t.text "address"
     t.datetime "created_at", null: false
+    t.string "gocardless_access_token"
+    t.integer "gocardless_mode", default: 0
+    t.boolean "is_b2b", default: true, null: false
+    t.boolean "is_b2c", default: false, null: false
+    t.boolean "is_internal", default: false, null: false
     t.string "name"
     t.integer "owner_id"
     t.datetime "updated_at", null: false
@@ -196,6 +201,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_205908) do
     t.integer "customer_account_id"
     t.datetime "deleted_at"
     t.string "email_address"
+    t.datetime "gocardless_configured_at"
+    t.string "gocardless_customer_id"
+    t.string "gocardless_mandate_id"
     t.string "name"
     t.string "phone"
     t.datetime "subscribed_at"
@@ -353,6 +361,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_205908) do
     t.datetime "created_at", null: false
     t.string "currency", default: "GBP", null: false
     t.integer "customer_id", null: false
+    t.integer "location_id"
     t.integer "loyalty_discount_amount_cents", default: 0
     t.integer "loyalty_points_redeemed", default: 0
     t.text "notes"
@@ -363,8 +372,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_205908) do
     t.integer "user_id"
     t.index ["account_id"], name: "index_orders_on_account_id"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["location_id"], name: "index_orders_on_location_id"
     t.index ["number"], name: "index_orders_on_number", unique: true
     t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.integer "amount_cents", null: false
+    t.datetime "created_at", null: false
+    t.string "currency", default: "GBP", null: false
+    t.integer "customer_id", null: false
+    t.integer "order_id", null: false
+    t.integer "payment_method", default: 0, null: false
+    t.string "provider_reference"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_payments_on_account_id"
+    t.index ["customer_id"], name: "index_payments_on_customer_id"
+    t.index ["order_id"], name: "index_payments_on_order_id", unique: true
   end
 
   create_table "refer_referral_codes", force: :cascade do |t|
@@ -541,7 +567,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_205908) do
   add_foreign_key "order_items", "orders"
   add_foreign_key "orders", "accounts"
   add_foreign_key "orders", "customers"
+  add_foreign_key "orders", "locations"
   add_foreign_key "orders", "users"
+  add_foreign_key "payments", "accounts"
+  add_foreign_key "payments", "customers"
+  add_foreign_key "payments", "orders"
   add_foreign_key "refer_visits", "refer_referral_codes", column: "referral_code_id"
   add_foreign_key "sessions", "users"
   add_foreign_key "supplier_prices", "inventory_items"

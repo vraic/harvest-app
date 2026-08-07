@@ -1,6 +1,7 @@
 class LoyaltyProgram < ApplicationRecord
   acts_as_tenant :account
   audited associated_with: :account
+  has_prefix_id :lp
 
   belongs_to :account
   has_many :loyalty_cards, dependent: :destroy

@@ -15,6 +15,7 @@ class Customer < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :customer_account, class_name: "Account", optional: true
   has_many :orders, dependent: :destroy
+  has_many :payments, dependent: :nullify
   has_many :inventory_group_customers, dependent: :destroy
   has_many :inventory_groups, through: :inventory_group_customers
   has_one :loyalty_card, dependent: :destroy
@@ -26,7 +27,8 @@ class Customer < ApplicationRecord
 
   anonymise do
     overwrite do
-      ignore :account_id, :user_id, :customer_account_id, :subscribed_to_newsletter, :subscribed_at
+      ignore :account_id, :user_id, :customer_account_id, :subscribed_to_newsletter, :subscribed_at,
+             :gocardless_customer_id, :gocardless_mandate_id, :gocardless_configured_at
       hex :name
       email :email_address
       hex :phone
@@ -34,6 +36,10 @@ class Customer < ApplicationRecord
   end
 
   validates :name, presence: true
+
+  def gocardless_configured?
+    gocardless_customer_id.present? && gocardless_mandate_id.present?
+  end
 
   private
 

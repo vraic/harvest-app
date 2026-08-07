@@ -4,20 +4,22 @@
 #   Ensure the SQLite 3 gem is defined in your Gemfile
 #   gem "sqlite3"
 #
-default: &default
+sqlite_default: &sqlite_default
   adapter: sqlite3
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
 
 development:
-  <<: *default
+  <<: *sqlite_default
   database: storage/development.sqlite3
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
+  adapter: sqlite3
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
   database: storage/test.sqlite3
 
 # Store production database in the storage/ directory, which by default
@@ -25,20 +27,20 @@ test:
 production:
   primary:
     adapter: postgresql
-    url: <%= ENV.fetch("DATABASE_URL") %>
+    url: <%= ENV["DATABASE_URL"] %>
     max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   cache:
     adapter: postgresql
-    url: <%= ENV.fetch("CACHE_DATABASE_URL") { ENV.fetch("DATABASE_URL") } %>
+    url: <%= ENV["CACHE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
     max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     migrations_paths: db/cache_migrate
   queue:
     adapter: postgresql
-    url: <%= ENV.fetch("QUEUE_DATABASE_URL") { ENV.fetch("DATABASE_URL") } %>
+    url: <%= ENV["QUEUE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
     max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     migrations_paths: db/queue_migrate
   cable:
     adapter: postgresql
-    url: <%= ENV.fetch("CABLE_DATABASE_URL") { ENV.fetch("DATABASE_URL") } %>
+    url: <%= ENV["CABLE_DATABASE_URL"] || ENV["DATABASE_URL"] %>
     max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     migrations_paths: db/cable_migrate

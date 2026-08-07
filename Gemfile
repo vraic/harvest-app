@@ -5,7 +5,7 @@ gem "rails", "~> 8.1.3"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use sqlite3 as the database for Active Record in development and test
-gem "sqlite3", ">= 2.1", group: [ :development, :test ]
+gem "sqlite3", ">= 2.1"
 # Use PostgreSQL as the database for Active Record in production
 gem "pg", "~> 1.5", group: :production
 # Use the Puma web server [https://github.com/puma/puma]

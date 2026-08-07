@@ -484,6 +484,7 @@ DEPENDENCIES
   jbuilder
   kamal
   lexxy
+  matrix
   money-rails
   pagy (~> 43.5)
   prawn (~> 2.4)

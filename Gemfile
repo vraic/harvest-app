@@ -103,6 +103,7 @@ gem "lexxy"
 gem "ahoy_matey"
 gem "ahoy_email"
 gem "refer"
+gem "matrix"
 
 gem "prawn", "~> 2.4"
 gem "prawn-table", "~> 0.2.2"

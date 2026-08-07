@@ -63,9 +63,14 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
     assert_text "Two-Factor Verification"
     assert_text "Please enter the code from your authenticator app"
 
-    code = ROTP::TOTP.new(@user.reload.otp_secret.strip).now
-    fill_in "Verification Code", with: code
-    assert_field "Verification Code", with: /^\d{6}$/
+    travel_to Time.current do
+      code = ROTP::TOTP.new(@user.reload.otp_secret.strip).now
+      fill_in "otp_code", with: code
+      click_button "Verify"
+    end
+
+    assert_no_current_path new_two_factor_verification_path, wait: 5
+    assert_selector "nav", visible: :any, wait: 5
   end
 
   test "2FA login phase 2: email OTP form accepts alphanumeric code" do
@@ -90,7 +95,10 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
 
     assert token.present?, "Email OTP token should have been generated"
 
-    fill_in "Verification Code", with: token
-    assert_field "Verification Code", with: token
+    fill_in "otp_code", with: token
+    click_button "Verify"
+
+    assert_no_current_path new_two_factor_verification_path, wait: 10
+    assert_selector "nav", visible: :any, wait: 10
   end
 end

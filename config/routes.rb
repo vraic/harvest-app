@@ -31,6 +31,7 @@ Rails.application.routes.draw do
     end
   end
   resources :reports, only: [ :index ]
+  resources :notifications, only: [ :index ]
   resources :supplier_requests, only: [ :index, :new, :create, :update, :destroy ]
   resources :order_items
   resources :orders do

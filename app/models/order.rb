@@ -33,6 +33,7 @@ class Order < ApplicationRecord
   before_validation :sync_item_locations
   after_create :process_loyalty_redemption
   after_create :send_received_email
+  after_create :notify_staff_of_customer_order
   after_update :process_loyalty_accrual, if: -> { saved_change_to_status? && complete? }
   after_update :send_status_emails, if: :saved_change_to_status?
 
@@ -102,5 +103,14 @@ class Order < ApplicationRecord
     if awaiting_collection?
       OrderMailer.order_awaiting_collection(self).deliver_later
     end
+  end
+
+  def notify_staff_of_customer_order
+    return unless customer_order?
+
+    recipients = account.active_staff_users
+    return if recipients.empty?
+
+    CustomerOrderNotifier.with(record: self, account_id: account_id).deliver(recipients)
   end
 end

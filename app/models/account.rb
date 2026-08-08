@@ -21,6 +21,8 @@ class Account < ApplicationRecord
   has_many :tasks, dependent: :destroy
   has_many :support_requests, dependent: :destroy
   has_one :loyalty_program, dependent: :destroy
+  has_many :noticed_events, class_name: "Noticed::Event", dependent: :destroy
+  has_many :noticed_notifications, class_name: "Noticed::Notification", dependent: :destroy
   accepts_nested_attributes_for :loyalty_program
   belongs_to :owner, class_name: "User", foreign_key: "owner_id"
 
@@ -40,6 +42,10 @@ class Account < ApplicationRecord
 
   def default_referral_code
     name.downcase.gsub(/[^a-z0-9]/, "")
+  end
+
+  def active_staff_users
+    account_users.active.staff.includes(:user).map(&:user).compact.uniq
   end
 
   private

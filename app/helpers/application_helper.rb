@@ -28,6 +28,8 @@ module ApplicationHelper
       controller_name == "orders"
     when :reports
       controller_name == "reports"
+    when :notifications
+      controller_name == "notifications"
     when :newsletters
       controller_path == "newsletters"
     when :customer_newsletters

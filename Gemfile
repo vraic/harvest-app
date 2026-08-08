@@ -40,6 +40,9 @@ gem "audited", "~> 5.6"
 # Authorisation
 gem "pundit", "~> 2.5"
 
+# In-app notifications
+gem "noticed"
+
 # Multi-tenant
 gem "acts_as_tenant"
 

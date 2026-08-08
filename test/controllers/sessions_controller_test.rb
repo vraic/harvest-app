@@ -21,14 +21,33 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     @user.update!(otp_required_for_login: false, prefers_email_login: false)
     post session_path, params: { email_address: @user.email_address, password: "password" }
 
-    # Users are now redirected to dashboard or shop based on role
     if @user.admin?
       assert_redirected_to dashboard_path
-    elsif @user.account_users.any? && @user.account_users.all?(&:customer?)
-      assert_redirected_to shop_path
-    else
+    elsif @user.account_users.active.where(user_role: [ :store_manager, :store_staff ]).exists?
       assert_redirected_to dashboard_path
+    else
+      assert_redirected_to shop_path
     end
+    assert_not_nil cookies[:session_id]
+  end
+
+  test "create with valid credentials and no memberships redirects to shop" do
+    user = users(:unassigned)
+    user.update!(otp_required_for_login: false, prefers_email_login: false)
+
+    post session_path, params: { email_address: user.email_address, password: "password" }
+
+    assert_redirected_to shop_path
+    assert_not_nil cookies[:session_id]
+  end
+
+  test "create with valid credentials and staff membership redirects to dashboard" do
+    user = users(:two)
+    user.update!(otp_required_for_login: false, prefers_email_login: false)
+
+    post session_path, params: { email_address: user.email_address, password: "password" }
+
+    assert_redirected_to dashboard_path
     assert_not_nil cookies[:session_id]
   end
 

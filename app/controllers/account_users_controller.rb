@@ -6,7 +6,7 @@ class AccountUsersController < ApplicationController
   # GET /accounts/:account_id/account_users or /accounts/:account_id/account_users.json
   def index
     authorize AccountUser
-    @pagy, @account_users = pagy(AccountUser.all)
+    @pagy, @account_users = pagy(AccountUser.active.includes(:user).order("users.name"))
   end
 
   # GET /account_users/1 or /account_users/1.json
@@ -38,9 +38,9 @@ class AccountUsersController < ApplicationController
       user.save!
     end
 
-    @account_user = AccountUser.new(account_user_params)
-    @account_user.user = user
-    @account_user.account = @account
+    @account_user = AccountUser.unscoped.find_or_initialize_by(account: @account, user: user)
+    @account_user.assign_attributes(account_user_params)
+    @account_user.archived_at = nil
 
     authorize @account_user
 
@@ -48,7 +48,7 @@ class AccountUsersController < ApplicationController
       if @account_user.save
         user.password = user.password_confirmation = nil
         UserMailer.account_invitation(user, @account).deliver_later
-        format.html { redirect_to @account, notice: "Account user was successfully created." }
+        format.html { redirect_to edit_account_path(@account, tab: "staff"), notice: "Account user was successfully invited." }
         format.json { render :show, status: :created, location: @account_user }
       else
         format.html { render :new, status: :unprocessable_content }
@@ -62,7 +62,7 @@ class AccountUsersController < ApplicationController
     authorize @account_user
     respond_to do |format|
       if @account_user.update(account_user_params)
-        format.html { redirect_to @account_user.account, notice: "Account user was successfully updated.", status: :see_other }
+        format.html { redirect_to edit_account_path(@account_user.account, tab: "staff"), notice: "Account user was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @account_user }
       else
         format.html { render :edit, status: :unprocessable_content }
@@ -75,10 +75,21 @@ class AccountUsersController < ApplicationController
   def destroy
     authorize @account_user
     account = @account_user.account
-    @account_user.destroy!
+
+    if @account_user.user_id == Current.user.id
+      redirect_to edit_account_path(account, tab: "staff"), alert: "You cannot archive yourself."
+      return
+    end
+
+    if @account_user.store_manager? && account.account_users.active.store_manager.where.not(id: @account_user.id).none?
+      redirect_to edit_account_path(account, tab: "staff"), alert: "At least one store manager is required."
+      return
+    end
+
+    @account_user.archive!
 
     respond_to do |format|
-      format.html { redirect_to account, notice: "Account user was successfully destroyed.", status: :see_other }
+      format.html { redirect_to edit_account_path(account, tab: "staff"), notice: "Account user was successfully archived.", status: :see_other }
       format.json { head :no_content }
     end
   end

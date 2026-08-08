@@ -10,14 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_064000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_08_093000) do
   create_table "account_users", force: :cascade do |t|
     t.integer "account_id"
+    t.datetime "archived_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.integer "user_role", default: 0
     t.index ["account_id", "user_id"], name: "index_account_users_on_account_id_and_user_id", unique: true
+    t.index ["archived_at"], name: "index_account_users_on_archived_at"
   end
 
   create_table "accounts", force: :cascade do |t|

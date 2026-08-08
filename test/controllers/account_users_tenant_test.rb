@@ -25,7 +25,7 @@ class AccountUsersTenantTest < ActionDispatch::IntegrationTest
 
     new_account_user = AccountUser.last
     assert_equal @account.id, new_account_user.account_id
-    assert_redirected_to @account
+    assert_redirected_to edit_account_url(@account, tab: "staff")
   end
 
   test "should not show account dropdown for non-admin" do

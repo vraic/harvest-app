@@ -5,5 +5,5 @@
 
   <%= render "form", account_user: @account_user %>
 
-  <%= link_to "Back to account", @account_user.account, class: secondary_button_class("mt-4 inline-block") %>
+  <%= link_to "Back to staff", edit_account_path(@account_user.account, tab: "staff"), class: secondary_button_class("mt-4 inline-block") %>
 </div>

@@ -16,31 +16,29 @@ class AccountStaffManagementTest < ApplicationSystemTestCase
 
     assert_text "Account was successfully created."
 
-    # Check if user is manager
-    visit account_path(Account.last)
+    # Check if user is manager in staff tab
+    visit edit_account_path(Account.last, tab: "staff")
     within "tr##{dom_id(AccountUser.last)}" do
       assert_text "Store Owner"
       assert_text "Store Manager"
     end
 
-    # Should be able to visit edit page
-    visit edit_account_path(Account.last)
-    assert_text "Editing account"
+    assert_text "Staff"
   end
 
-  test "adding, editing and removing staff" do
+  test "adding, editing and archiving staff" do
     @account = Account.create!(name: "Test Store", owner: @user)
 
     login_as(@user)
-    visit account_path(@account)
+    visit edit_account_path(@account, tab: "staff")
 
     # Add new staff
-    click_on "Add User"
+    click_on "Invite User"
     fill_in "Email address", with: @staff_email
     select "Store Staff", from: "User role"
     click_on "Create Account user"
 
-    assert_text "Account user was successfully created."
+    assert_text "Account user was successfully invited."
     assert_text @staff_email
     assert_text "Store Staff"
 
@@ -60,15 +58,15 @@ class AccountStaffManagementTest < ApplicationSystemTestCase
       assert_text "Store Manager"
     end
 
-    # Remove staff
+    # Archive staff
     within "tr##{dom_id(staff_account_user)}" do
       accept_confirm do
-        click_on "Remove"
+        click_on "Archive"
       end
     end
 
-    assert_text "Account user was successfully destroyed."
-    assert_no_text @staff_email
+    assert_text "Account user was successfully archived."
+    assert_text "Archived Staff"
   end
 
   test "adding existing user as staff" do
@@ -76,14 +74,14 @@ class AccountStaffManagementTest < ApplicationSystemTestCase
     @account = Account.create!(name: "Test Store", owner: @user)
 
     login_as(@user)
-    visit account_path(@account)
+    visit edit_account_path(@account, tab: "staff")
 
-    click_on "Add User"
+    click_on "Invite User"
     fill_in "Email address", with: "existing@example.com"
     select "Store Staff", from: "User role"
     click_on "Create Account user"
 
-    assert_text "Account user was successfully created."
+    assert_text "Account user was successfully invited."
     assert_text "Existing User"
     assert_text "Store Staff"
   end

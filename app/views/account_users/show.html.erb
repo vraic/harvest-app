@@ -8,7 +8,7 @@
 
   <div class="flex flex-wrap gap-2 mt-4">
     <%= link_to "Edit this account user", edit_account_user_path(@account_user), class: secondary_button_class("w-full sm:w-auto text-center") %>
-    <%= link_to "Back to account", @account_user.account, class: secondary_button_class("w-full sm:w-auto text-center") %>
-    <%= button_to "Destroy this account user", @account_user, method: :delete, form_class: "w-full sm:w-auto", class: danger_button_class("w-full"), data: { turbo_confirm: "Are you sure?" } %>
+    <%= link_to "Back to staff", edit_account_path(@account_user.account, tab: "staff"), class: secondary_button_class("w-full sm:w-auto text-center") %>
+    <%= button_to "Archive this account user", @account_user, method: :delete, form_class: "w-full sm:w-auto", class: danger_button_class("w-full"), data: { turbo_confirm: "Archive this user from the account?" } %>
   </div>
 </div>

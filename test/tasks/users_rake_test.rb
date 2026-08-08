@@ -27,6 +27,9 @@ class UsersRakeTest < ActiveSupport::TestCase
     @original_stdin = $stdin
 
     @original_env = {
+      "SEED_EMAIL_ADDRESS" => ENV["SEED_EMAIL_ADDRESS"],
+      "SEED_PASSWORD" => ENV["SEED_PASSWORD"],
+      "SEED_NAME" => ENV["SEED_NAME"],
       "EMAIL_ADDRESS" => ENV["EMAIL_ADDRESS"],
       "PASSWORD" => ENV["PASSWORD"],
       "NAME" => ENV["NAME"]
@@ -46,6 +49,9 @@ class UsersRakeTest < ActiveSupport::TestCase
     ENV["EMAIL_ADDRESS"] = email
     ENV["PASSWORD"] = password
     ENV["NAME"] = "Seed Admin"
+    ENV["SEED_EMAIL_ADDRESS"] = nil
+    ENV["SEED_PASSWORD"] = nil
+    ENV["SEED_NAME"] = nil
 
     output, = capture_io do
       assert_difference("User.where(email_address: '#{email}').count", 1) do
@@ -71,6 +77,9 @@ class UsersRakeTest < ActiveSupport::TestCase
     ENV["EMAIL_ADDRESS"] = user.email_address
     ENV["PASSWORD"] = new_password
     ENV["NAME"] = "Updated Admin"
+    ENV["SEED_EMAIL_ADDRESS"] = nil
+    ENV["SEED_PASSWORD"] = nil
+    ENV["SEED_NAME"] = nil
 
     output, = capture_io do
       assert_no_difference("User.count") do
@@ -95,6 +104,9 @@ class UsersRakeTest < ActiveSupport::TestCase
     ENV["EMAIL_ADDRESS"] = nil
     ENV["PASSWORD"] = nil
     ENV["NAME"] = nil
+    ENV["SEED_EMAIL_ADDRESS"] = nil
+    ENV["SEED_PASSWORD"] = nil
+    ENV["SEED_NAME"] = nil
 
     $stdin = FakeTTYInput.new([
       "#{email}\n",
@@ -125,6 +137,9 @@ class UsersRakeTest < ActiveSupport::TestCase
     ENV["EMAIL_ADDRESS"] = nil
     ENV["PASSWORD"] = nil
     ENV["NAME"] = nil
+    ENV["SEED_EMAIL_ADDRESS"] = nil
+    ENV["SEED_PASSWORD"] = nil
+    ENV["SEED_NAME"] = nil
 
     $stdin = StringIO.new
 

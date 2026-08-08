@@ -14,14 +14,18 @@ class CustomerOrdersTest < ApplicationSystemTestCase
     # Go to shop (unified view)
     visit shop_path
     assert_text "Shop by Category"
+    assert_no_selector "#desktop-sidebar-cart-link"
 
     # Quick add to cart from shop page
     # Find the link to the product and then the add to cart button in the same card
     find("h3", text: @item.display_name).find(:xpath, "ancestor::div[contains(@class, 'group')][1]").click_on "Add to cart"
     assert_text "#{@item.name} added to cart"
 
-    # Verify cart count in header
-    assert_text "1"
+    # Verify cart appears in sidebar with count
+    assert_selector "#desktop-sidebar-cart-link[href='#{cart_path}']"
+    within("#desktop-cart-count") do
+      assert_text "1"
+    end
 
     # Go to cart
     visit cart_path

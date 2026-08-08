@@ -24,6 +24,8 @@ module ApplicationHelper
       [ "inventory_items", "locations", "inventory_groups", "inventory_levels" ].include?(controller_name)
     when :shop
       controller_name == "shops" || controller_path.start_with?("shop/")
+    when :commerce
+      [ :orders, :inventory ].any? { |nav_item| nav_item_active?(nav_item) }
     when :orders
       controller_name == "orders"
     when :reports
@@ -40,6 +42,8 @@ module ApplicationHelper
       controller_name == "accounts" || controller_name == "supplier_requests"
     when :support_requests
       controller_name == "support_requests"
+    when :people
+      [ :customers, :suppliers, :newsletters, :customer_newsletters, :loyalty, :shop ].any? { |nav_item| nav_item_active?(nav_item) }
     when :settings
       [ "account_users", "users", "settings" ].include?(controller_name)
     else
@@ -204,16 +208,18 @@ module ApplicationHelper
 
   def show_account_switcher?
     return false unless Current.user
-    return true if Current.user.admin? && switchable_accounts.any?
+
     !customer_only? && switchable_accounts.size > 1
   end
 
   def global_admin_navigation?
-    Current.user&.admin? && Current.account.blank?
+    Current.user&.admin? && !acting_on_behalf_navigation?
   end
 
   def acting_on_behalf_navigation?
-    Current.user&.admin? && Current.account.present?
+    return false unless Current.user&.admin? && Current.account.present?
+
+    @acting_on_behalf_navigation ||= SupportRequest.unscoped.active.exists?(account_id: Current.account.id)
   end
 
   def store_operator_user?
@@ -223,7 +229,9 @@ module ApplicationHelper
   end
 
   def staff_navigation?
-    acting_on_behalf_navigation? || store_operator_user?
+    return acting_on_behalf_navigation? if Current.user&.admin?
+
+    store_operator_user?
   end
 
   def customer_navigation?

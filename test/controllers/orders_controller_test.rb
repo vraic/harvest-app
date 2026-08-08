@@ -10,6 +10,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get orders_url
     assert_response :success
+    assert_select "main > div > div.w-full", count: 1
   end
 
   test "should filter orders by today" do

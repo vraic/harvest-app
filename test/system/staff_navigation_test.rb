@@ -10,19 +10,37 @@ class StaffNavigationTest < ApplicationSystemTestCase
   test "staff member sees management links but not customer-facing ones" do
     login_as(@staff)
 
+    assert_no_selector "button span.sr-only", text: "Search", visible: :all
+    assert_no_selector "#desktop-sidebar-cart-link"
+    assert_selector "#desktop-sidebar-cart + div #user-menu-button-desktop"
+
     # Select account
     visit root_path
     assert_equal "Dashboard", find("#desktop-sidebar-main-nav > ul > li:first-child > ul > li:first-child a").text
 
-    within "nav" do
+    within "#desktop-sidebar-main-nav" do
       assert_text "Dashboard"
-      assert_text "Customer View"
-      assert_text "Newsletters"
-      assert_text "Loyalty"
+      assert_text "Tasks"
+      assert_text "Commerce"
+      assert_text "People"
+      assert_text "Reports"
+      assert_text "Store Settings"
+      assert_no_text "Quick links"
       assert_no_text "Notifications"
+      assert_no_selector "a[aria-label='Notifications'][href='/notifications']"
 
-      assert_selector "a[aria-label='Notifications'][href='/notifications']"
-      assert_no_selector "#desktop-notifications-badge"
+      click_button "Commerce"
+
+      assert_text "Orders"
+      assert_text "Inventory"
+
+      click_button "People"
+
+      assert_text "Customers"
+      assert_text "Suppliers"
+      assert_text "Newsletters"
+      assert_text "Loyalty Cards"
+      assert_text "Customer View"
 
       # Newsletters link for staff points to newsletters_path
       assert_selector "a[href='/newsletters']"
@@ -36,8 +54,11 @@ class StaffNavigationTest < ApplicationSystemTestCase
       refute_selector "a[href='/customer/loyalty_programs']"
     end
 
+    assert_selector "#desktop-sidebar-notifications-link[href='/notifications']"
+    assert_no_selector "#desktop-notifications-badge"
+
     # Visit Loyalty Cards as staff
-    click_on "Loyalty"
+    click_on "Loyalty Cards"
     assert_text "Loyalty Cards"
     assert_text @account.name
     assert_text "Total Enrolled"
@@ -49,10 +70,8 @@ class StaffNavigationTest < ApplicationSystemTestCase
     login_as(@staff)
     visit dashboard_path
 
-    within "#desktop-sidebar-main-nav" do
-      assert_selector "a[aria-label='Notifications'][href='/notifications']"
-      assert_selector "#desktop-notifications-badge", text: "1"
-    end
+    assert_selector "#desktop-sidebar-notifications-link[href='/notifications']"
+    assert_selector "#desktop-notifications-badge", text: "1"
   end
 
   test "staff member sees supplier view when b2c is off and b2b is on" do
@@ -63,7 +82,8 @@ class StaffNavigationTest < ApplicationSystemTestCase
     login_as(@staff)
     visit dashboard_path
 
-    within "nav" do
+    within "#desktop-sidebar-main-nav" do
+      click_button "People"
       assert_text "Supplier View"
       assert_no_text "Customer View"
       assert_selector "a[href='/shop']", text: "Supplier View"
@@ -80,7 +100,8 @@ class StaffNavigationTest < ApplicationSystemTestCase
     login_as(@staff)
     visit dashboard_path
 
-    within "nav" do
+    within "#desktop-sidebar-main-nav" do
+      click_button "People"
       assert_no_text "Customer View"
       assert_no_text "Supplier View"
       refute_selector "a[href='/shop']"
@@ -101,7 +122,7 @@ class StaffNavigationTest < ApplicationSystemTestCase
       assert_text "Dashboard"
       assert_text "Shop"
       assert_text "Newsletters"
-      assert_text "Loyalty"
+      assert_text "Loyalty Cards"
       assert_no_text "Customer View"
 
       # Should see customer versions

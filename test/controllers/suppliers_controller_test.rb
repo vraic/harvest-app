@@ -19,23 +19,67 @@ class SuppliersControllerTest < ActionDispatch::IntegrationTest
     get new_supplier_url
     assert_response :success
     assert_select "form"
+    assert_select "input[name='supplier[entry_mode]'][value='platform_store']"
+    assert_select "input[name='supplier[entry_mode]'][value='manual_entry']"
+    assert_select "select[name='supplier[supplier_account_id]']"
     assert_select "input[name='supplier[name]']"
     assert_select "input[name='supplier[email_address]']"
-    assert_select "select[name='supplier[supplier_account_id]']", 0
 
     # As admin
     sign_in_as(users(:administrator))
     get new_supplier_url
     assert_response :success
-    assert_select "select[name='supplier[supplier_account_id]']", 0
-    assert_select "select[name='supplier[account_id]']"
+    assert_select "select[name='supplier[supplier_account_id]']"
+    assert_select "select[name='supplier[account_id]']", 0
   end
 
-  test "should create supplier" do
+  test "should create supplier from selected store" do
+    supplier_store = accounts(:two)
+
     assert_difference("Supplier.count") do
-      post suppliers_url, params: { supplier: { name: "New Supplier", email_address: "supp@example.com" } }
+      post suppliers_url, params: { supplier: { entry_mode: "platform_store", supplier_account_id: supplier_store.id } }
     end
+
+    created_supplier = Supplier.last
+    assert_equal supplier_store.id, created_supplier.supplier_account_id
+    assert_equal supplier_store.name, created_supplier.name
+    assert_equal supplier_store.owner.email_address, created_supplier.email_address
+    assert_equal @account.id, created_supplier.account_id
+
+    assert_redirected_to supplier_url(created_supplier)
+  end
+
+  test "should create supplier with manual entry" do
+    supplier_store = accounts(:two)
+
+    assert_difference("Supplier.count") do
+      post suppliers_url, params: {
+        supplier: {
+          entry_mode: "manual_entry",
+          supplier_account_id: supplier_store.id,
+          name: "Manual Supplier",
+          email_address: "manual@supplier.com",
+          phone: "555-3333"
+        }
+      }
+    end
+
+    created_supplier = Supplier.last
+    assert_nil created_supplier.supplier_account_id
+    assert_equal "Manual Supplier", created_supplier.name
+    assert_equal "manual@supplier.com", created_supplier.email_address
+    assert_equal "555-3333", created_supplier.phone
+
     assert_redirected_to supplier_url(Supplier.last)
+  end
+
+  test "should require a selected store in platform mode" do
+    assert_no_difference("Supplier.count") do
+      post suppliers_url, params: { supplier: { entry_mode: "platform_store", supplier_account_id: "" } }
+    end
+
+    assert_response :unprocessable_content
+    assert_select "#error_explanation", text: /Supplier account must be selected/
   end
 
   test "should show supplier" do

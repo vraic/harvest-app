@@ -1,6 +1,7 @@
 class SuppliersController < ApplicationController
   before_action :require_account!
   before_action :set_supplier, only: %i[ show edit update destroy inventory ]
+  before_action :set_selectable_supplier_accounts, only: %i[ new create ]
 
   def index
     suppliers = policy_scope(Supplier)
@@ -25,6 +26,7 @@ class SuppliersController < ApplicationController
 
   def new
     @supplier = Supplier.new
+    @supplier_entry_mode = "platform_store"
     authorize @supplier
   end
 
@@ -34,10 +36,12 @@ class SuppliersController < ApplicationController
 
   def create
     @supplier = Supplier.new(supplier_params)
+    @supplier_entry_mode = supplier_entry_mode
+    apply_supplier_entry_mode!
     authorize @supplier
 
     respond_to do |format|
-      if @supplier.save
+      if @supplier.errors.none? && @supplier.save
         format.html { redirect_to @supplier, notice: "Supplier was successfully created." }
         format.json { render :show, status: :created, location: @supplier }
       else
@@ -81,8 +85,36 @@ class SuppliersController < ApplicationController
   end
 
   def supplier_params
-    attributes = [ :name, :email_address, :phone, :subscribed_to_newsletter ]
+    attributes = [ :name, :email_address, :phone, :subscribed_to_newsletter, :supplier_account_id ]
     attributes += [ :account_id ] if Current.user.admin?
     params.require(:supplier).permit(attributes)
+  end
+
+  def supplier_entry_mode
+    mode = params.dig(:supplier, :entry_mode)
+    mode.in?([ "platform_store", "manual_entry" ]) ? mode : "platform_store"
+  end
+
+  def apply_supplier_entry_mode!
+    if @supplier_entry_mode == "manual_entry"
+      @supplier.supplier_account = nil
+      return
+    end
+
+    supplier_store = @selectable_supplier_accounts.find_by(id: params.dig(:supplier, :supplier_account_id))
+    if supplier_store.blank?
+      @supplier.supplier_account = nil
+      @supplier.errors.add(:supplier_account, "must be selected")
+      return
+    end
+
+    @supplier.supplier_account = supplier_store
+    @supplier.name = supplier_store.name if @supplier.name.blank?
+    @supplier.email_address = supplier_store.owner&.email_address if @supplier.email_address.blank?
+  end
+
+  def set_selectable_supplier_accounts
+    excluded_account_id = Current.account&.id
+    @selectable_supplier_accounts = Account.unscoped.includes(:owner).where.not(id: excluded_account_id).order(:name)
   end
 end

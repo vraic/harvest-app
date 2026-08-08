@@ -12,54 +12,56 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :name, class: label_class %>
-    <%= form.text_field :name, class: input_class(account.errors[:name].any?) %>
-  </div>
+  <div class="<%= table_container_class("p-6 space-y-5") %>">
+    <div>
+      <%= form.label :name, class: label_class %>
+      <%= form.text_field :name, class: input_class(account.errors[:name].any?) %>
+    </div>
 
-  <div class="my-5">
-    <%= form.label :address, class: label_class %>
-    <%= form.text_area :address, rows: 4, class: input_class(account.errors[:address].any?, "h-auto") %>
-  </div>
+    <div>
+      <%= form.label :address, class: label_class %>
+      <%= form.text_area :address, rows: 4, class: input_class(account.errors[:address].any?, "h-auto") %>
+    </div>
 
-  <div class="my-5 space-y-2">
-    <p class="<%= label_class %>">Classifications</p>
-    <div class="flex flex-wrap gap-4">
-      <div class="flex items-center gap-2">
-        <%= form.check_box :is_b2c, class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
-        <%= form.label :is_b2c, "B2C", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
+    <div class="space-y-2">
+      <p class="<%= label_class %>">Classifications</p>
+      <div class="flex flex-wrap gap-4">
+        <div class="flex items-center gap-2">
+          <%= form.check_box :is_b2c, class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
+          <%= form.label :is_b2c, "B2C", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
+        </div>
+        <div class="flex items-center gap-2">
+          <%= form.check_box :is_b2b, class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
+          <%= form.label :is_b2b, "B2B", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
+        </div>
+        <div class="flex items-center gap-2">
+          <%= form.check_box :is_internal, class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
+          <%= form.label :is_internal, "Internal", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
+        </div>
       </div>
-      <div class="flex items-center gap-2">
-        <%= form.check_box :is_b2b, class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
-        <%= form.label :is_b2b, "B2B", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
+    </div>
+
+    <% if Current.user.admin? %>
+      <div>
+        <%= form.label :owner_id, class: label_class %>
+        <%= form.select(:owner_id, User.all.order(:name).map{|u| [u.name.to_s, u.id]}, { selected: form.object.persisted? ? @account&.owner_id : params[:owner_id], include_blank: false }, class: input_class(account.errors[:owner_id].any?)) %>
       </div>
-      <div class="flex items-center gap-2">
-        <%= form.check_box :is_internal, class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
-        <%= form.label :is_internal, "Internal", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
+    <% else %>
+      <%= form.hidden_field :owner_id, value: account.owner_id || Current.user.id %>
+    <% end %>
+
+    <div>
+      <%= form.label :header_image, class: label_class %>
+      <div class="mt-2">
+        <% if account.header_image.attached? %>
+          <%= image_tag account.header_image.variant(:thumb), class: "mb-2 rounded" %>
+        <% end %>
+        <%= form.file_field :header_image, class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/30 dark:file:text-indigo-400" %>
       </div>
     </div>
   </div>
 
-  <% if Current.user.admin? %>
-    <div class="my-5">
-      <%= form.label :owner_id, class: label_class %>
-      <%= form.select(:owner_id, User.all.order(:name).map{|u| [u.name.to_s, u.id]}, { selected: form.object.persisted? ? @account&.owner_id : params[:owner_id], include_blank: false }, class: input_class(account.errors[:owner_id].any?)) %>
-    </div>
-  <% else %>
-    <%= form.hidden_field :owner_id, value: account.owner_id || Current.user.id %>
-  <% end %>
-
-  <div class="my-5">
-    <%= form.label :header_image, class: label_class %>
-    <div class="mt-2">
-      <% if account.header_image.attached? %>
-        <%= image_tag account.header_image.variant(:thumb), class: "mb-2 rounded" %>
-      <% end %>
-      <%= form.file_field :header_image, class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/30 dark:file:text-indigo-400" %>
-    </div>
-  </div>
-
-  <div class="inline">
+  <div class="mt-6">
     <%= form.submit class: primary_button_class("w-full sm:w-auto") %>
   </div>
 <% end %>

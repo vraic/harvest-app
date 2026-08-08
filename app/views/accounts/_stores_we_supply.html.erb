@@ -1,70 +1,61 @@
-<div class="flex justify-between items-center mb-4">
-  <h2 class="text-xl font-semibold">Stores We Supply</h2>
-  <% if policy(SupplierRequest.new(sender_account: account)).new? %>
-    <%= link_to "Supply A Store", new_supplier_request_path(sender_account_id: account.id), class: primary_button_class %>
-  <% end %>
-</div>
+<%
+  supplied_accounts = Supplier.unscoped.where(supplier_account_id: account.id).includes(:account)
+  pending_requests = SupplierRequest.where(sender_account_id: account.id, status: :pending).includes(:receiver_account)
+%>
 
-<div class="overflow-x-auto">
-  <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
-    <thead>
-      <tr>
-        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white sm:pl-0">Store Name</th>
-        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Status</th>
-        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Date Joined</th>
-        <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-          <span class="sr-only">Actions</span>
-        </th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-      <% 
-        # Combine approved suppliers and pending requests
-        supplied_accounts = Supplier.unscoped.where(supplier_account_id: account.id).includes(:account)
-        pending_requests = SupplierRequest.where(sender_account_id: account.id, status: :pending).includes(:receiver_account)
-      %>
-      
-      <% supplied_accounts.each do |supplier| %>
-        <tr>
-          <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-0">
-            <%= supplier.account.name %>
-          </td>
-          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-            <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400">Active</span>
-          </td>
-          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-            <%= supplier.created_at.strftime("%b %d, %Y") %>
-          </td>
-          <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-            <%# Actions if any %>
-          </td>
-        </tr>
-      <% end %>
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold">Stores We Supply</h2>
+    <% if policy(SupplierRequest.new(sender_account: account)).new? %>
+      <%= link_to "Supply A Store", new_supplier_request_path(sender_account_id: account.id), class: primary_button_class %>
+    <% end %>
+  </div>
 
-      <% pending_requests.each do |request| %>
+  <div class="<%= table_container_class %>">
+    <table class="<%= table_class %>">
+      <thead class="<%= thead_class %>">
         <tr>
-          <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-0">
-            <%= request.receiver_account.name %>
-          </td>
-          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-            <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-900/30 dark:text-yellow-400">Pending Approval</span>
-          </td>
-          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-            <%= request.created_at.strftime("%b %d, %Y") %>
-          </td>
-          <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-            <%= button_to "Cancel", supplier_request_path(request), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" %>
-          </td>
+          <th class="<%= th_class %>">Store Name</th>
+          <th class="<%= th_class %>">Status</th>
+          <th class="<%= th_class %>">Date Joined</th>
+          <th class="<%= th_class("text-right") %>">
+            <span class="sr-only">Actions</span>
+          </th>
         </tr>
-      <% end %>
+      </thead>
+      <tbody class="<%= tbody_class %>">
+        <% supplied_accounts.each do |supplier| %>
+          <tr class="<%= tr_class("hover:bg-gray-50 dark:hover:bg-gray-900/50") %>">
+            <td class="<%= td_class("font-medium") %>"><%= supplier.account.name %></td>
+            <td class="<%= td_class("text-gray-500 dark:text-gray-400") %>">
+              <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400">Active</span>
+            </td>
+            <td class="<%= td_class("text-gray-500 dark:text-gray-400") %>"><%= supplier.created_at.strftime("%b %d, %Y") %></td>
+            <td class="<%= td_class("text-right text-gray-400 dark:text-gray-500") %>">—</td>
+          </tr>
+        <% end %>
 
-      <% if supplied_accounts.empty? && pending_requests.empty? %>
-        <tr>
-          <td colspan="4" class="py-10 text-center text-sm text-gray-500 dark:text-gray-400">
-            You are not currently supplying any other stores.
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+        <% pending_requests.each do |request| %>
+          <tr class="<%= tr_class("hover:bg-gray-50 dark:hover:bg-gray-900/50") %>">
+            <td class="<%= td_class("font-medium") %>"><%= request.receiver_account.name %></td>
+            <td class="<%= td_class("text-gray-500 dark:text-gray-400") %>">
+              <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-900/30 dark:text-yellow-400">Pending Approval</span>
+            </td>
+            <td class="<%= td_class("text-gray-500 dark:text-gray-400") %>"><%= request.created_at.strftime("%b %d, %Y") %></td>
+            <td class="<%= td_class("text-right") %>">
+              <%= button_to "Cancel", supplier_request_path(request), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" %>
+            </td>
+          </tr>
+        <% end %>
+
+        <% if supplied_accounts.empty? && pending_requests.empty? %>
+          <tr>
+            <td colspan="4" class="<%= td_class("py-10 text-center text-gray-500 dark:text-gray-400") %>">
+              You are not currently supplying any other stores.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>

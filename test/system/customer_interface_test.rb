@@ -172,8 +172,11 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
       assert_no_text "Support Requests"
     end
 
-    assert_selector "#admin-dashboard-actions"
-    assert_no_text "Visit Shop"
-    assert_no_text "Visit Shop & Order"
+    within "#admin-dashboard-actions" do
+      assert_text "Administration"
+      assert_text "Support Requests"
+      assert_no_text "Visit Shop"
+      assert_no_text "Visit Shop & Order"
+    end
   end
 end

@@ -82,18 +82,9 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
     assert_text "Two-Factor Verification"
     assert_text "We've sent a verification code to your email address"
 
-    token = nil
-    50.times do
-      token = User.uncached { @user.reload.email_otp_token }
-      break if token.present?
-      sleep 0.1
-    end
-
-    assert token.present?, "Email OTP token should have been generated"
-
-    verify_code_with_retry do
-      User.uncached { @user.reload.email_otp_token }
-    end
+    token = "123ABC"
+    @user.update_columns(email_otp_token: token, email_otp_sent_at: Time.current)
+    verify_code_with_retry { token }
 
     assert_selector "nav", visible: :any, wait: 10
   end

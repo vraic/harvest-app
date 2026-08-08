@@ -5,8 +5,17 @@ class LoyaltyCardsController < ApplicationController
   def index
     authorize LoyaltyCard
     if staff?
-      @loyalty_program = Current.account&.loyalty_program
-      @loyalty_cards = policy_scope(LoyaltyCard).includes(:customer).order("customers.name")
+      @account = Current.account
+      @loyalty_program = @account&.loyalty_program
+      @loyalty_cards = if @account.present?
+        policy_scope(LoyaltyCard)
+          .joins(:customer)
+          .where(customers: { account_id: @account.id })
+          .includes(:customer)
+          .order("customers.name")
+      else
+        LoyaltyCard.none
+      end
       render :staff_index
     else
       @customer = Customer.find_by(user_id: Current.user.id)

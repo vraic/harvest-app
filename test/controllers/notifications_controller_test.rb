@@ -32,4 +32,19 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_match "Access denied.", response.body
   end
+
+  test "admin without selected account sees no notifications instead of error" do
+    sign_out
+    admin = users(:administrator)
+    sign_in_as(admin)
+
+    account = accounts(:one)
+    event = TaskAssignedNotifier.with(record: tasks(:one), account_id: account.id).deliver(admin)
+
+    get notifications_url
+
+    assert_response :success
+    assert_includes response.body, "No notifications yet."
+    assert_not_includes response.body, event.notifications.first.event.message
+  end
 end

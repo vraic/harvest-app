@@ -17,7 +17,11 @@ module Noticed
 
     attribute :params, :json, default: {}
 
-    scope :for_account, ->(account) { where(account_id: account.id) }
+    scope :for_account, ->(account) do
+      next none if account.blank?
+
+      where(account_id: account.id)
+    end
 
     if respond_to? :serialize
       if Rails.gem_version >= Gem::Version.new("7.1.0.alpha")

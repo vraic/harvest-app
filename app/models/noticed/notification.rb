@@ -9,7 +9,11 @@ module Noticed
     belongs_to :recipient, polymorphic: true
 
     scope :newest_first, -> { order(created_at: :desc) }
-    scope :for_account, ->(account) { joins(:event).where(noticed_events: { account_id: account.id }) }
+    scope :for_account, ->(account) do
+      next none if account.blank?
+
+      joins(:event).where(noticed_events: { account_id: account.id })
+    end
 
     delegate :params, :record, to: :event
   end

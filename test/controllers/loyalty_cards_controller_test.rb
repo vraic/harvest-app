@@ -30,6 +30,18 @@ class LoyaltyCardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "staff index without selected account is safe" do
+    sign_out
+    sign_in_as(users(:administrator))
+
+    get loyalty_cards_url
+
+    assert_response :success
+    assert_includes response.body, "No store selected"
+    assert_not_includes response.body, loyalty_cards(:one).identifier
+    assert_not_includes response.body, customers(:one).name
+  end
+
   test "should get show" do
     get loyalty_card_url(@card)
     assert_response :success

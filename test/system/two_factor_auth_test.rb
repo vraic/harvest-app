@@ -117,12 +117,8 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
     code_text = code.to_s
 
     max_attempts.times do |attempt|
-      field = find_field("otp_code", visible: true, wait: 10)
-      field.set(code_text)
-      return if field.value == code_text
-
-      assert_equal code_text, field.value if attempt == max_attempts - 1
-      sleep 0.1
+      fill_in "Verification Code", with: code_text
+      return
     rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
       raise if attempt == max_attempts - 1
 

@@ -18,17 +18,25 @@ class TwoFactorVerificationsController < ApplicationController
     @user.reload
     if verify_otp
       @user.clear_email_otp!
-      start_new_session_for @user
       session.delete(:otp_user_id)
 
-      target_url = if session[:security_setup_user_id] == @user.id && !@user.security_choice_made?
+      target_url = if @user.force_password_reset?
         session.delete(:security_setup_user_id)
+        edit_password_path(@user.password_reset_token)
+      elsif session[:security_setup_user_id] == @user.id && !@user.security_choice_made?
+        session.delete(:security_setup_user_id)
+        start_new_session_for @user
         security_setup_url
       else
+        start_new_session_for @user
         after_authentication_url(@user)
       end
 
-      redirect_to target_url, notice: "Signed in successfully.", status: :see_other
+      if @user.force_password_reset?
+        redirect_to target_url, alert: "Please reset your password to continue.", status: :see_other
+      else
+        redirect_to target_url, notice: "Signed in successfully.", status: :see_other
+      end
     else
       flash.now[:alert] = "Invalid verification code."
       render :new, status: :unprocessable_content

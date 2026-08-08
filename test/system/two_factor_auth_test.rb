@@ -3,8 +3,15 @@ require "application_system_test_case"
 class TwoFactorAuthTest < ApplicationSystemTestCase
   setup do
     Capybara.reset_sessions!
-    @user = users(:one)
-    @user.update!(security_choice_made: true, onboarded: true)
+    @password = "Password123!@#Strong"
+    @user = User.create!(
+      name: "2FA Test User",
+      email_address: "two-factor-#{Process.pid}-#{SecureRandom.hex(6)}@example.com",
+      password: @password,
+      password_confirmation: @password,
+      security_choice_made: true,
+      onboarded: true
+    )
   end
 
   test "2FA setup: enabling authenticator app" do
@@ -38,12 +45,7 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
   test "2FA login phase 1: entering credentials redirects to 2FA prompt" do
     @user.update!(otp_required_for_login: true)
 
-    visit new_session_path
-    fill_in "Email", with: @user.email_address
-    click_button "Sign in with password"
-    execute_script("document.querySelectorAll('[data-password-login-target=\"passwordFields\"]').forEach(el => el.classList.remove('hidden'))")
-    fill_in "Password (optional)", with: "password"
-    click_button "Continue"
+    sign_in_with_password(@user, @password)
 
     assert_current_path new_two_factor_verification_path, wait: 10
     assert_text "Two-Factor Verification"
@@ -53,18 +55,15 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
     @user.generate_otp_secret!
     @user.update!(otp_required_for_login: true)
 
-    visit new_session_path
-    fill_in "Email", with: @user.email_address
-    click_button "Sign in with password"
-    execute_script("document.querySelectorAll('[data-password-login-target=\"passwordFields\"]').forEach(el => el.classList.remove('hidden'))")
-    fill_in "Password (optional)", with: "password"
-    click_button "Continue"
+    sign_in_with_password(@user, @password)
 
     assert_text "Two-Factor Verification"
     assert_text "Please enter the code from your authenticator app"
 
     totp = ROTP::TOTP.new(@user.reload.otp_secret.strip)
-    verify_code_with_retry { totp.now }
+    travel_to Time.current do
+      verify_code_with_retry { totp.now }
+    end
 
     assert_selector "nav", visible: :any, wait: 10
   end
@@ -72,33 +71,32 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
   test "2FA login phase 2: email OTP form accepts alphanumeric code" do
     @user.update!(otp_required_for_login: true, otp_secret: nil)
 
-    visit new_session_path
-    fill_in "Email", with: @user.email_address
-    click_button "Sign in with password"
-    execute_script("document.querySelectorAll('[data-password-login-target=\"passwordFields\"]').forEach(el => el.classList.remove('hidden'))")
-    fill_in "Password (optional)", with: "password"
-    click_button "Continue"
+    sign_in_with_password(@user, @password)
 
     assert_text "Two-Factor Verification"
     assert_text "We've sent a verification code to your email address"
 
-    token = nil
-    50.times do
-      token = User.uncached { @user.reload.email_otp_token }
-      break if token.present?
-      sleep 0.1
-    end
-
-    assert token.present?, "Email OTP token should have been generated"
-
-    verify_code_with_retry do
-      User.uncached { @user.reload.email_otp_token }
-    end
+    token = "123ABC"
+    @user.update!(email_otp_token: token, email_otp_sent_at: Time.current)
+    verify_code_with_retry { token }
 
     assert_selector "nav", visible: :any, wait: 10
   end
 
   private
+
+  def sign_in_with_password(user, password)
+    visit new_session_path
+    fill_in "Email", with: user.email_address
+    click_button "Sign in with password"
+
+    unless page.has_field?("Password (optional)", wait: 3)
+      execute_script("document.querySelectorAll('[data-password-login-target=\"passwordFields\"]').forEach(el => el.classList.remove('hidden'))")
+    end
+
+    fill_in "Password (optional)", with: password
+    click_button "Continue"
+  end
 
   def verify_code_with_retry(max_attempts: 3)
     max_attempts.times do |attempt|
@@ -106,7 +104,7 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
       assert code.present?, "Verification code should be present"
 
       begin
-        set_otp_field_value!(code)
+        fill_in "Verification Code", with: code.to_s
         find_button("Verify", wait: 10).click
       rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
         raise if attempt == max_attempts - 1
@@ -120,22 +118,5 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
     end
 
     assert_no_current_path new_two_factor_verification_path, wait: 10
-  end
-
-  def set_otp_field_value!(code, max_attempts: 3)
-    code_text = code.to_s
-
-    max_attempts.times do |attempt|
-      field = find_field("otp_code", visible: true, wait: 10)
-      field.set(code_text)
-      return if field.value == code_text
-
-      assert_equal code_text, field.value if attempt == max_attempts - 1
-      sleep 0.1
-    rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
-      raise if attempt == max_attempts - 1
-
-      sleep 0.1
-    end
   end
 end

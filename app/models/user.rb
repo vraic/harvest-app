@@ -27,7 +27,7 @@ class User < ApplicationRecord
       email :email_address
       hex :name
       with_strategy("ANONYMISED", :password_digest)
-      ignore :otp_secret, :email_otp_token, :email_otp_sent_at, :otp_required_for_login, :prefers_email_login, :security_choice_made, :onboarded
+      ignore :otp_secret, :email_otp_token, :email_otp_sent_at, :otp_required_for_login, :prefers_email_login, :security_choice_made, :onboarded, :force_password_reset
     end
   end
 

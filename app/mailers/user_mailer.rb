@@ -4,9 +4,9 @@ class UserMailer < ApplicationMailer
   #
   #   en.user_mailer.two_factor_code.subject
   #
-  def two_factor_code(user, token)
+  def two_factor_code(user)
     @user = user
-    @token = token
+    @token = user.email_otp_token
     mail to: user.email_address, subject: "Your 2FA Verification Code"
   end
 

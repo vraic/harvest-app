@@ -34,4 +34,15 @@ class UserTest < ActiveSupport::TestCase
 
     assert_match /\A\d{3}[A-Z]{3}\z/, token, "Token #{token} does not match the required format: 3 numbers then 3 letters (uppercase)"
   end
+
+  test "generate_email_otp! enqueues mail without passing raw token in job args" do
+    user = users(:one)
+
+    assert_enqueued_email_with UserMailer, :two_factor_code, args: [ user ] do
+      user.generate_email_otp!
+    end
+
+    token = user.reload.email_otp_token
+    refute_includes enqueued_jobs.last.to_s, token
+  end
 end

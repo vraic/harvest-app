@@ -72,7 +72,7 @@ class User < ApplicationRecord
     self.email_otp_token = token
     self.email_otp_sent_at = Time.current
     save!(validate: false)
-    UserMailer.two_factor_code(self, token).deliver_later
+    UserMailer.two_factor_code(self).deliver_later
   end
 
   def validate_email_otp(code)

@@ -59,6 +59,7 @@ Rails.application.configure do
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST") }
+  config.action_mailer.default_options = { from: ENV.fetch("MAILER_FROM_ADDRESS") }
 
   # Send email with Postmark using environment variables only.
   postmark_api_token = ENV.fetch("POSTMARK_API_TOKEN")

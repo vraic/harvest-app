@@ -27,9 +27,9 @@ class UsersRakeTest < ActiveSupport::TestCase
     @original_stdin = $stdin
 
     @original_env = {
-      "EMAIL_ADDRESS" => ENV["EMAIL_ADDRESS"],
-      "PASSWORD" => ENV["PASSWORD"],
-      "NAME" => ENV["NAME"]
+      "SEED_EMAIL_ADDRESS" => ENV["SEED_EMAIL_ADDRESS"],
+      "SEED_PASSWORD" => ENV["SEED_PASSWORD"],
+      "SEED_NAME" => ENV["SEED_NAME"]
     }
   end
 
@@ -43,9 +43,9 @@ class UsersRakeTest < ActiveSupport::TestCase
     email = "seed-admin@example.com"
     password = "VeryStrongSuperUserPassword123!"
 
-    ENV["EMAIL_ADDRESS"] = email
-    ENV["PASSWORD"] = password
-    ENV["NAME"] = "Seed Admin"
+    ENV["SEED_EMAIL_ADDRESS"] = email
+    ENV["SEED_PASSWORD"] = password
+    ENV["SEED_NAME"] = "Seed Admin"
 
     output, = capture_io do
       assert_difference("User.where(email_address: '#{email}').count", 1) do
@@ -68,9 +68,9 @@ class UsersRakeTest < ActiveSupport::TestCase
 
     new_password = "UpdatedSuperUserPassword123!"
 
-    ENV["EMAIL_ADDRESS"] = user.email_address
-    ENV["PASSWORD"] = new_password
-    ENV["NAME"] = "Updated Admin"
+    ENV["SEED_EMAIL_ADDRESS"] = user.email_address
+    ENV["SEED_PASSWORD"] = new_password
+    ENV["SEED_NAME"] = "Updated Admin"
 
     output, = capture_io do
       assert_no_difference("User.count") do
@@ -92,9 +92,9 @@ class UsersRakeTest < ActiveSupport::TestCase
     email = "interactive-admin@example.com"
     password = "VeryStrongInteractivePassword123!"
 
-    ENV["EMAIL_ADDRESS"] = nil
-    ENV["PASSWORD"] = nil
-    ENV["NAME"] = nil
+    ENV["SEED_EMAIL_ADDRESS"] = nil
+    ENV["SEED_PASSWORD"] = nil
+    ENV["SEED_NAME"] = nil
 
     $stdin = FakeTTYInput.new([
       "#{email}\n",
@@ -122,9 +122,9 @@ class UsersRakeTest < ActiveSupport::TestCase
   end
 
   test "seed_super_user aborts in non-interactive mode when env vars are missing" do
-    ENV["EMAIL_ADDRESS"] = nil
-    ENV["PASSWORD"] = nil
-    ENV["NAME"] = nil
+    ENV["SEED_EMAIL_ADDRESS"] = nil
+    ENV["SEED_PASSWORD"] = nil
+    ENV["SEED_NAME"] = nil
 
     $stdin = StringIO.new
 
@@ -132,6 +132,6 @@ class UsersRakeTest < ActiveSupport::TestCase
       assert_raises(SystemExit) { @task.invoke }
     end
 
-    assert_includes error_output, "EMAIL_ADDRESS is required in non-interactive mode."
+    assert_includes error_output, "SEED_EMAIL_ADDRESS is required in non-interactive mode."
   end
 end

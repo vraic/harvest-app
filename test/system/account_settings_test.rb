@@ -32,6 +32,25 @@ class AccountSettingsTest < ApplicationSystemTestCase
     assert_checked_field "Production"
   end
 
+  test "store manager can access staff tab" do
+    visit edit_account_path(@account)
+
+    assert_link "Staff"
+    click_on "Staff"
+
+    assert_text "Active Staff"
+    assert_link "Invite User"
+  end
+
+  test "non-manager cannot access staff tab" do
+    login_as(users(:three))
+
+    visit edit_account_path(@account, tab: "staff")
+
+    assert_text I18n.t("unauthorized")
+    assert_current_path shop_path
+  end
+
   test "validation failure keeps user on the correct tab" do
     visit edit_account_path(@account)
 

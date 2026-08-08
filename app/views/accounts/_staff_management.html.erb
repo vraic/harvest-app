@@ -1,0 +1,83 @@
+<div class="space-y-8">
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold">Staff</h2>
+    <% if policy(AccountUser.new(account: account)).create? %>
+      <%= link_to "Invite User", new_account_account_user_path(account), class: primary_button_class %>
+    <% end %>
+  </div>
+
+  <div class="space-y-3">
+    <h3 class="text-lg font-semibold">Active Staff</h3>
+
+    <div class="<%= table_container_class %>">
+      <table class="<%= table_class %>">
+        <thead class="<%= thead_class %>">
+          <tr>
+            <th class="<%= th_class %>">Name</th>
+            <th class="<%= th_class %>">Email</th>
+            <th class="<%= th_class %>">Role</th>
+            <th class="<%= th_class %>">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="<%= tbody_class %>">
+          <% if active_staff_memberships.any? %>
+            <% active_staff_memberships.each do |account_user| %>
+              <tr id="<%= dom_id account_user %>">
+                <td class="<%= td_class %>"><%= account_user.user.name %></td>
+                <td class="<%= td_class %>"><%= account_user.user.email_address %></td>
+                <td class="<%= td_class %>">
+                  <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset <%= account_user.store_manager? ? 'bg-purple-50 text-purple-700 ring-purple-700/10' : 'bg-blue-50 text-blue-700 ring-blue-700/10' %>">
+                    <%= account_user.user_role.titleize %>
+                  </span>
+                </td>
+                <td class="<%= td_class %>">
+                  <div class="flex gap-4">
+                    <% if policy(account_user).edit? %>
+                      <%= link_to "Edit", edit_account_user_path(account_user), class: "text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+                    <% end %>
+                    <% if policy(account_user).destroy? %>
+                      <%= button_to "Archive", account_user_path(account_user), method: :delete, class: "text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300", data: { turbo_confirm: "Archive this user from the account?" } %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="4" class="<%= td_class %>">No active staff members found.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <% if archived_staff_memberships.any? %>
+    <div class="space-y-3">
+      <h3 class="text-lg font-semibold">Archived Staff</h3>
+
+      <div class="<%= table_container_class %>">
+        <table class="<%= table_class %>">
+          <thead class="<%= thead_class %>">
+            <tr>
+              <th class="<%= th_class %>">Name</th>
+              <th class="<%= th_class %>">Email</th>
+              <th class="<%= th_class %>">Role</th>
+              <th class="<%= th_class %>">Archived</th>
+            </tr>
+          </thead>
+          <tbody class="<%= tbody_class %>">
+            <% archived_staff_memberships.each do |account_user| %>
+              <tr>
+                <td class="<%= td_class %>"><%= account_user.user.name %></td>
+                <td class="<%= td_class %>"><%= account_user.user.email_address %></td>
+                <td class="<%= td_class %>"><%= account_user.user_role.titleize %></td>
+                <td class="<%= td_class %>"><%= l(account_user.archived_at, format: :short) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+</div>

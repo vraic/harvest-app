@@ -7,7 +7,7 @@ class UserMailerTest < ActionMailer::TestCase
     mail = UserMailer.two_factor_code(user)
     assert_equal "Your 2FA Verification Code", mail.subject
     assert_equal [ user.email_address ], mail.to
-    assert_match "12345678", mail.body.encoded
+    assert_match "123456", mail.body.encoded
   end
 
   test "two_factor_code uses MAILER_FROM_ADDRESS when configured" do

@@ -1,9 +1,9 @@
-<% content_for :title, "Add Staff to #{@account.name}" %>
+<% content_for :title, "Invite Staff to #{@account.name}" %>
 
 <div class="md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl mb-8">Add Staff to <%= @account.name %></h1>
+  <h1 class="font-bold text-4xl mb-8">Invite Staff to <%= @account.name %></h1>
 
   <%= render "form", account_user: @account_user %>
 
-  <%= link_to "Back to account", @account, class: secondary_button_class("mt-4 inline-block") %>
+  <%= link_to "Back to staff", edit_account_path(@account, tab: "staff"), class: secondary_button_class("mt-4 inline-block") %>
 </div>

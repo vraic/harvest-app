@@ -45,7 +45,6 @@ class AccountsController < ApplicationController
   # GET /accounts/1 or /accounts/1.json
   def show
     authorize @account
-    @account_users = @account.account_users.includes(:user).order("users.name")
   end
 
   # GET /accounts/new
@@ -60,6 +59,18 @@ class AccountsController < ApplicationController
     authorize @account
     @account.build_loyalty_program unless @account.loyalty_program
     @tab = params[:tab] || "general"
+    @can_manage_staff = policy(AccountUser.new(account: @account)).index?
+
+    if @tab == "staff"
+      authorize AccountUser.new(account: @account), :index?
+
+      staff_memberships = @account.account_users
+        .where(user_role: [ :store_manager, :store_staff ])
+        .includes(:user)
+
+      @active_staff_memberships = staff_memberships.active.order("users.name")
+      @archived_staff_memberships = staff_memberships.archived.order(archived_at: :desc)
+    end
   end
 
   # POST /accounts or /accounts.json

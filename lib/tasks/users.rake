@@ -3,20 +3,20 @@ namespace :users do
   task seed_super_user: :environment do
     interactive = $stdin.tty?
 
-    email_address = ENV["EMAIL_ADDRESS"].to_s.strip.downcase
+    email_address = ENV["SEED_EMAIL_ADDRESS"].to_s.strip.downcase
     if email_address.blank? && interactive
       print "Email address: "
       email_address = $stdin.gets.to_s.strip.downcase
     end
 
-    name = ENV["NAME"].to_s.strip
+    name = ENV["SEED_NAME"].to_s.strip
     if name.blank? && interactive
       print "Name [Super User]: "
       name_input = $stdin.gets.to_s.strip
       name = name_input if name_input.present?
     end
 
-    password = ENV["PASSWORD"].to_s
+    password = ENV["SEED_PASSWORD"].to_s
     if password.blank? && interactive
       print "Password: "
       password = if $stdin.respond_to?(:noecho)

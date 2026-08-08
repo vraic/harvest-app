@@ -34,8 +34,7 @@ class TwoFactorVerificationsControllerTest < ActionDispatch::IntegrationTest
       post two_factor_verification_path, params: { otp_code: code }
     end
 
-    assert_response :redirect
-    refute_equal new_two_factor_verification_path, URI.parse(response.location).path
+    assert_redirected_to dashboard_path
     assert_equal "Signed in successfully.", flash[:notice]
     assert_nil session[:otp_user_id]
     assert_not_nil cookies[:session_id]
@@ -53,12 +52,30 @@ class TwoFactorVerificationsControllerTest < ActionDispatch::IntegrationTest
 
     post two_factor_verification_path, params: { otp_code: token }
 
-    assert_response :redirect
-    refute_equal new_two_factor_verification_path, URI.parse(response.location).path
+    assert_redirected_to dashboard_path
     assert_equal "Signed in successfully.", flash[:notice]
     assert_nil session[:otp_user_id]
     assert_not_nil cookies[:session_id]
     assert_nil User.find(@user.id).email_otp_token
+  end
+
+  test "create with valid email OTP signs in non-invited user to shop" do
+    user = users(:unassigned)
+    user.update!(security_choice_made: true, onboarded: true, prefers_email_login: false, otp_required_for_login: true, otp_secret: nil)
+
+    post session_path, params: { email_address: user.email_address, password: "password" }
+    assert_redirected_to new_two_factor_verification_path
+    assert_equal user.id, session[:otp_user_id]
+
+    token = User.find(user.id).email_otp_token
+    assert token.present?
+
+    post two_factor_verification_path, params: { otp_code: token }
+
+    assert_redirected_to shop_path
+    assert_equal "Signed in successfully.", flash[:notice]
+    assert_nil session[:otp_user_id]
+    assert_not_nil cookies[:session_id]
   end
 
   test "create with valid email OTP and forced reset redirects to password reset" do

@@ -40,12 +40,18 @@ module Authentication
 
       user ||= Current.session&.user || Current.user
 
-      if user&.admin?
+      return dashboard_url if user&.admin?
+
+      active_memberships = user&.account_users&.active || AccountUser.none
+      staff_membership = active_memberships.where(user_role: [ :store_manager, :store_staff ]).order(updated_at: :desc).first
+
+      if staff_membership
+        if session[:managed_account_id].blank? || session[:managed_account_id] == "none"
+          session[:managed_account_id] = staff_membership.account_id
+        end
         dashboard_url
-      elsif user&.account_users&.any? && user.account_users.all?(&:customer?)
-        shop_url
       else
-        dashboard_url
+        shop_url
       end
     end
 

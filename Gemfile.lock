@@ -723,5 +723,8 @@ CHECKSUMS
   zeitwerk (2.8.3) sha256=2c85125a8467ce069e20123d1e709a08955c9d29c118c25b46b7b7fafdbb92e5
   zxcvbn-ruby (2.0.1) sha256=9115bf22adb42a779ddb0fb9b3ceb5b69b634c0bfaa582166e43de332982c7fc
 
+RUBY VERSION
+  ruby 4.0.3
+
 BUNDLED WITH
   4.0.12

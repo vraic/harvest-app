@@ -64,7 +64,9 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
     assert_text "Please enter the code from your authenticator app"
 
     totp = ROTP::TOTP.new(@user.reload.otp_secret.strip)
-    verify_code_with_retry { totp.now }
+    travel_to Time.current do
+      verify_code_with_retry { totp.now }
+    end
 
     assert_selector "nav", visible: :any, wait: 10
   end
@@ -97,7 +99,7 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
       assert code.present?, "Verification code should be present"
 
       begin
-        set_otp_field_value!(code)
+        fill_in "Verification Code", with: code.to_s
         find_button("Verify", wait: 10).click
       rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
         raise if attempt == max_attempts - 1
@@ -111,18 +113,5 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
     end
 
     assert_no_current_path new_two_factor_verification_path, wait: 10
-  end
-
-  def set_otp_field_value!(code, max_attempts: 3)
-    code_text = code.to_s
-
-    max_attempts.times do |attempt|
-      fill_in "Verification Code", with: code_text
-      return
-    rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
-      raise if attempt == max_attempts - 1
-
-      sleep 0.1
-    end
   end
 end

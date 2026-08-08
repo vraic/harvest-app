@@ -1,0 +1,24 @@
+<% cart_count = current_cart.count %>
+<% sidebar_key = sidebar.to_sym %>
+<% wrapper_id = sidebar_key == :mobile ? "mobile-sidebar-cart" : "desktop-sidebar-cart" %>
+<% count_id = sidebar_key == :mobile ? "mobile-cart-count" : "desktop-cart-count" %>
+
+<div id="<%= wrapper_id %>" class="-mx-2">
+  <% if cart_count.positive? %>
+    <%= link_to cart_path, id: "#{sidebar_key}-sidebar-cart-link", class: "group relative flex items-center gap-x-3 rounded-xl border border-indigo-200/80 bg-gradient-to-r from-indigo-50 to-white p-3 shadow-sm transition hover:border-indigo-300 hover:shadow dark:border-indigo-500/30 dark:from-indigo-500/10 dark:to-gray-900" do %>
+      <span class="inline-flex size-9 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-sm group-hover:bg-indigo-500">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true" class="size-5">
+          <path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+
+      <span class="min-w-0 flex-1">
+        <span class="block text-sm font-semibold text-indigo-900 dark:text-indigo-200">Shopping Cart</span>
+        <span class="block text-xs text-indigo-700/80 dark:text-indigo-200/80"><%= pluralize(cart_count, "item") %> ready to checkout</span>
+      </span>
+
+      <span id="<%= count_id %>" class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-indigo-600 px-2 text-sm font-semibold text-white ring-2 ring-white dark:ring-gray-900"><%= cart_count %></span>
+      <span class="sr-only">View cart</span>
+    <% end %>
+  <% end %>
+</div>

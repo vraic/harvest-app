@@ -20,7 +20,7 @@ class CustomerExperienceTest < ApplicationSystemTestCase
       assert_text "Dashboard"
       assert_text "Shop"
       assert_text "Newsletters"
-      assert_text "Loyalty"
+      assert_text "Loyalty Cards"
     end
   end
 
@@ -39,7 +39,7 @@ class CustomerExperienceTest < ApplicationSystemTestCase
     visit shop_path
 
     within "#desktop-sidebar-main-nav" do
-      click_on "Loyalty"
+      click_on "Loyalty Cards"
     end
 
     assert_text "Loyalty Programmes"

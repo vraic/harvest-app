@@ -1,4 +1,6 @@
-<%= form_with(model: supplier, class: "contents") do |form| %>
+<% supplier_entry_mode = @supplier_entry_mode.presence || "platform_store" %>
+
+<%= form_with(model: supplier, class: "contents", data: (supplier.persisted? ? {} : { controller: "supplier-form" })) do |form| %>
   <% if supplier.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
       <h2><%= pluralize(supplier.errors.count, "error") %> prohibited this supplier from being saved:</h2>
@@ -10,32 +12,67 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :name, class: label_class %>
-    <%= form.text_field :name, class: input_class(supplier.errors[:name].any?) %>
-  </div>
+  <% if supplier.persisted? %>
+    <div class="my-5">
+      <%= form.label :name, class: label_class %>
+      <%= form.text_field :name, class: input_class(supplier.errors[:name].any?) %>
+    </div>
 
-  <div class="my-5">
-    <%= form.label :email_address, class: label_class %>
-    <%= form.text_field :email_address, class: input_class(supplier.errors[:email_address].any?) %>
-  </div>
+    <div class="my-5">
+      <%= form.label :email_address, class: label_class %>
+      <%= form.text_field :email_address, class: input_class(supplier.errors[:email_address].any?) %>
+    </div>
 
-  <div class="my-5">
-    <%= form.label :phone, class: label_class %>
-    <%= form.text_field :phone, class: input_class(supplier.errors[:phone].any?) %>
-  </div>
+    <div class="my-5">
+      <%= form.label :phone, class: label_class %>
+      <%= form.text_field :phone, class: input_class(supplier.errors[:phone].any?) %>
+    </div>
+  <% else %>
+    <div class="my-5 space-y-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+      <p class="text-sm font-medium text-gray-900 dark:text-white">How do you want to add this supplier?</p>
+      <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+        <%= form.radio_button :entry_mode, "platform_store", checked: supplier_entry_mode == "platform_store", data: { supplier_form_target: "modeInput", action: "supplier-form#switchMode" }, class: "h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
+        Select an existing store
+      </label>
+      <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+        <%= form.radio_button :entry_mode, "manual_entry", checked: supplier_entry_mode == "manual_entry", data: { supplier_form_target: "modeInput", action: "supplier-form#switchMode" }, class: "h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
+        Manual entry
+      </label>
+    </div>
+
+    <div class="my-5<%= " hidden" if supplier_entry_mode == "manual_entry" %>" data-supplier-form-target="platformFields">
+      <%= form.label :supplier_account_id, "Store", class: label_class %>
+      <%= form.select :supplier_account_id,
+                      @selectable_supplier_accounts.map { |account| [ account.name, account.id ] },
+                      { selected: supplier.supplier_account_id, include_blank: "Select a store" },
+                      class: input_class(supplier.errors[:supplier_account].any?),
+                      disabled: supplier_entry_mode == "manual_entry",
+                      data: { supplier_form_target: "platformInput" } %>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Choose another store on the platform to auto-link supplier access.</p>
+    </div>
+
+    <div class="my-5 space-y-5<%= " hidden" unless supplier_entry_mode == "manual_entry" %>" data-supplier-form-target="manualFields">
+      <div>
+        <%= form.label :name, class: label_class %>
+        <%= form.text_field :name, class: input_class(supplier.errors[:name].any?), disabled: supplier_entry_mode != "manual_entry", data: { supplier_form_target: "manualInput" } %>
+      </div>
+
+      <div>
+        <%= form.label :email_address, class: label_class %>
+        <%= form.text_field :email_address, class: input_class(supplier.errors[:email_address].any?), disabled: supplier_entry_mode != "manual_entry", data: { supplier_form_target: "manualInput" } %>
+      </div>
+
+      <div>
+        <%= form.label :phone, class: label_class %>
+        <%= form.text_field :phone, class: input_class(supplier.errors[:phone].any?), disabled: supplier_entry_mode != "manual_entry", data: { supplier_form_target: "manualInput" } %>
+      </div>
+    </div>
+  <% end %>
 
   <div class="my-5 flex items-center gap-2">
     <%= form.check_box :subscribed_to_newsletter, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
     <%= form.label :subscribed_to_newsletter, "Subscribed to newsletter", class: "text-sm font-medium text-gray-900 dark:text-white" %>
   </div>
-
-  <% if Current.user.admin? %>
-    <div class="my-5">
-      <%= form.label :account_id, class: label_class %>
-      <%= form.select(:account_id, Account.unscoped.all.order(:name).map{|ac| [ac.name.to_s, ac.id]}, { selected: form.object.persisted? ? supplier.account_id : params[:account_id], include_blank: false }, class: input_class(supplier.errors[:account_id].any?)) %>
-    </div>
-  <% end %>
 
   <div class="inline">
     <%= form.submit class: primary_button_class("w-full sm:w-auto") %>

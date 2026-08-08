@@ -12,60 +12,55 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <h2 class="text-lg font-semibold border-b pb-2 mb-4">GoCardless Configuration</h2>
-    <p class="text-sm text-gray-600 mb-4">Enter your GoCardless access token to enable integrated payments for your customers.</p>
-
-    <div class="mb-5">
-      <%= form.label :gocardless_access_token, "Access Token", class: label_class %>
-      <%= form.password_field :gocardless_access_token, value: account.gocardless_access_token, placeholder: "e.g. live_...", class: input_class(account.errors[:gocardless_access_token].any?) %>
-      <p class="mt-2 text-xs text-gray-500">You can find your access token in the GoCardless dashboard under Developers > Access Tokens.</p>
-    </div>
-
-    <div class="mb-5">
-      <%= form.label :gocardless_mode, "Mode", class: label_class %>
-      <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <label for="account_gocardless_mode_sandbox" class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none dark:bg-gray-800 dark:border-gray-700">
-          <%= form.radio_button :gocardless_mode, "sandbox", class: "sr-only", "aria-labelledby": "gocardless-mode-0-label" %>
-          <span class="flex flex-1">
-            <span class="flex flex-col">
-              <span id="gocardless-mode-0-label" class="block text-sm font-medium text-gray-900 dark:text-white">Sandbox</span>
-              <span class="mt-1 flex items-center text-sm text-gray-500">For testing and development</span>
-            </span>
-          </span>
-          <svg class="h-5 w-5 text-indigo-600 invisible check-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-          </svg>
-          <span class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent" aria-hidden="true"></span>
-        </label>
-
-        <label for="account_gocardless_mode_production" class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none dark:bg-gray-800 dark:border-gray-700">
-          <%= form.radio_button :gocardless_mode, "production", class: "sr-only", "aria-labelledby": "gocardless-mode-1-label" %>
-          <span class="flex flex-1">
-            <span class="flex flex-col">
-              <span id="gocardless-mode-1-label" class="block text-sm font-medium text-gray-900 dark:text-white">Production</span>
-              <span class="mt-1 flex items-center text-sm text-gray-500">For real transactions</span>
-            </span>
-          </span>
-          <svg class="h-5 w-5 text-indigo-600 invisible check-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-          </svg>
-          <span class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent" aria-hidden="true"></span>
-        </label>
+  <div class="<%= table_container_class("p-6") %>">
+    <div class="space-y-6">
+      <div>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">GoCardless Configuration</h2>
+        <p class="<%= help_text_class %>">Enter your GoCardless access token to enable integrated payments for your customers.</p>
       </div>
+
+      <div>
+        <%= form.label :gocardless_access_token, "Access Token", class: label_class %>
+        <%= form.password_field :gocardless_access_token, value: account.gocardless_access_token, placeholder: "e.g. live_...", class: input_class(account.errors[:gocardless_access_token].any?) %>
+        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">You can find your access token in the GoCardless dashboard under Developers > Access Tokens.</p>
+      </div>
+
+      <fieldset>
+        <legend class="<%= label_class %>">Mode</legend>
+        <div class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+            <%= form.radio_button :gocardless_mode, "sandbox", class: "peer sr-only", "aria-labelledby": "gocardless-mode-0-label" %>
+            <span class="flex flex-1">
+              <span class="flex flex-col">
+                <span id="gocardless-mode-0-label" class="block text-sm font-medium text-gray-900 dark:text-white">Sandbox</span>
+                <span class="mt-1 text-sm text-gray-500 dark:text-gray-400">For testing and development</span>
+              </span>
+            </span>
+            <svg class="invisible h-5 w-5 text-indigo-600 peer-checked:visible" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+            </svg>
+            <span class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent peer-checked:border-indigo-600" aria-hidden="true"></span>
+          </label>
+
+          <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+            <%= form.radio_button :gocardless_mode, "production", class: "peer sr-only", "aria-labelledby": "gocardless-mode-1-label" %>
+            <span class="flex flex-1">
+              <span class="flex flex-col">
+                <span id="gocardless-mode-1-label" class="block text-sm font-medium text-gray-900 dark:text-white">Production</span>
+                <span class="mt-1 text-sm text-gray-500 dark:text-gray-400">For real transactions</span>
+              </span>
+            </span>
+            <svg class="invisible h-5 w-5 text-indigo-600 peer-checked:visible" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+            </svg>
+            <span class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent peer-checked:border-indigo-600" aria-hidden="true"></span>
+          </label>
+        </div>
+      </fieldset>
     </div>
   </div>
 
-  <div class="inline">
+  <div class="mt-6">
     <%= form.submit "Save Payment Settings", class: primary_button_class("w-full sm:w-auto") %>
   </div>
 <% end %>
-
-<style>
-  input[type="radio"]:checked + span + .check-icon {
-    visibility: visible;
-  }
-  input[type="radio"]:checked ~ span[aria-hidden="true"] {
-    border-color: rgb(79 70 229); /* indigo-600 */
-  }
-</style>

@@ -1,5 +1,6 @@
 class OrdersController < ApplicationController
   before_action :require_account!, except: %i[ index show ]
+  before_action :ensure_customer_storefront_access!, only: %i[ new create ]
   before_action :set_order, only: %i[ show edit update destroy awaiting_collection complete ]
 
   # GET /orders or /orders.json
@@ -163,6 +164,13 @@ class OrdersController < ApplicationController
           hash[customer.id] = { loyalty_card: customer.loyalty_card }
         end
       end
+    end
+
+    def ensure_customer_storefront_access!
+      return unless customer?
+      return if storefront_accessible_account?(Current.account)
+
+      redirect_to dashboard_path, alert: "This store is not available for customer shopping."
     end
 
     def persist_order_with_payment

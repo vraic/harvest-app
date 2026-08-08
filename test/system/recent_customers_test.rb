@@ -12,8 +12,7 @@ class RecentCustomersTest < ApplicationSystemTestCase
     # Create an old customer
     Customer.create!(name: "Old Customer", email_address: "old@example.com", account: accounts(:one), created_at: 10.days.ago)
 
-    visit dashboard_path
-    click_on "Recent Customers", match: :first
+    visit customers_path(filter: "recent")
 
     assert_text "Recent Customer"
     assert_no_text "Old Customer"

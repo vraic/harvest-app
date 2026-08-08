@@ -66,4 +66,15 @@ class AccountSettingsTest < ApplicationSystemTestCase
     assert_selector "h2", text: "GoCardless Configuration"
     assert_field "Access Token", with: "short"
   end
+
+  test "account settings tabs use consistent panel and table styles" do
+    visit edit_account_path(@account)
+
+    [ "General", "Loyalty Program", "Payments", "Stores We Supply", "Staff" ].each do |tab_name|
+      click_on tab_name
+
+      assert_selector :xpath, "//div[contains(@class,'rounded-lg') and contains(@class,'bg-white') and contains(@class,'dark:bg-gray-800')]"
+      assert_selector :xpath, "//table[contains(@class,'min-w-full') and contains(@class,'divide-y')]" if [ "Stores We Supply", "Staff" ].include?(tab_name)
+    end
+  end
 end

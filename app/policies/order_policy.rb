@@ -8,7 +8,7 @@ class OrderPolicy < ApplicationPolicy
   end
 
   def create?
-    admin_or_staff? || customer?
+    admin_or_staff? || storefront_customer_access?
   end
 
   def update?
@@ -47,7 +47,23 @@ class OrderPolicy < ApplicationPolicy
   end
 
   def customer?
-    user.account_users.where(user_role: :customer).exists?
+    return false unless Current.account
+
+    user.account_users.exists?(account: Current.account, user_role: :customer)
+  end
+
+  def storefront_customer_access?
+    return false unless customer?
+    return false unless Current.account
+
+    return true if Current.account.is_b2c?
+    return false unless Current.account.is_b2b?
+
+    Supplier.unscoped.exists?(account: Current.account, supplier_account_id: supplier_operator_account_ids)
+  end
+
+  def supplier_operator_account_ids
+    AccountUser.unscoped.where(user: user, user_role: [ :store_manager, :store_staff ]).distinct.pluck(:account_id)
   end
 
   def record_belongs_to_customer?

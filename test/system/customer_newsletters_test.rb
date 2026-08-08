@@ -73,10 +73,11 @@ class CustomerNewslettersTest < ApplicationSystemTestCase
     visit dashboard_path
     # On desktop, newsletters_path is visible for staff
     within "#desktop-sidebar-main-nav" do
-       assert_link "Newsletters"
-       # We should check the href to ensure it's the management one
-       assert_selector "a[href='#{newsletters_path}']"
-       assert_no_selector "a[href='#{customer_newsletters_path}']"
+      click_button "People"
+      assert_link "Newsletters"
+      # We should check the href to ensure it's the management one
+      assert_selector "a[href='#{newsletters_path}']"
+      assert_no_selector "a[href='#{customer_newsletters_path}']"
     end
   end
 

@@ -66,4 +66,20 @@ class SupplierSearchTest < ApplicationSystemTestCase
 
     assert_text "Supplier One"
   end
+
+  test "new supplier defaults to store selection with manual fallback" do
+    login_as @admin
+    select_account("Account One")
+    visit new_supplier_url
+
+    assert_selector "input[name='supplier[entry_mode]'][value='platform_store']:checked", visible: :all
+    assert_selector "select[name='supplier[supplier_account_id]']:not([disabled])", visible: :all
+    assert_selector "input[name='supplier[name]'][disabled]", visible: :all
+
+    choose "Manual entry"
+
+    assert_selector "input[name='supplier[entry_mode]'][value='manual_entry']:checked", visible: :all
+    assert_selector "select[name='supplier[supplier_account_id]'][disabled]", visible: :all
+    assert_selector "input[name='supplier[name]']:not([disabled])", visible: :all
+  end
 end

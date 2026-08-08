@@ -5,8 +5,15 @@ class ManagedAccountsController < ApplicationController
     if Current.user.admin?
       if account_id.present?
         account = Account.find(account_id)
-        session[:managed_account_id] = account.id
-        flash[:notice] = "Now managing #{account.name}"
+        active_request = SupportRequest.unscoped.where(account: account).active.first
+
+        if active_request.present?
+          session[:managed_account_id] = account.id
+          flash[:notice] = "Now managing #{account.name}"
+        else
+          session.delete(:managed_account_id)
+          flash[:alert] = "Access denied. No active support authorization for this account."
+        end
       else
         session.delete(:managed_account_id)
         flash[:notice] = "Switched to Global view"

@@ -9,7 +9,7 @@
     <p class="mb-4">Welcome, <%= Current.user.name %> (<%= Current.user.email_address %>)!</p>
     
     <% if Current.account %>
-      <% if staff? || manager? %>
+      <% if (staff? || manager?) && !Current.user.admin? %>
         <div id="account-stats" class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 dark:bg-gray-800 dark:ring-1 dark:ring-white/10">
             <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Open Orders</dt>
@@ -76,6 +76,18 @@
       <% end %>
 
       <%= render "pages/loyalty", loyalty_card: @loyalty_card, loyalty_program: @loyalty_program %>
+    <% end %>
+
+    <% if Current.user.admin? %>
+      <div id="admin-dashboard-actions" class="mt-10 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h2 class="text-xl font-bold">Platform Administration</h2>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Use admin tools to manage stores, access requests, and support workflows.</p>
+
+        <div class="mt-4 flex flex-wrap gap-3">
+          <%= link_to "Administration", accounts_path, class: secondary_button_class %>
+          <%= link_to "Support Requests", support_requests_path, class: secondary_button_class %>
+        </div>
+      </div>
     <% end %>
 
     <% if !Current.account || customer? || Current.user.admin? %>

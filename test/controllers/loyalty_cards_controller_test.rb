@@ -28,6 +28,7 @@ class LoyaltyCardsControllerTest < ActionDispatch::IntegrationTest
 
     get loyalty_cards_url
     assert_response :success
+    assert_select "main > div > div.w-full", count: 1
   end
 
   test "staff index without selected account is safe" do
@@ -37,6 +38,7 @@ class LoyaltyCardsControllerTest < ActionDispatch::IntegrationTest
     get loyalty_cards_url
 
     assert_response :success
+    assert_select "main > div > div.w-full", count: 1
     assert_includes response.body, "No store selected"
     assert_not_includes response.body, loyalty_cards(:one).identifier
     assert_not_includes response.body, customers(:one).name

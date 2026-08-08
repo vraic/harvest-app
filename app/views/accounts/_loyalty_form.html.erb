@@ -12,31 +12,35 @@
     </div>
   <% end %>
 
-  <%= form.fields_for :loyalty_program do |lp_form| %>
-    <div class="my-5 flex items-start">
-      <div class="flex h-6 items-center">
-        <%= lp_form.check_box :active, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 dark:bg-gray-800 dark:border-gray-700" %>
+  <div class="<%= table_container_class("p-6") %>">
+    <%= form.fields_for :loyalty_program do |lp_form| %>
+      <div class="space-y-5">
+        <div class="flex items-start">
+          <div class="flex h-6 items-center">
+            <%= lp_form.check_box :active, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 dark:bg-gray-800 dark:border-gray-700" %>
+          </div>
+          <div class="ml-3 text-sm leading-6">
+            <%= lp_form.label :active, "Enable Loyalty Program", class: "font-medium text-gray-900 dark:text-white" %>
+            <p class="<%= help_text_class %>">Activate this to allow customers to earn and redeem points.</p>
+          </div>
+        </div>
+
+        <div>
+          <%= lp_form.label :currency_to_points_ratio, "Points earned per #{Money.default_currency.symbol}1 spent", class: label_class %>
+          <%= lp_form.number_field :currency_to_points_ratio, class: input_class(account.errors.include?(:"loyalty_program.currency_to_points_ratio")) %>
+          <p class="<%= help_text_class %>">e.g. 1 point per #{Money.default_currency.symbol}1 spent</p>
+        </div>
+
+        <div>
+          <%= lp_form.label :points_to_currency_ratio, "Redemption value per point (in #{Money.default_currency.iso_code})", class: label_class %>
+          <%= lp_form.number_field :points_to_currency_ratio, step: 0.01, class: input_class(account.errors.include?(:"loyalty_program.points_to_currency_ratio")) %>
+          <p class="<%= help_text_class %>">e.g. 0.10 means 1 point = 10p discount</p>
+        </div>
       </div>
-      <div class="ml-3 text-sm leading-6">
-        <%= lp_form.label :active, "Enable Loyalty Program", class: "font-medium text-gray-900 dark:text-white" %>
-        <p class="<%= help_text_class %>">Activate this to allow customers to earn and redeem points.</p>
-      </div>
-    </div>
+    <% end %>
+  </div>
 
-    <div class="my-5">
-      <%= lp_form.label :currency_to_points_ratio, "Points earned per #{Money.default_currency.symbol}1 spent", class: label_class %>
-      <%= lp_form.number_field :currency_to_points_ratio, class: input_class(account.errors.include?(:"loyalty_program.currency_to_points_ratio")) %>
-      <p class="<%= help_text_class %>">e.g. 1 point per #{Money.default_currency.symbol}1 spent</p>
-    </div>
-
-    <div class="my-5">
-      <%= lp_form.label :points_to_currency_ratio, "Redemption value per point (in #{Money.default_currency.iso_code})", class: label_class %>
-      <%= lp_form.number_field :points_to_currency_ratio, step: 0.01, class: input_class(account.errors.include?(:"loyalty_program.points_to_currency_ratio")) %>
-      <p class="<%= help_text_class %>">e.g. 0.10 means 1 point = 10p discount</p>
-    </div>
-  <% end %>
-
-  <div class="inline">
+  <div class="mt-6">
     <%= form.submit "Save Loyalty Settings", class: primary_button_class("w-full sm:w-auto") %>
   </div>
 <% end %>

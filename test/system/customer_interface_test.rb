@@ -20,6 +20,9 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
   test "staff user sees account switcher" do
     ActsAsTenant.without_tenant do
       @user.account_users.first.update!(user_role: :store_staff)
+      AccountUser.unscoped.find_or_create_by!(user: @user, account: accounts(:two)) do |account_user|
+        account_user.user_role = :store_staff
+      end
     end
 
     visit dashboard_path
@@ -59,6 +62,8 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
   end
 
   test "shop filtering based on classification" do
+    supplier_authorization = nil
+
     ActsAsTenant.without_tenant do
       accounts(:one).update!(is_b2c: true, is_b2b: false, is_internal: false)
       accounts(:two).update!(is_b2c: false, is_b2b: true, is_internal: false)
@@ -78,6 +83,12 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
     # As a staff member
     ActsAsTenant.without_tenant do
       @user.account_users.first.update!(user_role: :store_staff)
+      supplier_authorization = Supplier.create!(
+        account: accounts(:two),
+        supplier_account: accounts(:one),
+        name: accounts(:one).name,
+        email_address: "classified-supplier@example.com"
+      )
     end
     visit shop_path
     assert_text accounts(:one).name
@@ -90,9 +101,11 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
     assert_text accounts(:one).name
     assert_text accounts(:two).name
     assert_text "Internal Store"
+  ensure
+    supplier_authorization&.destroy!
   end
 
-  test "admin sees account switcher with authorized support requests" do
+  test "admin sees account switcher only with multiple authorized support requests" do
     admin = users(:administrator)
     login_as(admin)
 
@@ -105,12 +118,65 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
     visit dashboard_path
     assert_no_text "Switch Account"
 
-    # Create authorized support request
+    # One authorized support request is not enough to show switching
     ActsAsTenant.without_tenant do
       SupportRequest.create!(account: accounts(:one), requester: users(:one), message: "Help", status: :accepted, expires_at: 1.day.from_now)
     end
 
     visit dashboard_path
+    assert_no_text "Switch Account"
+
+    ActsAsTenant.without_tenant do
+      SupportRequest.create!(account: accounts(:two), requester: users(:two), message: "Need support", status: :accepted, expires_at: 1.day.from_now)
+    end
+
+    visit dashboard_path
     assert_text "Switch Account"
+  end
+
+  test "admin does not see account switcher without active support authorization even with account membership" do
+    admin = users(:administrator)
+    login_as(admin)
+
+    ActsAsTenant.without_tenant do
+      SupportRequest.delete_all
+      AccountUser.unscoped.find_or_create_by!(user: admin, account: accounts(:one)) do |account_user|
+        account_user.user_role = :store_manager
+      end
+    end
+
+    visit dashboard_path
+
+    assert_no_text "Switch Account"
+  end
+
+  test "admin acting on behalf uses staff navigation while keeping admin dashboard actions" do
+    admin = users(:administrator)
+
+    ActsAsTenant.without_tenant do
+      SupportRequest.delete_all
+      SupportRequest.create!(account: accounts(:one), requester: users(:one), message: "Support", status: :accepted, expires_at: 1.day.from_now)
+    end
+
+    login_as(admin)
+    select_account(accounts(:one).name)
+    visit dashboard_path
+
+    within "#desktop-sidebar-main-nav" do
+      assert_text "Tasks"
+      assert_text "People"
+      click_button "People"
+      assert_text "Customer View"
+      assert_no_text "Quick links"
+      assert_no_text "Administration"
+      assert_no_text "Support Requests"
+    end
+
+    within "#admin-dashboard-actions" do
+      assert_text "Administration"
+      assert_text "Support Requests"
+      assert_no_text "Visit Shop"
+      assert_no_text "Visit Shop & Order"
+    end
   end
 end

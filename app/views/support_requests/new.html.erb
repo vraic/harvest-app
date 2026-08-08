@@ -53,6 +53,25 @@
           <p class="<%= help_text_class %>">Be as descriptive as possible so our support team can assist you effectively.</p>
         </div>
 
+        <% if Current.user.admin? %>
+          <div class="rounded-md border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/20">
+            <div class="flex items-start gap-2">
+              <%= f.check_box :business_override, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 mt-1" %>
+              <div>
+                <%= f.label :business_override, "Business override", class: "text-sm font-semibold text-gray-900 dark:text-white" %>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Use this when the support request came in outside the system (for example, via telephone) and access must be granted immediately.</p>
+              </div>
+            </div>
+
+            <div class="mt-4 flex items-start gap-2">
+              <%= f.check_box :business_override_confirmation, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 mt-1" %>
+              <div>
+                <%= f.label :business_override_confirmation, "Yes, I confirm this support request and support authorization were received outside the system.", class: "text-sm font-medium text-gray-900 dark:text-white" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
         <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <%= link_to "Cancel", support_requests_path, class: secondary_button_class %>
           <%= f.submit "Submit Request", class: primary_button_class %>

@@ -24,6 +24,8 @@ module ApplicationHelper
       [ "inventory_items", "locations", "inventory_groups", "inventory_levels" ].include?(controller_name)
     when :shop
       controller_name == "shops" || controller_path.start_with?("shop/")
+    when :commerce
+      [ :orders, :inventory ].any? { |nav_item| nav_item_active?(nav_item) }
     when :orders
       controller_name == "orders"
     when :reports
@@ -40,6 +42,8 @@ module ApplicationHelper
       controller_name == "accounts" || controller_name == "supplier_requests"
     when :support_requests
       controller_name == "support_requests"
+    when :people
+      [ :customers, :suppliers, :newsletters, :customer_newsletters, :loyalty, :shop ].any? { |nav_item| nav_item_active?(nav_item) }
     when :settings
       [ "account_users", "users", "settings" ].include?(controller_name)
     else
@@ -67,6 +71,24 @@ module ApplicationHelper
     else
       "#{base_classes} text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white"
     end
+  end
+
+  def nav_icon_button_classes(item_key, extra_classes = nil)
+    active = nav_item_active?(item_key)
+    base_classes = [ "group relative flex items-center justify-center rounded-md p-2", extra_classes ].compact.join(" ")
+
+    if active
+      "#{base_classes} bg-gray-50 text-indigo-600 dark:bg-white/5 dark:text-white"
+    else
+      "#{base_classes} text-gray-700 hover:text-indigo-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/5"
+    end
+  end
+
+  def unread_notifications_count
+    return 0 unless authenticated? && staff_navigation?
+    return 0 if Current.account.blank?
+
+    Current.user.notifications.for_account(Current.account).unread.count
   end
 
   def label_class(extra_classes = nil)
@@ -157,6 +179,12 @@ module ApplicationHelper
   def switchable_accounts
     return [] unless Current.user
     ActsAsTenant.without_tenant do
+      if Current.user.admin?
+        return SupportRequest.unscoped.active.includes(:account).map do |sr|
+          { id: sr.account.id, name: sr.account.name, role: "Admin Authorization" }
+        end.uniq { |a| a[:id] }
+      end
+
       # direct memberships
       accounts = AccountUser.unscoped.where(user_id: Current.user.id).includes(:account).map do |au|
         { id: au.account.id, name: au.account.name, role: au.user_role.titleize, role_key: au.user_role.to_sym }
@@ -174,21 +202,40 @@ module ApplicationHelper
 
       all_accounts = (accounts + b2b_accounts)
 
-      if Current.user.admin?
-        authorized_accounts = SupportRequest.unscoped.active.includes(:account).map do |sr|
-          { id: sr.account.id, name: sr.account.name, role: "Admin Authorization" }
-        end
-        all_accounts += authorized_accounts
-      end
-
       all_accounts.uniq { |a| a[:id] }
     end
   end
 
   def show_account_switcher?
     return false unless Current.user
-    return true if Current.user.admin? && switchable_accounts.any?
+
     !customer_only? && switchable_accounts.size > 1
+  end
+
+  def global_admin_navigation?
+    Current.user&.admin? && !acting_on_behalf_navigation?
+  end
+
+  def acting_on_behalf_navigation?
+    return false unless Current.user&.admin? && Current.account.present?
+
+    @acting_on_behalf_navigation ||= SupportRequest.unscoped.active.exists?(account_id: Current.account.id)
+  end
+
+  def store_operator_user?
+    return false unless Current.user
+
+    Current.user.account_users.exists?(user_role: [ :store_manager, :store_staff ])
+  end
+
+  def staff_navigation?
+    return acting_on_behalf_navigation? if Current.user&.admin?
+
+    store_operator_user?
+  end
+
+  def customer_navigation?
+    authenticated? && !Current.user&.admin? && !store_operator_user?
   end
 
   def loyalty_card

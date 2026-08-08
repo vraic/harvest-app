@@ -22,10 +22,13 @@ class SessionsController < ApplicationController
     user = User.find_by(email_address: email_address)
 
     if user&.authenticate(params[:password])
-      session[:otp_user_id] = user.id
-      session.delete(:security_setup_user_id)
-
-      if user.otp_required_for_login? || user.prefers_email_login?
+      if user.force_password_reset?
+        session.delete(:otp_user_id)
+        session.delete(:security_setup_user_id)
+        redirect_to edit_password_path(user.password_reset_token), alert: "Please reset your password to continue.", status: :see_other
+      elsif user.otp_required_for_login? || user.prefers_email_login?
+        session[:otp_user_id] = user.id
+        session.delete(:security_setup_user_id)
         user.generate_email_otp! unless user.otp_enabled?
         user.password = user.password_confirmation = nil
         redirect_to new_two_factor_verification_path, status: :see_other

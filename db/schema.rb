@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_17_165542) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_08_064000) do
   create_table "account_users", force: :cascade do |t|
     t.integer "account_id"
     t.datetime "created_at", null: false
@@ -524,6 +524,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_17_165542) do
     t.string "email_address", null: false
     t.datetime "email_otp_sent_at"
     t.string "email_otp_token"
+    t.boolean "force_password_reset", default: false, null: false
     t.string "name"
     t.boolean "onboarded", default: false, null: false
     t.boolean "otp_required_for_login", default: false, null: false

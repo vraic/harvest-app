@@ -40,10 +40,14 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update" do
+    @user.update!(force_password_reset: true)
+
     assert_changes -> { @user.reload.password_digest } do
       put password_path(@user.password_reset_token), params: { password: "ComplexPassword123!", password_confirmation: "ComplexPassword123!" }
       assert_redirected_to new_session_path
     end
+
+    assert_not @user.reload.force_password_reset?
 
     follow_redirect!
     assert_notice "Password has been reset"

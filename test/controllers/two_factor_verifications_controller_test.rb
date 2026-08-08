@@ -60,4 +60,23 @@ class TwoFactorVerificationsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil cookies[:session_id]
     assert_nil User.find(@user.id).email_otp_token
   end
+
+  test "create with valid email OTP and forced reset redirects to password reset" do
+    @user.update!(otp_required_for_login: true, otp_secret: nil, force_password_reset: true)
+
+    post session_path, params: { email_address: @user.email_address }
+    assert_redirected_to new_two_factor_verification_path
+    assert_equal @user.id, session[:otp_user_id]
+
+    token = User.find(@user.id).email_otp_token
+    assert token.present?
+
+    post two_factor_verification_path, params: { otp_code: token }
+
+    assert_response :redirect
+    assert_match(%r{\A/passwords/.+/edit\z}, URI.parse(response.location).path)
+    assert_equal "Please reset your password to continue.", flash[:alert]
+    assert_nil session[:otp_user_id]
+    assert_nil cookies[:session_id]
+  end
 end

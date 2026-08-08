@@ -39,6 +39,18 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_nil cookies[:session_id]
   end
 
+  test "create with valid credentials and forced reset redirects to password reset" do
+    @user.update!(otp_required_for_login: false, prefers_email_login: false, force_password_reset: true)
+    post session_path, params: { email_address: @user.email_address, password: "password" }
+
+    assert_response :redirect
+    assert_match(%r{\A/passwords/.+/edit\z}, URI.parse(response.location).path)
+    assert_nil session[:otp_user_id]
+    assert_nil session[:security_setup_user_id]
+    assert_nil cookies[:session_id]
+    assert_equal "Please reset your password to continue.", flash[:alert]
+  end
+
   test "create without password sends one-time code for existing user" do
     assert_enqueued_emails 1 do
       post session_path, params: { email_address: @user.email_address }

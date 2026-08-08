@@ -37,8 +37,8 @@ namespace :users do
       abort "Password confirmation does not match." if password != password_confirmation
     end
 
-    abort(interactive ? "Email address is required." : "EMAIL_ADDRESS is required in non-interactive mode.") if email_address.blank?
-    abort(interactive ? "Password is required." : "PASSWORD is required in non-interactive mode.") if password.blank?
+    abort(interactive ? "Email address is required." : "SEED_EMAIL_ADDRESS is required in non-interactive mode.") if email_address.blank?
+    abort(interactive ? "Password is required." : "SEED_PASSWORD is required in non-interactive mode.") if password.blank?
 
     name = "Super User" if name.blank?
 

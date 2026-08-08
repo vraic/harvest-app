@@ -10,6 +10,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
   def login_as(user)
     Capybara.reset_sessions!
+    @logged_in_user = user
     # Use the fast-path login for system tests to avoid flaky 2FA UI interactions
     visit test_login_path(user_id: user.id)
 
@@ -19,6 +20,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
   def login_via_ui(user)
     Capybara.reset_sessions!
+    @logged_in_user = user
     visit new_session_url
     fill_in "Email", with: user.email_address
 
@@ -52,19 +54,28 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   end
 
   def select_account(name)
+    is_admin_user = @logged_in_user&.admin?
+    is_admin_user = page.has_link?("Administration") if is_admin_user.nil?
+
     # Use the Accounts page for admins to Join
-    if page.has_link?("Administration")
+    if is_admin_user
       visit accounts_path
-      row = find("tr", text: name)
-      if row.has_button?("Join Account")
-        within row do
-          click_on "Join Account"
+      within "#accounts" do
+        row = find("tr", text: name)
+        if row.has_button?("Join Account")
+          within row do
+            click_on "Join Account"
+          end
+          # Joining redirects to dashboard
+        elsif row.has_button?("Leave Account")
+          # Already joined
+          visit dashboard_path
+        else
+          flunk "Could not switch to #{name}: no Join/Leave control found for that account row"
         end
-        # Joining redirects to dashboard
-      elsif row.has_button?("Leave Account")
-        # Already joined
-        visit dashboard_path
       end
+
+      assert_selector "div", text: "Acting on behalf of: #{name}"
     else
       visit dashboard_path
       # Find the account section and click Select
@@ -100,12 +111,8 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
         end
         break if selected
       end
-    end
 
-    assert_text name
-    # Verify banner if it's an admin
-    if page.has_link?("Administration")
-      assert_selector "div", text: "Acting on behalf of: #{name}"
+      assert_text name
     end
   end
 

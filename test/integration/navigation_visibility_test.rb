@@ -7,19 +7,21 @@ class NavigationVisibilityTest < ActionDispatch::IntegrationTest
     @customer = users(:three)
   end
 
-  test "global admin sees all links" do
+  test "global admin acting on behalf sees staff navigation links" do
     grant_support_access(accounts(:one))
     sign_in_as(@admin)
-    # Select an account so manager? becomes true and settings shows up
+    # Select an account to ensure acting context uses the staff navigation
     patch managed_account_path, params: { account_id: accounts(:one).id }
     follow_redirect!
 
     assert_select "nav" do
+      assert_select "a", text: /Dashboard/
       assert_select "a", text: /Tasks/
       assert_select "a", text: /Customers/
       assert_select "a", text: /Inventory/
-      assert_select "a", text: /Orders/
-      assert_select "a", text: /Settings/
+      assert_select "a", text: /Customer View/
+      assert_select "a", text: /Administration/, count: 0
+      assert_select "a", text: /Support Requests/, count: 0
     end
   end
 

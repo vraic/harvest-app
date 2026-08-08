@@ -59,6 +59,8 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
   end
 
   test "shop filtering based on classification" do
+    supplier_authorization = nil
+
     ActsAsTenant.without_tenant do
       accounts(:one).update!(is_b2c: true, is_b2b: false, is_internal: false)
       accounts(:two).update!(is_b2c: false, is_b2b: true, is_internal: false)
@@ -78,6 +80,12 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
     # As a staff member
     ActsAsTenant.without_tenant do
       @user.account_users.first.update!(user_role: :store_staff)
+      supplier_authorization = Supplier.create!(
+        account: accounts(:two),
+        supplier_account: accounts(:one),
+        name: accounts(:one).name,
+        email_address: "classified-supplier@example.com"
+      )
     end
     visit shop_path
     assert_text accounts(:one).name
@@ -90,6 +98,8 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
     assert_text accounts(:one).name
     assert_text accounts(:two).name
     assert_text "Internal Store"
+  ensure
+    supplier_authorization&.destroy!
   end
 
   test "admin sees account switcher with authorized support requests" do
@@ -112,5 +122,46 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
 
     visit dashboard_path
     assert_text "Switch Account"
+  end
+
+  test "admin does not see account switcher without active support authorization even with account membership" do
+    admin = users(:administrator)
+    login_as(admin)
+
+    ActsAsTenant.without_tenant do
+      SupportRequest.delete_all
+      AccountUser.unscoped.find_or_create_by!(user: admin, account: accounts(:one)) do |account_user|
+        account_user.user_role = :store_manager
+      end
+    end
+
+    visit dashboard_path
+
+    assert_no_text "Switch Account"
+  end
+
+  test "admin acting on behalf uses staff navigation while keeping admin dashboard actions" do
+    admin = users(:administrator)
+
+    ActsAsTenant.without_tenant do
+      SupportRequest.delete_all
+      SupportRequest.create!(account: accounts(:one), requester: users(:one), message: "Support", status: :accepted, expires_at: 1.day.from_now)
+    end
+
+    login_as(admin)
+    select_account(accounts(:one).name)
+    visit dashboard_path
+
+    within "#desktop-sidebar-main-nav" do
+      assert_text "Tasks"
+      assert_text "Customer View"
+      assert_text "Quick links"
+      assert_no_text "Administration"
+      assert_no_text "Support Requests"
+    end
+
+    assert_selector "#admin-dashboard-actions"
+    assert_no_text "Visit Shop"
+    assert_no_text "Visit Shop & Order"
   end
 end

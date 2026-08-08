@@ -47,20 +47,55 @@ class GlobalAdminTest < ActionDispatch::IntegrationTest
     assert_no_match /Account Two/, response.body
   end
 
-  test "admin can see all navigation links" do
+  test "admin acting on behalf sees store staff navigation links" do
     grant_support_access(@account)
     sign_in_as(@admin)
-    # Select an account so manager? becomes true and settings shows up
+    # Select an account to verify nav switches into store-support mode
     patch managed_account_path, params: { account_id: @account.id }
     follow_redirect!
 
     assert_select "nav" do
+      assert_select "a", text: /Dashboard/
       assert_select "a", text: /Tasks/
       assert_select "a", text: /Customers/
       assert_select "a", text: /Inventory/
-      assert_select "a", text: /Orders/
-      assert_select "a", text: /Settings/
+      assert_select "a", text: /Customer View/
+      assert_select "a", text: /Administration/, count: 0
+      assert_select "a", text: /Support Requests/, count: 0
     end
+  end
+
+  test "admin cannot switch to an account without active support authorization" do
+    sign_in_as(@admin)
+
+    patch managed_account_path, params: { account_id: @account.id }
+
+    assert_redirected_to dashboard_path
+    assert_nil session[:managed_account_id]
+    follow_redirect!
+    assert_match "Access denied. No active support authorization for this account.", response.body
+  end
+
+  test "admin can switch to an account after business override support request is confirmed" do
+    sign_in_as(@admin)
+
+    assert_difference("SupportRequest.count") do
+      post support_requests_path, params: {
+        support_request: {
+          account_id: @account.id,
+          message: "Phone confirmation from store owner",
+          business_override: "1",
+          business_override_confirmation: "1"
+        }
+      }
+    end
+
+    support_request = SupportRequest.order(:id).last
+    assert support_request.active?
+
+    patch managed_account_path, params: { account_id: @account.id }
+    assert_redirected_to dashboard_path
+    assert_equal @account.id, session[:managed_account_id]
   end
 
   test "admin cannot create an inventory item without selecting an account" do
@@ -85,6 +120,7 @@ class GlobalAdminTest < ActionDispatch::IntegrationTest
   end
   test "admin can switch back to global view" do
     sign_in_as(@admin)
+    grant_support_access(@account)
     patch managed_account_path, params: { account_id: @account.id }
 
     patch managed_account_path, params: { account_id: "" }

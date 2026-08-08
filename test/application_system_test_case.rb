@@ -105,7 +105,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     assert_text name
     # Verify banner if it's an admin
     if page.has_link?("Administration")
-      assert_selector "div", text: "Managing Account: #{name}"
+      assert_selector "div", text: "Acting on behalf of: #{name}"
     end
   end
 

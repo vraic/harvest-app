@@ -46,7 +46,7 @@ class GlobalAdminSupportTest < ApplicationSystemTestCase
       click_on "Join Account"
     end
     assert_text "Joined Account One as a support team member."
-    assert_text "Managing Account: Account One"
+    assert_text "Acting on behalf of: Account One"
 
     # 4. Global admin performs an audited action in the account
     visit inventory_items_path
@@ -66,7 +66,7 @@ class GlobalAdminSupportTest < ApplicationSystemTestCase
     # 6. Global admin leaves the account
     click_on "Leave Account"
     assert_text "Left support session for Account One."
-    assert_no_text "Managing Account: Account One"
+    assert_no_text "Acting on behalf of: Account One"
   end
 
   test "admin initiated support request" do
@@ -100,7 +100,7 @@ class GlobalAdminSupportTest < ApplicationSystemTestCase
     within "##{dom_id support_request}" do
       click_on "Join Account"
     end
-    assert_text "Managing Account: Account One"
+    assert_text "Acting on behalf of: Account One"
   end
 
   test "extension request workflow" do

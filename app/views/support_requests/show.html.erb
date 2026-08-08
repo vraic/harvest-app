@@ -24,6 +24,21 @@
         </span>
       </div>
       <div class="p-6 text-gray-900 dark:text-white whitespace-pre-wrap"><%= @support_request.message %></div>
+
+      <% if @support_request.received_outside_system? && @support_request.authorization_received_outside_system? %>
+        <div class="px-6 pb-6 text-sm text-amber-700 dark:text-amber-300">
+          <p class="font-semibold">Business override confirmed</p>
+          <p>
+            Request and authorization received outside the system.
+            <% if @support_request.received_outside_system_confirmed_by.present? %>
+              Confirmed by <%= @support_request.received_outside_system_confirmed_by.name %>
+            <% end %>
+            <% if @support_request.received_outside_system_confirmed_at.present? %>
+              at <%= @support_request.received_outside_system_confirmed_at.to_fs(:short) %>.
+            <% end %>
+          </p>
+        </div>
+      <% end %>
     </div>
 
     <!-- Actions for Admins/Managers -->

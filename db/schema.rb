@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_121559) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
   create_table "account_users", force: :cascade do |t|
     t.integer "account_id"
     t.datetime "archived_at"
@@ -522,13 +522,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_121559) do
 
   create_table "support_requests", force: :cascade do |t|
     t.integer "account_id", null: false
+    t.boolean "authorization_received_outside_system", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at"
     t.text "message"
+    t.boolean "received_outside_system", default: false, null: false
+    t.datetime "received_outside_system_confirmed_at"
+    t.integer "received_outside_system_confirmed_by_id"
     t.integer "requester_id", null: false
     t.integer "status"
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_support_requests_on_account_id"
+    t.index ["received_outside_system_confirmed_by_id"], name: "index_support_requests_on_override_confirmer_id"
     t.index ["requester_id"], name: "index_support_requests_on_requester_id"
   end
 
@@ -616,6 +621,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_121559) do
   add_foreign_key "support_request_comments", "support_requests"
   add_foreign_key "support_request_comments", "users"
   add_foreign_key "support_requests", "accounts"
+  add_foreign_key "support_requests", "users", column: "received_outside_system_confirmed_by_id"
   add_foreign_key "support_requests", "users", column: "requester_id"
   add_foreign_key "tasks", "accounts"
   add_foreign_key "tasks", "users", column: "assigned_by_id"

@@ -46,17 +46,15 @@ class NavigationTest < ApplicationSystemTestCase
     login_as(@manager)
     visit dashboard_path
 
-    # On dashboard, click "Manage Store" for Second Store
-    within "#stores-grid" do
-      # Find the card for Second Store and click Manage Store there
-      card = find("h3", text: "Second Store").ancestor(".overflow-hidden")
-      within card do
-        click_on "Manage Store"
+    click_on "Switch Account"
+    within "#account-switcher" do
+      row = find("li", text: "Second Store")
+      within row do
+        click_on "Switch"
       end
     end
 
-    # Wait for the switch to happen
-    assert_text "Dashboard"
+    assert_text "Switched to Second Store"
 
     within "#desktop-sidebar-main-nav" do
       assert_text "Store Settings"

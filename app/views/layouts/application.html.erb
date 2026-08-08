@@ -58,17 +58,6 @@
               <%= render "layouts/navigation", mobile: true %>
 <% if authenticated? %>
                 <ul role="list" class="-mx-2 space-y-1 mt-auto">
-                  <% if Current.user&.admin? %>
-                    <li>
-                      <%= link_to accounts_path, class: nav_link_classes(:accounts) do %>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:accounts) %>">
-                          <path d="M10.34 15.84c-.68-.34-1.16-.94-1.34-1.63L8.75 13l-1.47-.49c-.69-.23-1.22-.73-1.46-1.4l-.12-.34c-.2-.55-.16-1.16.12-1.68l.38-.52c.38-.52.95-.84 1.58-.9l1.47-.13.34-1.36c.17-.69.64-1.25 1.28-1.52l.34-.12c.55-.2 1.16-.16 1.68.12l.52.38c.52.38.84.95.9 1.58l.13 1.47 1.36.34c.69.17 1.25.64 1.52 1.28l.12.34c.2.55.16 1.16-.12 1.68l-.38.52c-.38.52-.95.84-1.58.9l-1.47.13-.34 1.36c-.17.69-.64 1.25-1.28 1.52l-.34.12c-.55.2-1.16.16-1.68-.12l-.52-.38c-.52-.38-.84-.95-.9-1.58l-.13-1.47-1.36-.34Z" stroke-linecap="round" stroke-linejoin="round" />
-                          <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        Administration
-                      <% end %>
-                    </li>
-                  <% end %>
                   <% if show_account_switcher? %>
                     <li>
                       <button type="button" command="show-modal" commandfor="account-switcher" class="group flex w-full gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-indigo-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/5">
@@ -163,17 +152,6 @@
 
           <% if authenticated? %>
             <ul role="list" class="-mx-2 mt-auto space-y-1">
-              <% if Current.user&.admin? %>
-                <li>
-                  <%= link_to accounts_path, class: nav_link_classes(:accounts) do %>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:accounts) %>">
-                      <path d="M10.34 15.84c-.68-.34-1.16-.94-1.34-1.63L8.75 13l-1.47-.49c-.69-.23-1.22-.73-1.46-1.4l-.12-.34c-.2-.55-.16-1.16.12-1.68l.38-.52c.38-.52.95-.84 1.58-.9l1.47-.13.34-1.36c.17-.69.64-1.25 1.28-1.52l.34-.12c.55-.2 1.16-.16 1.68.12l.52.38c.52.38.84.95.9 1.58l.13 1.47 1.36.34c.69.17 1.25.64 1.52 1.28l.12.34c.2.55.16 1.16-.12 1.68l-.38.52c-.38.52-.95.84-1.58.9l-1.47.13-.34 1.36c-.17.69-.64 1.25-1.28 1.52l-.34.12c-.55.2-1.16.16-1.68-.12l-.52-.38c-.52-.38-.84-.95-.9-1.58l-.13-1.47-1.36-.34Z" stroke-linecap="round" stroke-linejoin="round" />
-                      <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    Administration
-                  <% end %>
-                </li>
-              <% end %>
               <% if show_account_switcher? %>
                 <li>
                   <button type="button" command="show-modal" commandfor="account-switcher" class="group flex w-full gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:text-indigo-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/5">
@@ -259,7 +237,8 @@
         </div>
         <% if Current.user&.admin? && Current.account %>
           <div class="mb-8 bg-indigo-600 px-4 py-2 rounded-lg text-white text-center text-sm font-medium shadow-sm flex items-center justify-center gap-4">
-            <span>Managing Account: <span class="font-bold"><%= Current.account.name %></span></span>
+            <span class="uppercase tracking-wide text-xs font-semibold text-indigo-100">Admin Support Mode</span>
+            <span>Acting on behalf of: <span class="font-bold"><%= Current.account.name %></span></span>
             <%= button_to "Leave Account", leave_account_path(Current.account), method: :post, class: "underline hover:text-indigo-100" %>
           </div>
         <% end %>

@@ -19,6 +19,7 @@ class SupportRequestsController < ApplicationController
     @support_request = SupportRequest.new(support_request_params)
     @support_request.account ||= Current.account
     @support_request.requester = Current.user
+    apply_business_override(@support_request) if Current.user.admin?
     authorize @support_request
 
     if @support_request.save
@@ -84,5 +85,15 @@ class SupportRequestsController < ApplicationController
     permitted = [ :message, :status ]
     permitted << :account_id if Current.user.admin?
     params.require(:support_request).permit(permitted)
+  end
+
+  def apply_business_override(support_request)
+    support_request.business_override = params.dig(:support_request, :business_override)
+    support_request.business_override_confirmation = params.dig(:support_request, :business_override_confirmation)
+
+    return unless support_request.business_override?
+    return unless support_request.business_override_confirmation?
+
+    support_request.apply_business_override!(confirmed_by: Current.user)
   end
 end

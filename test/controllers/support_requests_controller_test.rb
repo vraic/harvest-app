@@ -34,6 +34,101 @@ class SupportRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to support_requests_url
   end
 
+  test "admin can create business override support_request with immediate authorization" do
+    sign_in_as @admin
+
+    assert_difference("SupportRequest.count") do
+      post support_requests_url, params: {
+        support_request: {
+          account_id: @account.id,
+          message: "Telephone support authorization received",
+          business_override: "1",
+          business_override_confirmation: "1"
+        }
+      }
+    end
+
+    assert_redirected_to support_requests_url
+
+    support_request = SupportRequest.order(:id).last
+    assert support_request.accepted?
+    assert support_request.active?
+    assert support_request.received_outside_system?
+    assert support_request.authorization_received_outside_system?
+    assert_equal @admin.id, support_request.received_outside_system_confirmed_by_id
+    assert support_request.received_outside_system_confirmed_at.present?
+  end
+
+  test "admin business override requires explicit confirmation" do
+    sign_in_as @admin
+
+    assert_no_difference("SupportRequest.count") do
+      post support_requests_url, params: {
+        support_request: {
+          account_id: @account.id,
+          message: "Telephone support authorization received",
+          business_override: "1",
+          business_override_confirmation: "0"
+        }
+      }
+    end
+
+    assert_response :unprocessable_content
+    assert_match "Business override confirmation must be accepted", response.body
+  end
+
+  test "admin business override without migrated columns returns validation error instead of crashing" do
+    sign_in_as @admin
+
+    missing_columns = [
+      "received_outside_system",
+      "authorization_received_outside_system",
+      "received_outside_system_confirmed_at",
+      "received_outside_system_confirmed_by_id"
+    ]
+
+    original_column_names = SupportRequest.method(:column_names)
+    SupportRequest.define_singleton_method(:column_names) { original_column_names.call - missing_columns }
+
+    begin
+      assert_no_difference("SupportRequest.count") do
+        post support_requests_url, params: {
+          support_request: {
+            account_id: @account.id,
+            message: "Telephone support authorization received",
+            business_override: "1",
+            business_override_confirmation: "1"
+          }
+        }
+      end
+    ensure
+      SupportRequest.define_singleton_method(:column_names, original_column_names)
+    end
+
+    assert_response :unprocessable_content
+    assert_match "Business override fields are unavailable", response.body
+  end
+
+  test "store manager cannot force business override flags" do
+    sign_in_as @store_manager
+
+    assert_difference("SupportRequest.count") do
+      post support_requests_url, params: {
+        support_request: {
+          message: "Need access support",
+          business_override: "1",
+          business_override_confirmation: "1"
+        }
+      }
+    end
+
+    support_request = SupportRequest.order(:id).last
+    assert support_request.pending?
+    assert_not support_request.received_outside_system?
+    assert_not support_request.authorization_received_outside_system?
+    assert_nil support_request.received_outside_system_confirmed_by_id
+  end
+
   test "should accept support_request" do
     sign_in_as @admin
     patch support_request_url(@support_request), params: { support_request: { status: "accepted" } }

@@ -1,6 +1,7 @@
 class CheckoutsController < ApplicationController
   skip_before_action :set_tenant
   before_action :require_authentication
+  before_action :remove_inaccessible_cart_items!, only: [ :show, :create ]
 
   def show
     @cart = current_cart
@@ -22,6 +23,11 @@ class CheckoutsController < ApplicationController
 
   def create
     @cart = current_cart
+    if @cart.empty?
+      redirect_to shop_path, alert: "Your cart is empty."
+      return
+    end
+
     checkout_params = params[:checkout] || {}
     payment_method = params[:payment_method] || "cash_on_collection"
 
@@ -102,6 +108,28 @@ class CheckoutsController < ApplicationController
         }
       end
       render :show, status: :unprocessable_content
+    end
+  end
+
+  private
+
+  def remove_inaccessible_cart_items!
+    removed = false
+
+    current_cart.items.each do |item|
+      next if storefront_accessible_account?(item.account)
+
+      current_cart.remove_item(item.product.id)
+      removed = true
+    end
+
+    return unless removed
+
+    message = "Some cart items were removed because the store is not available for shopping."
+    if action_name == "show"
+      flash.now[:alert] = message
+    else
+      flash[:alert] = message
     end
   end
 end

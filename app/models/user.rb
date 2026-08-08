@@ -20,6 +20,7 @@ class User < ApplicationRecord
   has_many :orders, dependent: :nullify
   has_many :notes, dependent: :destroy
   has_many :support_requests, foreign_key: "requester_id", dependent: :destroy
+  has_many :notifications, as: :recipient, class_name: "Noticed::Notification", dependent: :destroy
 
   anonymise do
     overwrite do

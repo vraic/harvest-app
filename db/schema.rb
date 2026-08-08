@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_093000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_08_121559) do
   create_table "account_users", force: :cascade do |t|
     t.integer "account_id"
     t.datetime "archived_at"
@@ -344,6 +344,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_093000) do
     t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
+  create_table "noticed_events", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "notifications_count"
+    t.json "params"
+    t.bigint "record_id"
+    t.string "record_type"
+    t.string "type"
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_noticed_events_on_account_id"
+    t.index ["record_type", "record_id"], name: "index_noticed_events_on_record"
+  end
+
+  create_table "noticed_notifications", force: :cascade do |t|
+    t.bigint "account_id"
+    t.datetime "created_at", null: false
+    t.bigint "event_id", null: false
+    t.datetime "read_at", precision: nil
+    t.bigint "recipient_id", null: false
+    t.string "recipient_type", null: false
+    t.datetime "seen_at", precision: nil
+    t.string "type"
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_noticed_notifications_on_account_id"
+    t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
+    t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
+  end
+
   create_table "order_items", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "currency", default: "GBP", null: false
@@ -511,7 +539,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_093000) do
     t.datetime "created_at", null: false
     t.text "description"
     t.date "due_date"
-    t.integer "responsible_user_id", null: false
+    t.integer "responsible_user_id"
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_tasks_on_account_id"

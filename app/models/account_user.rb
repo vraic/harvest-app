@@ -7,6 +7,7 @@ class AccountUser < ApplicationRecord
 
   scope :active, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
+  scope :staff, -> { where(user_role: [ :store_manager, :store_staff ]) }
 
   def archived?
     archived_at.present?

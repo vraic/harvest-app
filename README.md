@@ -8,7 +8,7 @@ Harvest is open-source software: anyone can use this codebase and deploy it wher
 
 ## What Is Harvest?
 
-Harvest is an open source technology platform designed for the island's agricultural sector. It provides practical digital tools shaped by farmers direct input, respects everyone's data, and runs on island-based infrastructure.
+Harvest is an open source technology platform designed for the island's agricultural sector. It provides practical digital tools shaped by farmers direct input, respects everyone's data, and is designed to run on island-based infrastructure.
 
 We're currently at proof-of-concept stage. The codebase is live, CI pipelines are green, development is active and we have staging environments running. We're seeking funding to continue serving the island's farming community.
 

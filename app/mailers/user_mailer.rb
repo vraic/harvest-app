@@ -13,6 +13,6 @@ class UserMailer < ApplicationMailer
   def account_invitation(user, account)
     @user = user
     @account = account
-    mail to: user.email_address, subject: "You've been invited to #{@account.name} on Vraic OS"
+    mail to: user.email_address, subject: "You've been invited to #{@account.name} on Harvest"
   end
 end

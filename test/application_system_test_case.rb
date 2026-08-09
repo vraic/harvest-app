@@ -59,20 +59,26 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
     # Use the Accounts page for admins to Join
     if is_admin_user
-      visit accounts_path
-      within "#accounts" do
-        row = find("tr", text: name)
-        if row.has_button?("Join Account")
+      begin
+        admin_select_retries ||= 0
+        visit accounts_path
+        within "#accounts" do
+          row = find("tr", text: name, match: :first)
           within row do
-            click_on "Join Account"
+            if page.has_button?("Join Account", wait: 0)
+              click_on "Join Account"
+              # Joining redirects to dashboard
+            elsif page.has_button?("Leave Account", wait: 0)
+              # Already joined
+              visit dashboard_path
+            else
+              flunk "Could not switch to #{name}: no Join/Leave control found for that account row"
+            end
           end
-          # Joining redirects to dashboard
-        elsif row.has_button?("Leave Account")
-          # Already joined
-          visit dashboard_path
-        else
-          flunk "Could not switch to #{name}: no Join/Leave control found for that account row"
         end
+      rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
+        retry if (admin_select_retries += 1) < 3
+        raise
       end
 
       assert_selector "div", text: "Acting on behalf of: #{name}"

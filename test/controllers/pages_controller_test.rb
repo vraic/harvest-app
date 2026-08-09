@@ -5,7 +5,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    assert_select "h1", "Operations software for the island's food network."
+    assert_select "h1", "One place to run daily farm operations."
     assert_select "nav[aria-label='Homepage'] a[href='#features']", text: "Features"
     assert_select "nav[aria-label='Homepage'] a[href='#platform']", text: "Platform"
     assert_select "nav[aria-label='Homepage'] a[href='#overview']", text: "Overview"

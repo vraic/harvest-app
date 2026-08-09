@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "vraic.je" %></title>
+    <title><%= content_for(:title) || "harvest.je" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Vraic OS">
+    <meta name="application-name" content="Harvest">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -66,8 +66,8 @@
               <% sidebar_unread_notifications_count = sidebar_staff_navigation ? unread_notifications_count : 0 %>
               <div class="relative flex h-16 shrink-0 items-center justify-between">
                 <div class="flex items-center">
-                  <%= image_tag "icon.svg", alt: "Vraic", class: "h-8 w-auto dark:hidden" %>
-                  <%= image_tag "icon.svg", alt: "Vraic", class: "h-8 w-auto not-dark:hidden" %>
+                  <%= image_tag "icon.svg", alt: "Harvest", class: "h-8 w-auto dark:hidden" %>
+                  <%= image_tag "icon.svg", alt: "Harvest", class: "h-8 w-auto not-dark:hidden" %>
                 </div>
                 <% if sidebar_staff_navigation %>
                   <%= link_to notifications_path, id: "mobile-sidebar-notifications-link", class: nav_icon_button_classes(:notifications), aria: { label: "Notifications" } do %>
@@ -175,8 +175,8 @@
         <% sidebar_unread_notifications_count = sidebar_staff_navigation ? unread_notifications_count : 0 %>
         <div class="flex h-16 shrink-0 items-center justify-between">
           <div class="flex items-center">
-            <%= image_tag "icon.svg", alt: "Vraic", class: "h-8 w-auto dark:hidden" %>
-            <%= image_tag "icon.svg", alt: "Vraic", class: "h-8 w-auto not-dark:hidden" %>
+            <%= image_tag "icon.svg", alt: "Harvest", class: "h-8 w-auto dark:hidden" %>
+            <%= image_tag "icon.svg", alt: "Harvest", class: "h-8 w-auto not-dark:hidden" %>
           </div>
           <% if sidebar_staff_navigation %>
             <%= link_to notifications_path, id: "desktop-sidebar-notifications-link", class: nav_icon_button_classes(:notifications), aria: { label: "Notifications" } do %>

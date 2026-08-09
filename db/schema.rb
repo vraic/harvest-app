@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_180000) do
   create_table "account_users", force: :cascade do |t|
     t.integer "account_id"
     t.datetime "archived_at"
@@ -27,11 +27,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
     t.datetime "created_at", null: false
     t.string "gocardless_access_token"
     t.integer "gocardless_mode", default: 0
+    t.string "inactive_customer_retention_action"
+    t.string "inactive_supplier_retention_action"
+    t.integer "inactivity_retention_years_override"
     t.boolean "is_b2b", default: true, null: false
     t.boolean "is_b2c", default: false, null: false
     t.boolean "is_internal", default: false, null: false
     t.string "name"
     t.integer "owner_id"
+    t.integer "soft_delete_retention_days_override"
     t.datetime "updated_at", null: false
   end
 
@@ -208,6 +212,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
     t.string "gocardless_mandate_id"
     t.string "name"
     t.string "phone"
+    t.boolean "retention_hold", default: false, null: false
+    t.string "retention_hold_reason"
+    t.date "retention_hold_until"
     t.datetime "subscribed_at"
     t.boolean "subscribed_to_newsletter", default: false, null: false
     t.datetime "updated_at", null: false
@@ -215,7 +222,57 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
     t.index ["account_id"], name: "index_customers_on_account_id"
     t.index ["customer_account_id"], name: "index_customers_on_customer_account_id"
     t.index ["deleted_at"], name: "index_customers_on_deleted_at"
+    t.index ["retention_hold"], name: "index_customers_on_retention_hold"
     t.index ["user_id"], name: "index_customers_on_user_id"
+  end
+
+  create_table "data_retention_events", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.string "action_name", null: false
+    t.integer "actor_id"
+    t.datetime "created_at", null: false
+    t.text "details"
+    t.string "event_type", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "created_at"], name: "index_data_retention_events_on_account_id_and_created_at"
+    t.index ["account_id"], name: "index_data_retention_events_on_account_id"
+    t.index ["actor_id"], name: "index_data_retention_events_on_actor_id"
+    t.index ["event_type"], name: "index_data_retention_events_on_event_type"
+    t.index ["record_type", "record_id"], name: "index_data_retention_events_on_record_type_and_record_id"
+  end
+
+  create_table "data_subject_requests", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.datetime "acted_at"
+    t.integer "acted_by_id"
+    t.datetime "completed_at"
+    t.text "completion_evidence"
+    t.datetime "created_at", null: false
+    t.text "decision_summary"
+    t.date "due_on", null: false
+    t.text "exemption_reason"
+    t.boolean "identity_verified", default: false, null: false
+    t.text "legal_basis"
+    t.integer "offboarding_action", default: 0, null: false
+    t.string "offboarding_reason"
+    t.text "request_summary", null: false
+    t.integer "request_type", default: 0, null: false
+    t.datetime "requested_at", null: false
+    t.integer "requester_id", null: false
+    t.integer "status", default: 0, null: false
+    t.string "subject_email"
+    t.string "subject_name"
+    t.integer "subject_user_id"
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "due_on"], name: "index_data_subject_requests_on_account_id_and_due_on"
+    t.index ["account_id", "status"], name: "index_data_subject_requests_on_account_id_and_status"
+    t.index ["account_id"], name: "index_data_subject_requests_on_account_id"
+    t.index ["acted_by_id"], name: "index_data_subject_requests_on_acted_by_id"
+    t.index ["request_type"], name: "index_data_subject_requests_on_request_type"
+    t.index ["requester_id"], name: "index_data_subject_requests_on_requester_id"
+    t.index ["subject_user_id"], name: "index_data_subject_requests_on_subject_user_id"
   end
 
   create_table "inventory_group_customers", force: :cascade do |t|
@@ -497,6 +554,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
     t.string "email_address"
     t.string "name"
     t.string "phone"
+    t.boolean "retention_hold", default: false, null: false
+    t.string "retention_hold_reason"
+    t.date "retention_hold_until"
     t.datetime "subscribed_at"
     t.boolean "subscribed_to_newsletter", default: false, null: false
     t.integer "supplier_account_id"
@@ -504,6 +564,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
     t.integer "user_id"
     t.index ["account_id"], name: "index_suppliers_on_account_id"
     t.index ["deleted_at"], name: "index_suppliers_on_deleted_at"
+    t.index ["retention_hold"], name: "index_suppliers_on_retention_hold"
     t.index ["supplier_account_id"], name: "index_suppliers_on_supplier_account_id"
     t.index ["user_id"], name: "index_suppliers_on_user_id"
   end
@@ -578,6 +639,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
   add_foreign_key "customers", "accounts"
   add_foreign_key "customers", "accounts", column: "customer_account_id"
   add_foreign_key "customers", "users"
+  add_foreign_key "data_retention_events", "accounts"
+  add_foreign_key "data_retention_events", "users", column: "actor_id"
+  add_foreign_key "data_subject_requests", "accounts"
+  add_foreign_key "data_subject_requests", "users", column: "acted_by_id"
+  add_foreign_key "data_subject_requests", "users", column: "requester_id"
+  add_foreign_key "data_subject_requests", "users", column: "subject_user_id"
   add_foreign_key "inventory_group_customers", "customers"
   add_foreign_key "inventory_group_customers", "inventory_groups"
   add_foreign_key "inventory_group_suppliers", "inventory_groups"

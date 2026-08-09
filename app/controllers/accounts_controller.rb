@@ -133,6 +133,8 @@ class AccountsController < ApplicationController
     def account_params
       params.require(:account).permit(:name, :address, :owner_id, :header_image, :is_b2c, :is_b2b, :is_internal,
         :gocardless_access_token, :gocardless_mode,
+        :inactivity_retention_years_override, :soft_delete_retention_days_override,
+        :inactive_customer_retention_action, :inactive_supplier_retention_action,
         loyalty_program_attributes: [ :id, :points_to_currency_ratio, :currency_to_points_ratio, :active ])
     end
 end

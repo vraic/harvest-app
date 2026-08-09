@@ -1,0 +1,58 @@
+<% content_for :title, "Data Rights Request" %>
+
+<div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+  <div class="flex items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Data Rights Request</h1>
+      <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Requested by <%= @data_subject_request.requester.name %> · Due <%= @data_subject_request.due_on %></p>
+    </div>
+    <%= link_to "Back", data_subject_requests_path, class: "text-sm font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" %>
+  </div>
+
+  <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-gray-900">
+    <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Type</dt>
+        <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= @data_subject_request.request_type.humanize %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Status</dt>
+        <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= @data_subject_request.status.humanize %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Subject</dt>
+        <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= @data_subject_request.subject_name.presence || @data_subject_request.subject_user&.name || "Unknown" %></dd>
+      </div>
+      <div>
+        <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Identity verified</dt>
+        <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= @data_subject_request.identity_verified? ? "Yes" : "No" %></dd>
+      </div>
+    </dl>
+
+    <div class="mt-6 border-t border-gray-200 pt-6 dark:border-white/10">
+      <h2 class="text-base font-semibold text-gray-900 dark:text-white">Request details</h2>
+      <p class="mt-2 whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300"><%= @data_subject_request.request_summary %></p>
+    </div>
+
+    <% if @data_subject_request.evidence_files.attached? %>
+      <div class="mt-6 border-t border-gray-200 pt-6 dark:border-white/10">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white">Evidence files</h2>
+        <ul role="list" class="mt-3 divide-y divide-gray-100 rounded-md border border-gray-200 dark:divide-gray-800 dark:border-gray-700">
+          <% @data_subject_request.evidence_files.each do |file| %>
+            <li class="flex items-center justify-between py-3 pl-4 pr-5 text-sm/6">
+              <div class="flex min-w-0 flex-1 items-center gap-2">
+                <span class="truncate text-gray-900 dark:text-white"><%= file.filename %></span>
+                <span class="shrink-0 text-gray-400"><%= number_to_human_size file.byte_size %></span>
+              </div>
+              <%= link_to "Download", rails_blob_path(file, disposition: "attachment"), class: "font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400" %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-gray-900">
+    <%= render "form", data_subject_request: @data_subject_request, submit_label: "Update request" %>
+  </div>
+</div>

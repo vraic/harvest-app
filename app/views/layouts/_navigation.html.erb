@@ -31,6 +31,24 @@
               Support Requests
             <% end %>
           </li>
+          <li>
+            <%= link_to data_subject_requests_path, class: nav_link_classes(:data_subject_requests) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:data_subject_requests) %>">
+                <path d="M7.5 3.75h6.75L18 7.5v12.75a.75.75 0 0 1-.75.75H6.75A.75.75 0 0 1 6 20.25V4.5a.75.75 0 0 1 .75-.75Z" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M14.25 3.75V7.5H18M8.25 11.25h7.5M8.25 14.25h7.5M8.25 17.25h4.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Data Rights Requests
+            <% end %>
+          </li>
+          <li>
+            <%= link_to data_retention_events_path, class: nav_link_classes(:data_retention_events) do %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="<%= nav_icon_classes(:data_retention_events) %>">
+                <path d="M6 3.75h12A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75Z" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M7.5 8.25h9M7.5 12h6M7.5 15.75h4.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Data Retention Events
+            <% end %>
+          </li>
         <% elsif staff_navigation %>
           <li>
             <%= link_to tasks_path, class: nav_link_classes(:tasks) do %>
@@ -94,6 +112,16 @@
               <li>
                 <%= link_to loyalty_cards_path, class: nav_link_classes(:loyalty, "pl-3") do %>
                   Loyalty Cards
+                <% end %>
+              </li>
+              <li>
+                <%= link_to data_subject_requests_path, class: nav_link_classes(:data_subject_requests, "pl-3") do %>
+                  Data Rights Requests
+                <% end %>
+              </li>
+              <li>
+                <%= link_to data_retention_events_path, class: nav_link_classes(:data_retention_events, "pl-3") do %>
+                  Data Retention Events
                 <% end %>
               </li>
               <% if show_staff_shop_navigation? %>

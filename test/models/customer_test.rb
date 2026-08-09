@@ -43,6 +43,35 @@ class CustomerTest < ActiveSupport::TestCase
     assert_includes customer.errors[:name], "can't be blank"
   end
 
+  test "retention hold requires non-past keep until date" do
+    customer = Customer.new(
+      account: @account,
+      name: "Retention Customer",
+      retention_hold: true,
+      retention_hold_until: 1.day.ago.to_date
+    )
+
+    assert_not customer.valid?
+    assert_includes customer.errors[:retention_hold_until], "must be today or later"
+  end
+
+  test "clears retention hold metadata when hold is disabled" do
+    customer = customers(:one)
+
+    customer.update!(
+      retention_hold: true,
+      retention_hold_until: 1.year.from_now.to_date,
+      retention_hold_reason: "Minor"
+    )
+
+    customer.update!(retention_hold: false)
+
+    customer.reload
+    assert_not customer.retention_hold
+    assert_nil customer.retention_hold_until
+    assert_nil customer.retention_hold_reason
+  end
+
   test "ensuring account user while another tenant is active does not cause RecordNotUnique" do
     user = users(:one)
     account_one = accounts(:one)

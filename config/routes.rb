@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  get "guides" => "guides#index", as: :guides
+  get "guides/*slug" => "guides#show", as: :guide_page
+  get "docs" => redirect("/guides")
+  get "docs/*slug" => redirect { |params, request|
+    destination = "/guides/#{params[:slug]}"
+    request.query_string.present? ? "#{destination}?#{request.query_string}" : destination
+  }
+
   resources :loyalty_cards, only: [ :index, :create, :show ] do
     member do
       get :wallet
@@ -27,6 +35,8 @@ Rails.application.routes.draw do
   end
   resources :suppliers do
     member do
+      patch :anonymise
+      patch :update_retention_hold
       get :inventory
     end
   end
@@ -73,6 +83,8 @@ Rails.application.routes.draw do
   resources :inventory_groups
   resources :customers do
     member do
+      patch :anonymise
+      patch :update_retention_hold
       delete :really_destroy
     end
   end
@@ -90,12 +102,15 @@ Rails.application.routes.draw do
     end
     resources :comments, controller: "support_request_comments", only: %i[ create update ]
   end
+  resources :data_subject_requests, only: %i[ index show new create update ]
+  resources :data_retention_events, only: %i[ index ]
   # Auditing
   mount Audits1984::Engine => "/console"
 
   # Authentication
   resources :users do
     member do
+      patch :anonymise
       delete :really_destroy
     end
   end

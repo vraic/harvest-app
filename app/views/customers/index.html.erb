@@ -1,19 +1,27 @@
 <% content_for :title, "Customers" %>
 
 <div class="w-full">
-  
+
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Customers</h1>
     <%= link_to "New customer", new_customer_path, class: primary_button_class %>
   </div>
 
+  <div class="mt-4 flex items-center gap-3 text-sm font-medium">
+    <%= link_to "Active", customers_path(filter: params[:filter].presence), class: params[:view] == "archived" ? "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" : "text-indigo-600 dark:text-indigo-400" %>
+    <span class="text-gray-400">|</span>
+    <%= link_to "Archived", customers_path(view: "archived"), class: params[:view] == "archived" ? "text-indigo-600 dark:text-indigo-400" : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" %>
+  </div>
+
   <div class="mt-8">
     <%= form_with url: customers_path, method: :get, class: "flex gap-2", id: "customer-search-form" do |f| %>
+      <%= hidden_field_tag :view, params[:view] if params[:view].present? %>
+      <%= hidden_field_tag :filter, params[:filter] if params[:filter].present? %>
       <div class="grow">
         <%= f.text_field :query, value: params[:query], placeholder: "Search customers by name, email or phone...", class: input_class %>
       </div>
       <%= f.submit "Search", class: secondary_button_class %>
-      <%= link_to "Clear", customers_path, class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" if params[:query].present? %>
+      <%= link_to "Clear", customers_path(view: params[:view], filter: params[:filter]), class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" if params[:query].present? %>
     <% end %>
   </div>
 
@@ -40,7 +48,7 @@
                 </td>
               <% end %>
               <td class="<%= td_class %>">
-                <%= link_to customer.name, customer, class: "text-indigo-600 hover:text-indigo-900 font-semibold" %>
+                <%= link_to customer.name, customer_path(customer, view: params[:view]), class: "text-indigo-600 hover:text-indigo-900 font-semibold" %>
               </td>
               <td class="<%= td_class %>">
                 <% if customer.customer_account_id.present? %>
@@ -59,7 +67,7 @@
           <% end %>
         <% else %>
           <tr>
-            <td colspan="4" class="<%= td_class %> text-center py-10">No customers found.</td>
+            <td colspan="<%= Current.account.nil? && Current.user&.admin? ? 5 : 4 %>" class="<%= td_class %> text-center py-10">No customers found.</td>
           </tr>
         <% end %>
       </tbody>

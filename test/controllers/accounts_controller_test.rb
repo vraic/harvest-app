@@ -37,7 +37,24 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update account" do
-    patch account_url(@account), params: { account: { address: @account.address, name: @account.name, owner_id: @account.owner_id } }
+    patch account_url(@account), params: {
+      account: {
+        address: @account.address,
+        name: @account.name,
+        owner_id: @account.owner_id,
+        inactivity_retention_years_override: 6,
+        soft_delete_retention_days_override: 120,
+        inactive_customer_retention_action: "archive",
+        inactive_supplier_retention_action: "none"
+      }
+    }
+
+    @account.reload
+
+    assert_equal 6, @account.inactivity_retention_years_override
+    assert_equal 120, @account.soft_delete_retention_days_override
+    assert_equal "archive", @account.inactive_customer_retention_action
+    assert_equal "none", @account.inactive_supplier_retention_action
     assert_redirected_to account_url(@account)
   end
 

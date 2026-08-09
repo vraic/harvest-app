@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
   layout :resolve_layout
-  before_action :set_user, only: %i[ show edit update destroy really_destroy ]
+  before_action :set_user, only: %i[ show edit update destroy anonymise really_destroy ]
 
   # GET /users or /users.json
   def index
@@ -74,7 +74,22 @@ class UsersController < ApplicationController
     @user.destroy!
 
     respond_to do |format|
-      format.html { redirect_to users_path, notice: "User was successfully destroyed.", status: :see_other }
+      format.html { redirect_to users_path, notice: "User was archived.", status: :see_other }
+      format.json { head :no_content }
+    end
+  end
+
+  def anonymise
+    if @user.admin?
+      redirect_to users_path, alert: "Cannot anonymise admin users."
+      return
+    end
+
+    @user.anonymise!
+    @user.destroy! unless @user.deleted?
+
+    respond_to do |format|
+      format.html { redirect_to users_path, notice: "User was anonymised.", status: :see_other }
       format.json { head :no_content }
     end
   end

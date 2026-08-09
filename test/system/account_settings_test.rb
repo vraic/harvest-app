@@ -67,10 +67,31 @@ class AccountSettingsTest < ApplicationSystemTestCase
     assert_field "Access Token", with: "short"
   end
 
+  test "updating store retention settings" do
+    visit edit_account_path(@account)
+
+    click_on "Data Retention"
+
+    fill_in "Inactive record retention (years)", with: 8
+    fill_in "Archived record purge window (days)", with: 180
+    select "Archive record", from: "Inactive customer action"
+    select "Do nothing (manual review)", from: "Inactive supplier action"
+
+    click_on "Save Retention Settings"
+
+    assert_text "Account was successfully updated."
+
+    @account.reload
+    assert_equal 8, @account.inactivity_retention_years_override
+    assert_equal 180, @account.soft_delete_retention_days_override
+    assert_equal "archive", @account.inactive_customer_retention_action
+    assert_equal "none", @account.inactive_supplier_retention_action
+  end
+
   test "account settings tabs use consistent panel and table styles" do
     visit edit_account_path(@account)
 
-    [ "General", "Loyalty Program", "Payments", "Stores We Supply", "Staff" ].each do |tab_name|
+    [ "General", "Loyalty Program", "Payments", "Data Retention", "Stores We Supply", "Staff" ].each do |tab_name|
       click_on tab_name
 
       assert_selector :xpath, "//div[contains(@class,'rounded-lg') and contains(@class,'bg-white') and contains(@class,'dark:bg-gray-800')]"

@@ -1,17 +1,51 @@
 <% content_for :title, "Showing customer" %>
 
+<% showing_archived = params[:view] == "archived" || @customer.deleted? %>
+<% back_path = showing_archived ? customers_path(view: "archived") : customers_path %>
+
 <div class="md:w-2/3 w-full">
-  
+
   <h1 class="font-bold text-4xl">Showing customer</h1>
 
   <%= render @customer %>
 
+  <div class="<%= table_container_class("p-6 mt-6") %>">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Retention hold</h2>
+    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1 mb-4">Mark this record to prevent automated retention actions until the hold expires or is removed.</p>
+
+    <%= form_with model: @customer, url: update_retention_hold_customer_path(@customer, view: (showing_archived ? "archived" : nil)), method: :patch, class: "space-y-4" do |form| %>
+      <div>
+        <label class="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-white">
+          <%= form.check_box :retention_hold, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" %>
+          Keep this customer record
+        </label>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <%= form.label :retention_hold_until, "Keep until (optional)", class: label_class("mb-1") %>
+          <%= form.date_field :retention_hold_until, class: input_class(@customer.errors[:retention_hold_until].any?) %>
+        </div>
+
+        <div>
+          <%= form.label :retention_hold_reason, "Reason (optional)", class: label_class("mb-1") %>
+          <%= form.text_field :retention_hold_reason, class: input_class(@customer.errors[:retention_hold_reason].any?), placeholder: "e.g. Minor, retain 7 years after age 18" %>
+        </div>
+      </div>
+
+      <%= form.submit "Save retention hold", class: primary_button_class %>
+    <% end %>
+  </div>
+
   <div class="flex flex-wrap gap-2 mt-4">
-    <%= link_to "Edit this customer", edit_customer_path(@customer), class: secondary_button_class("w-full sm:w-auto text-center") %>
-    <%= link_to "Back to customers", customers_path, class: secondary_button_class("w-full sm:w-auto text-center") %>
-    <%= button_to "Destroy this customer", @customer, method: :delete, form_class: "w-full sm:w-auto", class: danger_button_class("w-full"), data: { turbo_confirm: "Are you sure?" } %>
+    <% unless @customer.deleted? %>
+      <%= link_to "Edit this customer", edit_customer_path(@customer), class: secondary_button_class("w-full sm:w-auto text-center") %>
+      <%= button_to "Archive this customer", customer_path(@customer), method: :delete, form_class: "w-full sm:w-auto", class: danger_button_class("w-full"), data: { turbo_confirm: "Are you sure?" } %>
+    <% end %>
+    <%= link_to "Back to customers", back_path, class: secondary_button_class("w-full sm:w-auto text-center") %>
+    <%= button_to "Anonymise this customer", anonymise_customer_path(@customer, view: (showing_archived ? "archived" : nil)), method: :patch, form_class: "w-full sm:w-auto", class: danger_button_class("w-full bg-amber-700 hover:bg-amber-600"), data: { turbo_confirm: "Are you sure? This will irreversibly anonymise personal data." } %>
     <% if policy(@customer).really_destroy? %>
-      <%= button_to "Really Delete", really_destroy_customer_path(@customer), method: :delete, form_class: "w-full sm:w-auto", class: danger_button_class("w-full bg-red-800 hover:bg-red-700"), data: { turbo_confirm: "Are you sure? This is permanent." } %>
+      <%= button_to "Really Delete", really_destroy_customer_path(@customer, view: (showing_archived ? "archived" : nil)), method: :delete, form_class: "w-full sm:w-auto", class: danger_button_class("w-full bg-red-800 hover:bg-red-700"), data: { turbo_confirm: "Are you sure? This is permanent." } %>
     <% end %>
   </div>
 </div>

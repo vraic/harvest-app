@@ -1,0 +1,126 @@
+<%= form_with model: data_subject_request, class: "space-y-8" do |f| %>
+  <% if data_subject_request.errors.any? %>
+    <div class="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <p class="font-semibold">Please correct the following:</p>
+      <ul class="mt-2 list-disc pl-5">
+        <% data_subject_request.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if Current.user.admin? %>
+    <div>
+      <%= f.label :account_id, "Account", class: label_class %>
+      <div class="mt-2">
+        <%= f.collection_select :account_id, @available_accounts, :id, :name, { prompt: "Select account" }, { class: input_class(data_subject_request.errors[:account].any?) } %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div>
+      <%= f.label :request_type, "Request type", class: label_class %>
+      <div class="mt-2">
+        <%= f.select :request_type, options_for_select(DataSubjectRequest.request_types.keys.map { |key| [key.humanize, key] }, data_subject_request.request_type), {}, class: input_class(data_subject_request.errors[:request_type].any?) %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :due_on, "Due date", class: label_class %>
+      <div class="mt-2">
+        <%= f.date_field :due_on, class: input_class(data_subject_request.errors[:due_on].any?) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div>
+      <%= f.label :subject_user_id, "Subject user", class: label_class %>
+      <div class="mt-2">
+        <%= f.collection_select :subject_user_id, @available_subject_users, :id, :name, { include_blank: "External / not linked" }, { class: input_class(data_subject_request.errors[:subject_user].any?) } %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :legal_basis, "Lawful basis", class: label_class %>
+      <div class="mt-2">
+        <%= f.select :legal_basis, options_for_select(DataSubjectRequest.lawful_basis_options_for_select, data_subject_request.legal_basis), { include_blank: "Select lawful basis" }, class: input_class(data_subject_request.errors[:legal_basis].any?) %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :request_summary, "Request summary", class: label_class %>
+    <div class="mt-2">
+      <%= f.text_area :request_summary, rows: 4, class: input_class(data_subject_request.errors[:request_summary].any?) %>
+    </div>
+  </div>
+
+  <% if data_subject_request.persisted? && policy(data_subject_request).update? %>
+    <div class="rounded-xl border border-gray-200 bg-gray-50 p-6 dark:border-white/10 dark:bg-white/5">
+      <h2 class="text-base font-semibold text-gray-900 dark:text-white">Review and completion</h2>
+
+      <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div>
+          <%= f.label :status, class: label_class %>
+          <div class="mt-2">
+            <%= f.select :status, options_for_select(DataSubjectRequest.statuses.keys.map { |key| [key.humanize, key] }, data_subject_request.status), {}, class: input_class(data_subject_request.errors[:status].any?) %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :offboarding_action, class: label_class %>
+          <div class="mt-2">
+            <%= f.select :offboarding_action, options_for_select(DataSubjectRequest.offboarding_actions.keys.map { |key| [key.humanize, key] }, data_subject_request.offboarding_action), {}, class: input_class(data_subject_request.errors[:offboarding_action].any?) %>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <%= f.label :decision_summary, class: label_class %>
+        <div class="mt-2">
+          <%= f.text_area :decision_summary, rows: 3, class: input_class(data_subject_request.errors[:decision_summary].any?) %>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <%= f.label :completion_evidence, class: label_class %>
+        <div class="mt-2">
+          <%= f.text_area :completion_evidence, rows: 3, class: input_class(data_subject_request.errors[:completion_evidence].any?) %>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <%= f.label :evidence_files, "Evidence files", class: label_class %>
+        <div class="mt-2">
+          <%= f.file_field :evidence_files, multiple: true, class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-gray-700 dark:file:text-gray-300" %>
+        </div>
+      </div>
+
+      <% if data_subject_request.evidence_files.attached? %>
+        <div class="mt-6">
+          <p class="text-sm font-medium text-gray-900 dark:text-white">Existing evidence files</p>
+          <ul class="mt-2 list-disc pl-5 text-sm text-gray-700 dark:text-gray-300">
+            <% data_subject_request.evidence_files.each do |file| %>
+              <li>
+                <%= link_to file.filename, rails_blob_path(file, disposition: "attachment"), class: "font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400" %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <label class="mt-6 inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+        <%= check_box_tag :complete_request, "1", false, class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
+        Mark as completed now
+      </label>
+    </div>
+  <% end %>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit submit_label, class: primary_button_class %>
+    <%= link_to "Back", data_subject_requests_path, class: "text-sm font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" %>
+  </div>
+<% end %>

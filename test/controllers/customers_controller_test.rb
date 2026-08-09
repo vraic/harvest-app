@@ -57,6 +57,51 @@ class CustomersControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil Customer.with_deleted.find_by(id: @customer.id).deleted_at
   end
 
+  test "should show archived customers when requested" do
+    delete customer_url(@customer)
+
+    get customers_url(view: "archived")
+
+    assert_response :success
+    assert_match Customer.with_deleted.find(@customer.id).name, response.body
+  end
+
+  test "should show archived customer record" do
+    delete customer_url(@customer)
+
+    get customer_url(@customer, view: "archived")
+
+    assert_response :success
+    assert_match Customer.with_deleted.find(@customer.id).name, response.body
+  end
+
+  test "should allow anonymising archived customer" do
+    delete customer_url(@customer)
+
+    patch anonymise_customer_url(@customer, view: "archived")
+
+    assert_redirected_to customers_url(view: "archived")
+    assert Customer.with_deleted.find(@customer.id).deleted?
+  end
+
+  test "should update customer retention hold" do
+    assert_difference("DataRetentionEvent.count", 1) do
+      patch update_retention_hold_customer_url(@customer), params: {
+        customer: {
+          retention_hold: "1",
+          retention_hold_until: 1.year.from_now.to_date,
+          retention_hold_reason: "Minor"
+        }
+      }
+    end
+
+    assert_redirected_to customer_url(@customer)
+    @customer.reload
+    assert @customer.retention_hold
+    assert_equal "Minor", @customer.retention_hold_reason
+    assert_equal "manual_hold_enabled", DataRetentionEvent.order(:id).last.event_type
+  end
+
   test "should really destroy customer as account admin" do
     assert_difference("Customer.count", -1) do
       delete really_destroy_customer_url(@customer)

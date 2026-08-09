@@ -100,6 +100,24 @@ class SuppliersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Updated", @supplier.reload.name
   end
 
+  test "should update supplier retention hold" do
+    assert_difference("DataRetentionEvent.count", 1) do
+      patch update_retention_hold_supplier_url(@supplier), params: {
+        supplier: {
+          retention_hold: "1",
+          retention_hold_until: 1.year.from_now.to_date,
+          retention_hold_reason: "Legal hold"
+        }
+      }
+    end
+
+    assert_redirected_to supplier_url(@supplier)
+    @supplier.reload
+    assert @supplier.retention_hold
+    assert_equal "Legal hold", @supplier.retention_hold_reason
+    assert_equal "manual_hold_enabled", DataRetentionEvent.order(:id).last.event_type
+  end
+
   test "should destroy supplier" do
     assert_difference("Supplier.count", -1) do
       delete supplier_url(@supplier)

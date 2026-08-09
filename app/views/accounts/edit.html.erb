@@ -9,6 +9,7 @@
       <%= link_to "General", edit_account_path(@account, tab: "general"), class: "#{@tab == 'general' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'} whitespace-nowrap border-b-2 py-3 px-1 text-sm font-medium" %>
       <%= link_to "Loyalty Program", edit_account_path(@account, tab: "loyalty"), class: "#{@tab == 'loyalty' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'} whitespace-nowrap border-b-2 py-3 px-1 text-sm font-medium" %>
       <%= link_to "Payments", edit_account_path(@account, tab: "payments"), class: "#{@tab == 'payments' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'} whitespace-nowrap border-b-2 py-3 px-1 text-sm font-medium" %>
+      <%= link_to "Data Retention", edit_account_path(@account, tab: "retention"), class: "#{@tab == 'retention' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'} whitespace-nowrap border-b-2 py-3 px-1 text-sm font-medium" %>
       <%= link_to "Stores We Supply", edit_account_path(@account, tab: "stores_we_supply"), class: "#{@tab == 'stores_we_supply' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'} whitespace-nowrap border-b-2 py-3 px-1 text-sm font-medium" %>
       <% if can_manage_staff %>
         <%= link_to "Staff", edit_account_path(@account, tab: "staff"), class: "#{@tab == 'staff' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'} whitespace-nowrap border-b-2 py-3 px-1 text-sm font-medium" %>
@@ -23,6 +24,8 @@
       <%= render "loyalty_form", account: @account %>
     <% elsif @tab == "payments" %>
       <%= render "payments_form", account: @account %>
+    <% elsif @tab == "retention" %>
+      <%= render "retention_form", account: @account %>
     <% elsif @tab == "stores_we_supply" %>
       <%= render "stores_we_supply", account: @account %>
     <% elsif @tab == "staff" && can_manage_staff %>

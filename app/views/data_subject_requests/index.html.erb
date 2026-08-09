@@ -1,0 +1,50 @@
+<% content_for :title, "Data Rights Requests" %>
+
+<div class="w-full">
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="font-bold text-4xl">Data Rights Requests</h1>
+      <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Track requests and evidence for individual rights handling.</p>
+    </div>
+    <%= link_to "New request", new_data_subject_request_path, class: primary_button_class %>
+  </div>
+
+  <div class="mt-8 <%= table_container_class %>">
+    <table class="<%= table_class %>">
+      <thead class="<%= thead_class %>">
+        <tr>
+          <th class="<%= th_class %>">Subject</th>
+          <th class="<%= th_class %>">Type</th>
+          <th class="<%= th_class %>">Status</th>
+          <th class="<%= th_class %>">Due</th>
+          <th class="<%= th_class %>">Requested by</th>
+          <th class="<%= th_class %>">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="<%= tbody_class %>">
+        <% if @data_subject_requests.any? %>
+          <% @data_subject_requests.each do |request| %>
+            <tr class="<%= tr_class %>">
+              <td class="<%= td_class %>"><%= request.subject_name.presence || request.subject_user&.name || "Unknown" %></td>
+              <td class="<%= td_class %>"><%= request.request_type.humanize %></td>
+              <td class="<%= td_class %>"><%= request.status.humanize %></td>
+              <td class="<%= td_class %>"><%= request.due_on %></td>
+              <td class="<%= td_class %>"><%= request.requester.name %></td>
+              <td class="<%= td_class %>">
+                <%= link_to "View", data_subject_request_path(request), class: "text-indigo-600 hover:text-indigo-900 font-semibold" %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="6" class="<%= td_class %> text-center py-10">No data rights requests yet.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-8 flex justify-center">
+    <%== pagy_tailwind_nav(@pagy) %>
+  </div>
+</div>

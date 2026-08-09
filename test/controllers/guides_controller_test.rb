@@ -15,6 +15,7 @@ class GuidesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", "Getting started"
     assert_select "article", /Choose your path/
+    assert_select "article script", count: 0
   end
 
   test "show on this page links target section anchors in article" do

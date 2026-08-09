@@ -58,9 +58,9 @@ class LoyaltyCardsController < ApplicationController
 
     pass_json = {
       formatVersion: 1,
-      passTypeIdentifier: "pass.vraic.os.loyalty",
+      passTypeIdentifier: "pass.harvest.app.loyalty",
       serialNumber: @loyalty_card.identifier,
-      teamIdentifier: "VRAICOS",
+      teamIdentifier: "HARVEST",
       organizationName: Current.account.name,
       description: "#{Current.account.name} Loyalty Card",
       logoText: Current.account.name,

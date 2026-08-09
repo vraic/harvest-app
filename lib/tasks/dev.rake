@@ -23,7 +23,7 @@ namespace :db do
 
     # 2. Main Account (Account One)
     account_one = Account.create!(
-      name: "Vraic Farms",
+      name: "Harvest Farms",
       address: "123 Farm Road, Jersey",
       owner_id: admin.id,
       is_b2c: true,
@@ -38,14 +38,14 @@ namespace :db do
     )
 
     account_one_admin = User.create!(
-      name: "Vraic Farms Admin",
+      name: "Harvest Farms Admin",
       email_address: "account-one@example.com",
       password: "ThisIsAVeryLongAndSecurePassword123!"
     )
     AccountUser.create!(account: account_one, user: account_one_admin, user_role: :store_manager)
 
     account_one_staff = User.create!(
-      name: "John Doe at Vraic Farms",
+      name: "John Doe at Harvest Farms",
       email_address: "account-one-staff@example.com",
       password: "ThisIsAVeryLongAndSecurePassword123!"
     )
@@ -57,7 +57,7 @@ namespace :db do
       password: "ThisIsAVeryLongAndSecurePassword123!"
     )
     AccountUser.create!(account: account_one, user: account_one_customer, user_role: :customer)
-    puts "Created Vraic Farms with store manager (account-one@example.com), staff (account-one-staff@example.com) and customer (account-one-customer@example.com)"
+    puts "Created Harvest Farms with store manager (account-one@example.com), staff (account-one-staff@example.com) and customer (account-one-customer@example.com)"
 
     # 3. Suppliers
     supplier_names = [ "Paradise Veg", "Jolly Hoggs", "Dark Shrooms", "Coastal Fish" ]
@@ -83,8 +83,8 @@ namespace :db do
 
     # 5. Establish Relationships via SupplierRequests
 
-    # All 4 named suppliers supply Vraic Farms (Account One)
-    # This makes Vraic Farms a customer of these suppliers.
+    # All 4 named suppliers supply Harvest Farms (Account One)
+    # This makes Harvest Farms a customer of these suppliers.
     suppliers.each do |s_acc|
       req = SupplierRequest.create!(sender_account: s_acc, receiver_account: account_one)
       req.approved!
@@ -162,7 +162,7 @@ namespace :db do
 
       # Newsletters
       Newsletter.create!(
-        subject: "Welcome to Vraic Farms!",
+        subject: "Welcome to Harvest Farms!",
         content: "<h1>Welcome</h1><p>Thanks for joining our newsletter list. We have fresh veg every week!</p>",
         target: :everyone,
         sent_at: 2.days.ago

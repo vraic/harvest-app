@@ -53,7 +53,7 @@ class User < ApplicationRecord
 
   def otp_qr_code
     return if otp_secret.blank?
-    issuer = "Vraic OS"
+    issuer = "Harvest"
     label = "#{issuer}:#{email_address}"
     totp = ROTP::TOTP.new(otp_secret, issuer: issuer)
     url = totp.provisioning_uri(label)

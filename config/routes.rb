@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   end
   resources :suppliers do
     member do
+      patch :anonymise
       get :inventory
     end
   end
@@ -73,6 +74,7 @@ Rails.application.routes.draw do
   resources :inventory_groups
   resources :customers do
     member do
+      patch :anonymise
       delete :really_destroy
     end
   end
@@ -90,12 +92,14 @@ Rails.application.routes.draw do
     end
     resources :comments, controller: "support_request_comments", only: %i[ create update ]
   end
+  resources :data_subject_requests, only: %i[ index show new create update ]
   # Auditing
   mount Audits1984::Engine => "/console"
 
   # Authentication
   resources :users do
     member do
+      patch :anonymise
       delete :really_destroy
     end
   end

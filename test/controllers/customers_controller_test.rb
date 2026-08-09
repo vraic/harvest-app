@@ -57,6 +57,33 @@ class CustomersControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil Customer.with_deleted.find_by(id: @customer.id).deleted_at
   end
 
+  test "should show archived customers when requested" do
+    delete customer_url(@customer)
+
+    get customers_url(view: "archived")
+
+    assert_response :success
+    assert_match Customer.with_deleted.find(@customer.id).name, response.body
+  end
+
+  test "should show archived customer record" do
+    delete customer_url(@customer)
+
+    get customer_url(@customer, view: "archived")
+
+    assert_response :success
+    assert_match Customer.with_deleted.find(@customer.id).name, response.body
+  end
+
+  test "should allow anonymising archived customer" do
+    delete customer_url(@customer)
+
+    patch anonymise_customer_url(@customer, view: "archived")
+
+    assert_redirected_to customers_url(view: "archived")
+    assert Customer.with_deleted.find(@customer.id).deleted?
+  end
+
   test "should really destroy customer as account admin" do
     assert_difference("Customer.count", -1) do
       delete really_destroy_customer_url(@customer)

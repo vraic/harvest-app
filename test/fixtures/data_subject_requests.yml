@@ -1,0 +1,43 @@
+one:
+  account: one
+  requester: administrator
+  subject_user: unassigned
+  request_type: access
+  status: received
+  requested_at: <%= 2.days.ago %>
+  due_on: <%= 28.days.from_now.to_date %>
+  identity_verified: true
+  subject_name: Test User Unassigned
+  subject_email: unassigned@example.com
+  request_summary: Need a copy of all personal data.
+  legal_basis: legal_obligation
+  offboarding_action: none
+
+two:
+  account: two
+  requester: administrator
+  subject_user: unassigned
+  request_type: restriction
+  status: in_review
+  requested_at: <%= 1.day.ago %>
+  due_on: <%= 29.days.from_now.to_date %>
+  identity_verified: true
+  subject_name: Test User Unassigned
+  subject_email: unassigned@example.com
+  request_summary: Restrict processing while complaint is reviewed.
+  legal_basis: legal_obligation
+  offboarding_action: none
+
+erasure_pending:
+  account: one
+  requester: administrator
+  subject_user: unassigned
+  request_type: erasure
+  status: in_review
+  requested_at: <%= 1.day.ago %>
+  due_on: <%= 29.days.from_now.to_date %>
+  identity_verified: true
+  request_summary: Please remove personal data where legally possible.
+  legal_basis: legal_obligation
+  offboarding_action: archive
+  offboarding_reason: User requested closure

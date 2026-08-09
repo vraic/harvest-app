@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_133000) do
   create_table "account_users", force: :cascade do |t|
     t.integer "account_id"
     t.datetime "archived_at"
@@ -216,6 +216,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
     t.index ["customer_account_id"], name: "index_customers_on_customer_account_id"
     t.index ["deleted_at"], name: "index_customers_on_deleted_at"
     t.index ["user_id"], name: "index_customers_on_user_id"
+  end
+
+  create_table "data_subject_requests", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.datetime "acted_at"
+    t.integer "acted_by_id"
+    t.datetime "completed_at"
+    t.text "completion_evidence"
+    t.datetime "created_at", null: false
+    t.text "decision_summary"
+    t.date "due_on", null: false
+    t.text "exemption_reason"
+    t.boolean "identity_verified", default: false, null: false
+    t.text "legal_basis"
+    t.integer "offboarding_action", default: 0, null: false
+    t.string "offboarding_reason"
+    t.text "request_summary", null: false
+    t.integer "request_type", default: 0, null: false
+    t.datetime "requested_at", null: false
+    t.integer "requester_id", null: false
+    t.integer "status", default: 0, null: false
+    t.string "subject_email"
+    t.string "subject_name"
+    t.integer "subject_user_id"
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "due_on"], name: "index_data_subject_requests_on_account_id_and_due_on"
+    t.index ["account_id", "status"], name: "index_data_subject_requests_on_account_id_and_status"
+    t.index ["account_id"], name: "index_data_subject_requests_on_account_id"
+    t.index ["acted_by_id"], name: "index_data_subject_requests_on_acted_by_id"
+    t.index ["request_type"], name: "index_data_subject_requests_on_request_type"
+    t.index ["requester_id"], name: "index_data_subject_requests_on_requester_id"
+    t.index ["subject_user_id"], name: "index_data_subject_requests_on_subject_user_id"
   end
 
   create_table "inventory_group_customers", force: :cascade do |t|
@@ -578,6 +610,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_163500) do
   add_foreign_key "customers", "accounts"
   add_foreign_key "customers", "accounts", column: "customer_account_id"
   add_foreign_key "customers", "users"
+  add_foreign_key "data_subject_requests", "accounts"
+  add_foreign_key "data_subject_requests", "users", column: "acted_by_id"
+  add_foreign_key "data_subject_requests", "users", column: "requester_id"
+  add_foreign_key "data_subject_requests", "users", column: "subject_user_id"
   add_foreign_key "inventory_group_customers", "customers"
   add_foreign_key "inventory_group_customers", "inventory_groups"
   add_foreign_key "inventory_group_suppliers", "inventory_groups"

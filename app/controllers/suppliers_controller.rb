@@ -1,6 +1,6 @@
 class SuppliersController < ApplicationController
   before_action :require_account!
-  before_action :set_supplier, only: %i[ show edit update destroy inventory ]
+  before_action :set_supplier, only: %i[ show edit update destroy anonymise inventory ]
   before_action :set_selectable_supplier_accounts, only: %i[ new create ]
 
   def index
@@ -68,7 +68,17 @@ class SuppliersController < ApplicationController
     authorize @supplier
     @supplier.destroy!
     respond_to do |format|
-      format.html { redirect_to suppliers_path, notice: "Supplier was successfully destroyed.", status: :see_other }
+      format.html { redirect_to suppliers_path, notice: "Supplier was archived.", status: :see_other }
+      format.json { head :no_content }
+    end
+  end
+
+  def anonymise
+    authorize @supplier, :destroy?
+    @supplier.anonymise!
+    @supplier.destroy! unless @supplier.deleted?
+    respond_to do |format|
+      format.html { redirect_to suppliers_path, notice: "Supplier was anonymised.", status: :see_other }
       format.json { head :no_content }
     end
   end

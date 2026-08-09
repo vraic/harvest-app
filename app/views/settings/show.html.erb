@@ -141,11 +141,12 @@
       <div class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
         <div>
           <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Delete account</h2>
-          <p class="mt-1 text-sm/6 text-gray-500 dark:text-gray-400">No longer want to use our service? You can delete your account here. This action is not reversible. All information related to this account will be deleted permanently.</p>
+          <p class="mt-1 text-sm/6 text-gray-500 dark:text-gray-400">No longer want to use our service? You can archive your account here. We immediately remove access, and we only retain personal data where legally required before retention-policy purge.</p>
+          <p class="mt-2 text-sm/6 text-gray-500 dark:text-gray-400">Need to exercise data rights (access, rectification, erasure, restriction, objection, portability)? <%= link_to "Create a data rights request", new_data_subject_request_path, class: "font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>.</p>
         </div>
 
-        <%= form_with model: @user, url: settings_path, method: :delete, class: "flex items-start md:col-span-2", data: { turbo_confirm: "Are you sure you want to delete your account? This cannot be undone." } do |f| %>
-          <%= f.submit "Yes, delete my account", class: "rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 dark:bg-red-500 dark:shadow-none dark:hover:bg-red-400" %>
+        <%= form_with model: @user, url: settings_path, method: :delete, class: "flex items-start md:col-span-2", data: { turbo_confirm: "Are you sure you want to archive your account? Access will be removed immediately." } do |f| %>
+          <%= f.submit "Yes, archive my account", class: "rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 dark:bg-red-500 dark:shadow-none dark:hover:bg-red-400" %>
         <% end %>
       </div>
 

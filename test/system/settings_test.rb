@@ -49,15 +49,23 @@ class SettingsTest < ApplicationSystemTestCase
     assert_equal 1, @user.sessions.count
   end
 
-  test "can delete account" do
+  test "can archive account" do
     login_as @user
     visit settings_path
+    assert_text "archive your account"
+    before_count = DataSubjectRequest.uncached { DataSubjectRequest.count }
 
     accept_confirm do
-      click_on "Yes, delete my account"
+      click_on "Yes, archive my account"
     end
 
-    assert_text "Account deleted"
+    assert_text "Account archived"
+    assert_equal before_count + 1, DataSubjectRequest.uncached { DataSubjectRequest.count }
+
+    request = DataSubjectRequest.order(:id).last
+    assert request.completed?
+    assert request.erasure?
+    assert request.offboarding_archive?
     assert_nil User.find_by(id: @user.id)
   end
 end

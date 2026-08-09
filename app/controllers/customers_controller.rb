@@ -1,11 +1,13 @@
 class CustomersController < ApplicationController
   before_action :require_account!
-  before_action :set_customer, only: %i[ show edit update destroy really_destroy ]
+  before_action :set_customer, only: %i[ show edit update destroy anonymise really_destroy ]
 
   # GET /customers or /customers.json
   def index
     customers = policy_scope(Customer)
-    customers = customers.where("customers.created_at >= ?", 7.days.ago) if params[:filter] == "recent"
+    @showing_archived = showing_archived?
+    customers = @showing_archived ? customers.only_deleted : customers
+    customers = customers.where("customers.created_at >= ?", 7.days.ago) if params[:filter] == "recent" && !@showing_archived
 
     if params[:query].present?
       # Try to find by exact name or email first since they are encrypted and search_cop (LIKE) won't work
@@ -73,7 +75,18 @@ class CustomersController < ApplicationController
     @customer.destroy!
 
     respond_to do |format|
-      format.html { redirect_to customers_path, notice: "Customer was successfully destroyed.", status: :see_other }
+      format.html { redirect_to customers_index_path_for_redirect, notice: "Customer was archived.", status: :see_other }
+      format.json { head :no_content }
+    end
+  end
+
+  def anonymise
+    authorize @customer, :destroy?
+    @customer.anonymise!
+    @customer.destroy! unless @customer.deleted?
+
+    respond_to do |format|
+      format.html { redirect_to customers_index_path_for_redirect, notice: "Customer was anonymised.", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -83,7 +96,7 @@ class CustomersController < ApplicationController
     @customer.destroy_fully!
 
     respond_to do |format|
-      format.html { redirect_to customers_path, notice: "Customer was permanently deleted.", status: :see_other }
+      format.html { redirect_to customers_index_path_for_redirect, notice: "Customer was permanently deleted.", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -91,7 +104,23 @@ class CustomersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_customer
-      @customer = Customer.find(params[:id])
+      @customer = customer_lookup_scope.find(params[:id])
+    end
+
+    def customer_lookup_scope
+      if %w[show anonymise really_destroy].include?(action_name)
+        Customer.with_deleted
+      else
+        Customer
+      end
+    end
+
+    def showing_archived?
+      params[:view] == "archived"
+    end
+
+    def customers_index_path_for_redirect
+      showing_archived? ? customers_path(view: "archived") : customers_path
     end
 
     # Only allow a list of trusted parameters through.

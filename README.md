@@ -4,7 +4,7 @@
 
 Practical digital tools for the island farming community. Built on island, for islanders.
 
-Harvest is open-source software: anyone can use this codebase and deploy it wherever they want, however they want. If you'd rather not self-host, you can subscribe to a fully hosted and commercially supported version at [harvest.je](https://harvest.je).
+Harvest is open-source software: anyone can use this codebase and deploy it wherever they want, however they want. If you'd rather not self-host, check out the fully hosted and commercially supported version at [harvest.je](https://harvest.je).
 
 ## What Is Harvest?
 

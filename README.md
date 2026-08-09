@@ -4,6 +4,8 @@
 
 Practical digital tools for the island farming community. Built on island, for islanders.
 
+Harvest is open-source software: anyone can use this codebase and deploy it wherever they want, however they want. If you'd rather not self-host, you can subscribe to a fully hosted and commercially supported version at [harvest.je](https://harvest.je).
+
 ## What Is Harvest?
 
 Harvest is an open source technology platform designed for the island's agricultural sector. It provides practical digital tools shaped by farmers direct input, respects everyone's data, and runs on island-based infrastructure.
@@ -26,8 +28,14 @@ Jersey's technology ecosystem benefits from diverse approaches. Currently, the b
 - Community-first: Tools built from direct farmer input, not distant corporate roadmaps
 - Data sovereignty: Your farm data stays on island infrastructure under your control
 - Open by default: Code and decision-making auditable by anyone
+- Deploy anywhere: Run and host Harvest in any environment that works for you
 - Practical utility: Features that solve real problems, not shiny object syndrome
 - Sustainable development: Built to last, maintained locally, resilient to vendor lock-in
+
+## Deployment Options
+
+- Self-hosted: Use this repository under the MIT license and deploy however and wherever you want.
+- Fully hosted: Get a managed, commercially supported deployment at [harvest.je](https://harvest.je).
 
 ## Technologies
 

@@ -61,6 +61,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     if is_admin_user
       begin
         admin_select_retries ||= 0
+        already_joined = false
         visit accounts_path
         within "#accounts" do
           row = find("tr", text: name, match: :first)
@@ -70,12 +71,14 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
               # Joining redirects to dashboard
             elsif page.has_button?("Leave Account", wait: 0)
               # Already joined
-              visit dashboard_path
+              already_joined = true
             else
               flunk "Could not switch to #{name}: no Join/Leave control found for that account row"
             end
           end
         end
+
+        visit dashboard_path if already_joined
       rescue Selenium::WebDriver::Error::StaleElementReferenceError, Selenium::WebDriver::Error::UnknownError
         retry if (admin_select_retries += 1) < 3
         raise

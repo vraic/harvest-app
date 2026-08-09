@@ -9,7 +9,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "nav[aria-label='Homepage'] a[href='#features']", text: "Features"
     assert_select "nav[aria-label='Homepage'] a[href='#platform']", text: "Platform"
     assert_select "nav[aria-label='Homepage'] a[href='#overview']", text: "Overview"
-    assert_select "nav[aria-label='Homepage'] a[href='#faq']", text: "FAQ"
+    assert_select "nav[aria-label='Homepage'] a[href='#faq']", text: "Use cases"
     assert_select "a[href=?]", new_session_path, text: "Login", minimum: 1
     assert_select "a[href=?]", new_session_path, text: "Get started"
   end

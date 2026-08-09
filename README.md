@@ -61,7 +61,7 @@ Harvest is built on [Rails](https://rubyonrails.org) following the [Rails Doctri
 ## Getting Started
 
 1. Clone this repo to your local/dev environment
-2. Change directory to `harvest-app` and start the web server:
+2. Change into the directory you've just cloned and start the web server:
 
    ```bash
    $ cd harvest-app

@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  get "guides" => "guides#index", as: :guides
+  get "guides/*slug" => "guides#show", as: :guide_page
+  get "docs" => redirect("/guides")
+  get "docs/*slug" => redirect { |params, request|
+    destination = "/guides/#{params[:slug]}"
+    request.query_string.present? ? "#{destination}?#{request.query_string}" : destination
+  }
+
   resources :loyalty_cards, only: [ :index, :create, :show ] do
     member do
       get :wallet

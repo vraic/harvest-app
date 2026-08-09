@@ -1,0 +1,137 @@
+<% content_for :title, [@guide.title, "Guides"].join(" · ") %>
+<% content_for :no_sidebar, true %>
+
+<div class="-mx-4 -my-10 min-h-screen bg-white text-slate-900 sm:-mx-6 lg:-mx-8">
+  <header class="sticky top-0 z-40 border-b border-slate-300 bg-white">
+    <div class="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+      <%= link_to guides_path, class: "inline-flex items-center gap-2 text-sm font-semibold text-slate-900" do %>
+        <span class="inline-flex size-7 items-center justify-center rounded-full border border-red-700 bg-red-700 text-xs font-bold text-white">H</span>
+        <span>Harvest Guides</span>
+      <% end %>
+
+      <%= form_with url: guides_path, method: :get, local: true, class: "ml-auto flex w-full items-center gap-2 sm:w-auto" do |form| %>
+        <label for="docs-show-query" class="sr-only">Search guides</label>
+        <%= form.search_field :q, value: @query, id: "docs-show-query", placeholder: "Search guides", class: "w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-red-600 focus:outline-none sm:w-72" %>
+        <%= form.submit "Search", class: "inline-flex shrink-0 items-center rounded border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50" %>
+      <% end %>
+
+      <%= link_to "GitHub", "https://github.com/vraic/harvest-je", target: "_blank", rel: "noopener noreferrer", class: "hidden text-sm font-medium text-slate-600 transition hover:text-slate-900 lg:inline-flex" %>
+      <%= link_to "Home", root_path, class: "hidden text-sm font-medium text-slate-600 transition hover:text-slate-900 lg:inline-flex" %>
+    </div>
+  </header>
+
+  <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_13rem]">
+
+      <main class="min-w-0 py-8 lg:max-w-4xl">
+        <% breadcrumb_items = guides_breadcrumb_items(@guide, @guide_sections) %>
+        <nav aria-label="Breadcrumb" class="mb-5">
+          <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+            <% breadcrumb_items.each_with_index do |(label, path), index| %>
+              <li class="inline-flex items-center gap-2">
+                <% if path.present? %>
+                  <%= link_to label, path, class: "transition hover:text-slate-700" %>
+                <% else %>
+                  <span class="font-medium text-slate-700"><%= label %></span>
+                <% end %>
+                <% if index < breadcrumb_items.size - 1 %>
+                  <span aria-hidden="true">/</span>
+                <% end %>
+              </li>
+            <% end %>
+          </ol>
+        </nav>
+
+        <header class="pb-6">
+          <h1 class="text-4xl font-semibold tracking-tight text-slate-900" style="font-family: Georgia, Cambria, 'Times New Roman', Times, serif;"><%= @guide.title %></h1>
+          <% if @guide.description.present? %>
+            <p class="mt-3 text-lg text-slate-700"><%= @guide.description %></p>
+          <% end %>
+          <% if guides_last_updated_label(@guide.updated_at).present? %>
+            <p class="mt-3 text-sm text-slate-500">Last updated on <%= guides_last_updated_label(@guide.updated_at) %></p>
+          <% end %>
+        </header>
+
+        <% if @query.present? %>
+          <section class="my-8 border-y border-slate-200 py-5">
+            <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <h2 class="text-lg font-semibold text-slate-900">Search results</h2>
+              <p class="text-sm text-slate-500"><%= pluralize(@search_results.size, "result") %> for “<%= @query %>”</p>
+            </div>
+
+            <% if @search_results.any? %>
+              <ul class="divide-y divide-slate-200 border-t border-slate-200">
+                <% @search_results.each do |result| %>
+                  <li class="py-3 first:pt-4 last:pb-0">
+                    <%= link_to guide_page_path_with_query(result.document.slug, @query), class: "block transition hover:text-red-700" do %>
+                      <p class="text-sm font-semibold text-slate-900"><%= result.document.title %></p>
+                      <p class="mt-1 text-sm leading-6 text-slate-700"><%= guides_search_highlight(result.excerpt, @query) %></p>
+                    <% end %>
+                  </li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p class="text-sm text-slate-500">No matches found.</p>
+            <% end %>
+          </section>
+        <% end %>
+
+        <article class="mt-6 max-w-none text-[1.05rem] leading-7 text-slate-800 [&_a]:text-red-700 [&_a]:underline [&_a]:decoration-red-300 [&_a:hover]:text-red-600 [&_blockquote]:border-l-4 [&_blockquote]:border-slate-300 [&_blockquote]:pl-4 [&_code]:rounded [&_code]:bg-slate-100 [&_code]:px-1 [&_code]:py-0.5 [&_h1]:mt-0 [&_h1]:text-3xl [&_h1]:font-semibold [&_h1]:tracking-tight [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-semibold [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-semibold [&_hr]:my-8 [&_li]:my-1 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-slate-900 [&_pre]:p-4 [&_pre]:text-slate-100 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_tbody_td]:border [&_tbody_td]:border-slate-200 [&_tbody_td]:px-3 [&_tbody_td]:py-2 [&_thead_th]:border [&_thead_th]:border-slate-300 [&_thead_th]:bg-slate-100 [&_thead_th]:px-3 [&_thead_th]:py-2 [&_ul]:list-disc [&_ul]:pl-6" style="font-family: Georgia, Cambria, 'Times New Roman', Times, serif;">
+          <%= @guide.body_html.html_safe %>
+        </article>
+
+        <% if @related_guides.any? %>
+          <section class="mt-12 border-t border-slate-200 pt-6">
+            <h2 class="text-sm font-semibold uppercase tracking-[0.14em] text-slate-700">Related guides</h2>
+            <ul class="mt-3 space-y-1.5">
+              <% @related_guides.each do |related_guide| %>
+                <li>
+                  <%= link_to guide_page_path_with_query(related_guide.slug, @query), class: "text-sm font-medium text-red-700 transition hover:text-red-600" do %>
+                    <%= related_guide.title %>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </section>
+        <% end %>
+
+        <% previous_guide_item = previous_guide(@guides, @guide) %>
+        <% next_guide_item = next_guide(@guides, @guide) %>
+        <% if previous_guide_item.present? || next_guide_item.present? %>
+          <div class="mt-12 grid gap-4 border-t border-slate-200 pt-5 sm:grid-cols-2">
+            <% if previous_guide_item.present? %>
+              <%= link_to guide_page_path_with_query(previous_guide_item.slug, @query), class: "block border-l-2 border-slate-300 pl-4 transition hover:border-red-600" do %>
+                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Previous</p>
+                <p class="mt-1 text-sm font-medium text-slate-900"><%= previous_guide_item.title %></p>
+              <% end %>
+            <% else %>
+              <span></span>
+            <% end %>
+
+            <% if next_guide_item.present? %>
+              <%= link_to guide_page_path_with_query(next_guide_item.slug, @query), class: "block border-r-2 border-slate-300 pr-4 text-right transition hover:border-red-600" do %>
+                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Next</p>
+                <p class="mt-1 text-sm font-medium text-slate-900"><%= next_guide_item.title %></p>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </main>
+
+      <aside class="hidden lg:block">
+        <% if @guide.headings.any? %>
+          <div class="sticky top-20 py-8">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">In this guide</p>
+            <ul class="space-y-1.5 border-l border-slate-300 pl-3 text-sm">
+              <% @guide.headings.each do |heading, anchor| %>
+                <li>
+                  <%= link_to heading, "##{anchor}", class: "block text-slate-600 transition hover:text-red-700" %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </aside>
+    </div>
+  </div>
+</div>

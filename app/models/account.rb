@@ -1,4 +1,10 @@
 class Account < ApplicationRecord
+  RETENTION_ACTIONS = {
+    "none" => "Do nothing (manual review)",
+    "archive" => "Archive record",
+    "anonymise" => "Anonymise and archive record"
+  }.freeze
+
   has_referrals
   has_one_attached :header_image do |attachable|
     attachable.variant :thumb, resize_to_limit: [ 200, 200 ]
@@ -20,6 +26,7 @@ class Account < ApplicationRecord
   has_many :locations, dependent: :destroy
   has_many :tasks, dependent: :destroy
   has_many :support_requests, dependent: :destroy
+  has_many :data_retention_events, dependent: :destroy
   has_one :loyalty_program, dependent: :destroy
   has_many :noticed_events, class_name: "Noticed::Event", dependent: :destroy
   has_many :noticed_notifications, class_name: "Noticed::Notification", dependent: :destroy
@@ -32,6 +39,14 @@ class Account < ApplicationRecord
   validates :name, presence: true
   validates :owner_id, presence: true
   validates :gocardless_access_token, length: { minimum: 8 }, allow_blank: true
+  validates :inactivity_retention_years_override,
+    numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 25 },
+    allow_nil: true
+  validates :soft_delete_retention_days_override,
+    numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 3650 },
+    allow_nil: true
+  validates :inactive_customer_retention_action, inclusion: { in: RETENTION_ACTIONS.keys }, allow_nil: true
+  validates :inactive_supplier_retention_action, inclusion: { in: RETENTION_ACTIONS.keys }, allow_nil: true
 
   scope :b2c, -> { where(is_b2c: true) }
   scope :b2b, -> { where(is_b2b: true) }
@@ -46,6 +61,26 @@ class Account < ApplicationRecord
 
   def active_staff_users
     account_users.active.staff.includes(:user).map(&:user).compact.uniq
+  end
+
+  def effective_inactivity_retention_years
+    inactivity_retention_years_override || Rails.application.config.x.data_protection.inactive_record_retention_years
+  end
+
+  def effective_soft_delete_retention_days
+    soft_delete_retention_days_override || Rails.application.config.x.data_protection.soft_delete_retention_days
+  end
+
+  def effective_inactive_customer_retention_action
+    inactive_customer_retention_action.presence || Rails.application.config.x.data_protection.inactive_record_retention_action
+  end
+
+  def effective_inactive_supplier_retention_action
+    inactive_supplier_retention_action.presence || Rails.application.config.x.data_protection.inactive_record_retention_action
+  end
+
+  def self.retention_action_options_for_select
+    RETENTION_ACTIONS.map { |value, label| [ label, value ] }
   end
 
   private

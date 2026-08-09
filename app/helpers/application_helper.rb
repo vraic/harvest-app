@@ -44,8 +44,10 @@ module ApplicationHelper
       controller_name == "support_requests"
     when :data_subject_requests
       controller_name == "data_subject_requests"
+    when :data_retention_events
+      controller_name == "data_retention_events"
     when :people
-      [ :customers, :suppliers, :newsletters, :customer_newsletters, :loyalty, :shop, :data_subject_requests ].any? { |nav_item| nav_item_active?(nav_item) }
+      [ :customers, :suppliers, :newsletters, :customer_newsletters, :loyalty, :shop, :data_subject_requests, :data_retention_events ].any? { |nav_item| nav_item_active?(nav_item) }
     when :settings
       [ "account_users", "users", "settings" ].include?(controller_name)
     else

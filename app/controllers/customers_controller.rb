@@ -1,6 +1,6 @@
 class CustomersController < ApplicationController
   before_action :require_account!
-  before_action :set_customer, only: %i[ show edit update destroy anonymise really_destroy ]
+  before_action :set_customer, only: %i[ show edit update update_retention_hold destroy anonymise really_destroy ]
 
   # GET /customers or /customers.json
   def index
@@ -69,6 +69,26 @@ class CustomersController < ApplicationController
     end
   end
 
+  def update_retention_hold
+    authorize @customer, :update?
+
+    if @customer.update(retention_hold_params)
+      DataRetention::EventRecorder.record!(
+        account: @customer.account,
+        record: @customer,
+        event_type: @customer.retention_hold_active? ? "manual_hold_enabled" : "manual_hold_disabled",
+        action_name: "manual_hold",
+        details: retention_hold_event_details(@customer),
+        actor: Current.user
+      )
+
+      notice = @customer.retention_hold_active? ? "Customer marked to be retained." : "Customer retention hold removed."
+      redirect_to customer_show_path_for_redirect, notice:, status: :see_other
+    else
+      redirect_to customer_show_path_for_redirect, alert: @customer.errors.full_messages.to_sentence, status: :see_other
+    end
+  end
+
   # DELETE /customers/1 or /customers/1.json
   def destroy
     authorize @customer
@@ -108,11 +128,15 @@ class CustomersController < ApplicationController
     end
 
     def customer_lookup_scope
-      if %w[show anonymise really_destroy].include?(action_name)
+      if %w[show anonymise really_destroy update_retention_hold].include?(action_name)
         Customer.with_deleted
       else
         Customer
       end
+    end
+
+    def customer_show_path_for_redirect
+      customer_path(@customer, view: (showing_archived? ? "archived" : nil))
     end
 
     def showing_archived?
@@ -121,6 +145,18 @@ class CustomersController < ApplicationController
 
     def customers_index_path_for_redirect
       showing_archived? ? customers_path(view: "archived") : customers_path
+    end
+
+    def retention_hold_params
+      params.require(:customer).permit(:retention_hold, :retention_hold_until, :retention_hold_reason)
+    end
+
+    def retention_hold_event_details(customer)
+      details = []
+      details << "Hold enabled" if customer.retention_hold_active?
+      details << "Hold until #{customer.retention_hold_until}" if customer.retention_hold_until.present?
+      details << "Reason: #{customer.retention_hold_reason}" if customer.retention_hold_reason.present?
+      (details.presence || [ "Hold removed" ]).join(". ")
     end
 
     # Only allow a list of trusted parameters through.

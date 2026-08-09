@@ -1,0 +1,61 @@
+<% content_for :title, "Data Retention Events" %>
+
+<div class="w-full">
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+    <h1 class="font-bold text-4xl text-gray-900 dark:text-white">Data Retention Events</h1>
+
+    <%= form_with url: data_retention_events_path, method: :get, local: true, class: "flex items-end gap-3" do |form| %>
+      <div>
+        <%= form.label :event_type, "Event type", class: label_class("mb-1") %>
+        <%= form.select :event_type,
+                        options_for_select([["All events", nil]] + DataRetentionEvent::EVENT_TYPES.map { |event_type| [event_type.humanize, event_type] }, params[:event_type]),
+                        {},
+                        class: input_class %>
+      </div>
+      <%= form.submit "Filter", class: secondary_button_class %>
+    <% end %>
+  </div>
+
+  <div class="<%= table_container_class %>">
+    <table class="<%= table_class %>">
+      <thead class="<%= thead_class %>">
+        <tr>
+          <th scope="col" class="<%= th_class %>">When</th>
+          <% if Current.account.nil? && Current.user&.admin? %>
+            <th scope="col" class="<%= th_class %>">Account</th>
+          <% end %>
+          <th scope="col" class="<%= th_class %>">Record</th>
+          <th scope="col" class="<%= th_class %>">Event</th>
+          <th scope="col" class="<%= th_class %>">Action</th>
+          <th scope="col" class="<%= th_class %>">Actor</th>
+          <th scope="col" class="<%= th_class %>">Details</th>
+        </tr>
+      </thead>
+      <tbody class="<%= tbody_class %>">
+        <% if @data_retention_events.any? %>
+          <% @data_retention_events.each do |event| %>
+            <tr class="<%= tr_class %>">
+              <td class="<%= td_class %>"><%= event.created_at.strftime("%d %b %Y %H:%M") %></td>
+              <% if Current.account.nil? && Current.user&.admin? %>
+                <td class="<%= td_class %>"><%= event.account.name %></td>
+              <% end %>
+              <td class="<%= td_class %>"><%= "#{event.record_type}##{event.record_id}" %></td>
+              <td class="<%= td_class %>"><%= event.event_type.humanize %></td>
+              <td class="<%= td_class %>"><%= event.action_name.humanize %></td>
+              <td class="<%= td_class %>"><%= event.actor&.name || "System" %></td>
+              <td class="<%= td_class %>"><%= event.details.presence || "—" %></td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="7" class="<%= td_class %> text-center py-10 text-gray-500">No retention events yet.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-8 flex justify-center">
+    <%== pagy_tailwind_nav(@pagy) %>
+  </div>
+</div>

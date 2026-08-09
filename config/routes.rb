@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   resources :suppliers do
     member do
       patch :anonymise
+      patch :update_retention_hold
       get :inventory
     end
   end
@@ -75,6 +76,7 @@ Rails.application.routes.draw do
   resources :customers do
     member do
       patch :anonymise
+      patch :update_retention_hold
       delete :really_destroy
     end
   end
@@ -93,6 +95,7 @@ Rails.application.routes.draw do
     resources :comments, controller: "support_request_comments", only: %i[ create update ]
   end
   resources :data_subject_requests, only: %i[ index show new create update ]
+  resources :data_retention_events, only: %i[ index ]
   # Auditing
   mount Audits1984::Engine => "/console"
 

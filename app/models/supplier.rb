@@ -24,7 +24,8 @@ class Supplier < ApplicationRecord
 
   anonymise do
     overwrite do
-      ignore :account_id, :supplier_account_id, :user_id, :subscribed_to_newsletter, :subscribed_at
+      ignore :account_id, :supplier_account_id, :user_id, :subscribed_to_newsletter, :subscribed_at,
+             :retention_hold, :retention_hold_until, :retention_hold_reason
       hex :name
       email :email_address
       hex :phone
@@ -32,6 +33,10 @@ class Supplier < ApplicationRecord
   end
 
   validates :name, presence: true
+  validates :retention_hold_reason, length: { maximum: 255 }, allow_blank: true
+  validate :retention_hold_until_must_be_today_or_later, if: :retention_hold?
+
+  before_validation :clear_retention_hold_fields_unless_held
 
   def inventory_items
     return InventoryItem.none unless supplier_account
@@ -50,7 +55,28 @@ class Supplier < ApplicationRecord
                                                                 .select(:id) })
   end
 
+  def retention_hold_active?(reference_time: Time.current)
+    return false unless retention_hold?
+    return true if retention_hold_until.blank?
+
+    retention_hold_until >= reference_time.to_date
+  end
+
   private
+
+  def clear_retention_hold_fields_unless_held
+    return if retention_hold?
+
+    self.retention_hold_until = nil
+    self.retention_hold_reason = nil
+  end
+
+  def retention_hold_until_must_be_today_or_later
+    return if retention_hold_until.blank?
+    return unless retention_hold_until < Date.current
+
+    errors.add(:retention_hold_until, "must be today or later")
+  end
 
   def link_by_email
     if email_address.present?

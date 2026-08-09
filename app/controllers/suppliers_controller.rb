@@ -1,6 +1,6 @@
 class SuppliersController < ApplicationController
   before_action :require_account!
-  before_action :set_supplier, only: %i[ show edit update destroy anonymise inventory ]
+  before_action :set_supplier, only: %i[ show edit update update_retention_hold destroy anonymise inventory ]
   before_action :set_selectable_supplier_accounts, only: %i[ new create ]
 
   def index
@@ -64,6 +64,26 @@ class SuppliersController < ApplicationController
     end
   end
 
+  def update_retention_hold
+    authorize @supplier, :update?
+
+    if @supplier.update(retention_hold_params)
+      DataRetention::EventRecorder.record!(
+        account: @supplier.account,
+        record: @supplier,
+        event_type: @supplier.retention_hold_active? ? "manual_hold_enabled" : "manual_hold_disabled",
+        action_name: "manual_hold",
+        details: retention_hold_event_details(@supplier),
+        actor: Current.user
+      )
+
+      notice = @supplier.retention_hold_active? ? "Supplier marked to be retained." : "Supplier retention hold removed."
+      redirect_to supplier_path(@supplier), notice:, status: :see_other
+    else
+      redirect_to supplier_path(@supplier), alert: @supplier.errors.full_messages.to_sentence, status: :see_other
+    end
+  end
+
   def destroy
     authorize @supplier
     @supplier.destroy!
@@ -98,6 +118,18 @@ class SuppliersController < ApplicationController
     attributes = [ :name, :email_address, :phone, :subscribed_to_newsletter, :supplier_account_id ]
     attributes += [ :account_id ] if Current.user.admin?
     params.require(:supplier).permit(attributes)
+  end
+
+  def retention_hold_params
+    params.require(:supplier).permit(:retention_hold, :retention_hold_until, :retention_hold_reason)
+  end
+
+  def retention_hold_event_details(supplier)
+    details = []
+    details << "Hold enabled" if supplier.retention_hold_active?
+    details << "Hold until #{supplier.retention_hold_until}" if supplier.retention_hold_until.present?
+    details << "Reason: #{supplier.retention_hold_reason}" if supplier.retention_hold_reason.present?
+    (details.presence || [ "Hold removed" ]).join(". ")
   end
 
   def supplier_entry_mode

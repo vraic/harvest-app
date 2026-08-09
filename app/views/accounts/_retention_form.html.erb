@@ -1,0 +1,63 @@
+<%= form_with(model: account, class: "contents") do |form| %>
+  <%= hidden_field_tag :tab, "retention" %>
+  <% if account.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(account.errors.count, "error") %> prohibited this account from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% account.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% default_years = Rails.application.config.x.data_protection.inactive_record_retention_years %>
+  <% default_days = Rails.application.config.x.data_protection.soft_delete_retention_days %>
+  <% default_action = Rails.application.config.x.data_protection.inactive_record_retention_action.presence || "anonymise" %>
+
+  <div class="<%= table_container_class("p-6") %>">
+    <div class="space-y-6">
+      <div>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Data Retention</h2>
+        <p class="<%= help_text_class %>">Configure how this store handles inactivity and retention windows. Leave overrides blank to use the default 7-year best-practice baseline.</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div>
+          <%= form.label :inactivity_retention_years_override, "Inactive record retention (years)", class: label_class %>
+          <%= form.number_field :inactivity_retention_years_override, min: 1, max: 25, placeholder: default_years, class: input_class(account.errors[:inactivity_retention_years_override].any?) %>
+          <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Default: <%= default_years %> years (typical tax/accounting retention baseline).</p>
+        </div>
+
+        <div>
+          <%= form.label :soft_delete_retention_days_override, "Archived record purge window (days)", class: label_class %>
+          <%= form.number_field :soft_delete_retention_days_override, min: 1, max: 3650, placeholder: default_days, class: input_class(account.errors[:soft_delete_retention_days_override].any?) %>
+          <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Default: <%= default_days %> days before archived records are permanently deleted.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div>
+          <%= form.label :inactive_customer_retention_action, "Inactive customer action", class: label_class %>
+          <%= form.select :inactive_customer_retention_action,
+                          options_for_select(Account.retention_action_options_for_select, account.inactive_customer_retention_action),
+                          { include_blank: "Use default (#{default_action.humanize})" },
+                          class: input_class(account.errors[:inactive_customer_retention_action].any?) %>
+        </div>
+
+        <div>
+          <%= form.label :inactive_supplier_retention_action, "Inactive supplier action", class: label_class %>
+          <%= form.select :inactive_supplier_retention_action,
+                          options_for_select(Account.retention_action_options_for_select, account.inactive_supplier_retention_action),
+                          { include_blank: "Use default (#{default_action.humanize})" },
+                          class: input_class(account.errors[:inactive_supplier_retention_action].any?) %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <%= form.submit "Save Retention Settings", class: primary_button_class("w-full sm:w-auto") %>
+  </div>
+<% end %>

@@ -2,11 +2,15 @@ require "application_system_test_case"
 
 class SignupFlowTest < ApplicationSystemTestCase
   test "new user can signup, create a store, and see supplier widget" do
+    original_invite_code = ENV["SIGNUP_INVITE_CODE"]
+    ENV["SIGNUP_INVITE_CODE"] = "system-test-invite"
+
     # 1. Signup
     visit new_user_url
     fill_in "Name", with: "New Store Owner"
     fill_in "Email", with: "owner@example.com"
     fill_in "Password", with: "ComplexPassword123!"
+    fill_in "Invite code", with: "system-test-invite"
     click_button "Create User"
 
     assert_text "How would you like to sign in?"
@@ -27,5 +31,7 @@ class SignupFlowTest < ApplicationSystemTestCase
     visit edit_account_path(Account.last)
     assert_text "General"
     assert_text "Stores We Supply"
+  ensure
+    ENV["SIGNUP_INVITE_CODE"] = original_invite_code
   end
 end

@@ -30,6 +30,13 @@
     <%= form.password_field :password, class: input_class(user.errors[:password].any?) %>
   </div>
 
+  <% unless authenticated? %>
+    <div class="my-5">
+      <%= label_tag :signup_invite_code, "Invite code", class: label_class %>
+      <%= password_field_tag :signup_invite_code, params[:signup_invite_code], class: input_class(user.errors[:base].any?) %>
+    </div>
+  <% end %>
+
   <div class="inline">
     <%= form.submit class: primary_button_class("w-full sm:w-auto") %>
   </div>

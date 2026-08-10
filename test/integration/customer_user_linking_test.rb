@@ -80,21 +80,29 @@ class CustomerUserLinkingTest < ActionDispatch::IntegrationTest
   end
 
   test "public signup creates user and logs in" do
-    assert_difference "User.count", 1 do
-      post users_path, params: { user: { name: "Alice", email_address: "alice@example.com", password: "ComplexPassword123!" } }
+    with_signup_invite_code("linking-secret") do
+      assert_difference "User.count", 1 do
+        post users_path, params: {
+          user: { name: "Alice", email_address: "alice@example.com", password: "ComplexPassword123!" },
+          signup_invite_code: "linking-secret"
+        }
+      end
     end
 
     assert_redirected_to security_setup_path
   end
 
   test "public signup with account_id creates customer and account_user" do
-    assert_difference "User.count", 1 do
-      assert_difference "Customer.count", 1 do
-        assert_difference "AccountUser.count", 1 do
-          post users_path, params: {
-            user: { name: "Alice", email_address: "alice@example.com", password: "ComplexPassword123!" },
-            account_id: @account_a.id
-          }
+    with_signup_invite_code("linking-secret") do
+      assert_difference "User.count", 1 do
+        assert_difference "Customer.count", 1 do
+          assert_difference "AccountUser.count", 1 do
+            post users_path, params: {
+              user: { name: "Alice", email_address: "alice@example.com", password: "ComplexPassword123!" },
+              account_id: @account_a.id,
+              signup_invite_code: "linking-secret"
+            }
+          end
         end
       end
     end
@@ -107,4 +115,14 @@ class CustomerUserLinkingTest < ActionDispatch::IntegrationTest
     assert_equal "customer", au.user_role
     assert_redirected_to security_setup_path
   end
+
+  private
+    def with_signup_invite_code(code)
+      original_code = ENV["SIGNUP_INVITE_CODE"]
+      ENV["SIGNUP_INVITE_CODE"] = code
+
+      yield
+    ensure
+      ENV["SIGNUP_INVITE_CODE"] = original_code
+    end
 end

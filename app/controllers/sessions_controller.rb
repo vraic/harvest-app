@@ -19,6 +19,11 @@ class SessionsController < ApplicationController
 
   def create
     email_address = params[:email_address].to_s.strip.downcase
+    if email_address.blank?
+      redirect_to new_session_path, alert: "Enter your email address.", status: :see_other
+      return
+    end
+
     user = User.find_by(email_address: email_address)
 
     if user&.authenticate(params[:password])
@@ -38,13 +43,14 @@ class SessionsController < ApplicationController
       end
     elsif params[:password].present?
       redirect_to new_session_path, alert: "Try another email address or password.", status: :see_other
-    else
-      user = find_or_create_email_login_user(email_address)
+    elsif user
       session[:otp_user_id] = user.id
       session[:security_setup_user_id] = user.id unless user.security_choice_made?
       user.generate_email_otp!
       user.password = user.password_confirmation = nil
       redirect_to new_two_factor_verification_path, notice: "We emailed you a one-time code.", status: :see_other
+    else
+      redirect_to new_user_path(email_address: email_address), alert: "No account found for that email. Please sign up first.", status: :see_other
     end
   end
 
@@ -54,12 +60,4 @@ class SessionsController < ApplicationController
   end
 
   private
-
-  def find_or_create_email_login_user(email_address)
-    User.find_or_create_by!(email_address: email_address) do |user|
-      user.name = email_address.split("@").first.to_s.humanize
-      user.password = user.password_confirmation = SecureRandom.alphanumeric(32)
-      user.prefers_email_login = true
-    end
-  end
 end

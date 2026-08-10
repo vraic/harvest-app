@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  draw :madmin
   get "guides" => "guides#index", as: :guides
   get "guides/*slug" => "guides#show", as: :guide_page
   get "docs" => redirect("/guides")

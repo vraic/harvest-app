@@ -22,7 +22,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     post session_path, params: { email_address: @user.email_address, password: "password" }
 
     if @user.admin?
-      assert_redirected_to dashboard_path
+      assert_redirected_to madmin_root_path
     elsif @user.account_users.active.where(user_role: [ :store_manager, :store_staff ]).exists?
       assert_redirected_to dashboard_path
     else

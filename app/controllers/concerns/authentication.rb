@@ -40,7 +40,7 @@ module Authentication
 
       user ||= Current.session&.user || Current.user
 
-      return dashboard_url if user&.admin?
+      return madmin_root_url if user&.admin?
 
       active_memberships = user&.account_users&.active || AccountUser.none
       staff_membership = active_memberships.where(user_role: [ :store_manager, :store_staff ]).order(updated_at: :desc).first

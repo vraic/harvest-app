@@ -26,6 +26,27 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_notice "reset instructions sent"
   end
 
+  test "create shows an error when reset instructions cannot be sent" do
+    failing_delivery = Class.new do
+      def deliver_later
+        raise StandardError, "queue unavailable"
+      end
+
+      def deliver_now
+        raise StandardError, "smtp unavailable"
+      end
+    end.new
+
+    with_stubbed_password_mailer_reset(failing_delivery) do
+      post passwords_path, params: { email_address: @user.email_address }
+    end
+
+    assert_redirected_to new_password_path
+
+    follow_redirect!
+    assert_notice "send password reset instructions"
+  end
+
   test "edit" do
     get edit_password_path(@user.password_reset_token)
     assert_response :success
@@ -65,6 +86,16 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
+    def with_stubbed_password_mailer_reset(delivery)
+      singleton = PasswordsMailer.singleton_class
+
+      singleton.send(:define_method, :reset) { |_user| delivery }
+
+      yield
+    ensure
+      singleton.send(:remove_method, :reset)
+    end
+
     def assert_notice(text)
       assert_select "div", /#{text}/
     end

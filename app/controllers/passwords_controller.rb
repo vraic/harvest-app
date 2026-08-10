@@ -10,7 +10,13 @@ class PasswordsController < ApplicationController
 
   def create
     if user = User.find_by(email_address: params[:email_address])
-      PasswordsMailer.reset(user).deliver_later
+      if send_password_reset_instructions(user)
+        redirect_to new_session_path, notice: "Password reset instructions sent (if user with that email address exists)."
+      else
+        redirect_to new_password_path, alert: "Couldn't send password reset instructions right now. Please try again."
+      end
+
+      return
     end
 
     redirect_to new_session_path, notice: "Password reset instructions sent (if user with that email address exists)."
@@ -30,6 +36,28 @@ class PasswordsController < ApplicationController
   end
 
   private
+    def send_password_reset_instructions(user)
+      mail = PasswordsMailer.reset(user)
+
+      begin
+        mail.deliver_later
+        true
+      rescue StandardError => enqueue_error
+        Rails.logger.warn("[PasswordsController] Failed to enqueue password reset email for user_id=#{user.id}: #{enqueue_error.class}: #{enqueue_error.message}")
+
+        begin
+          mail.deliver_now
+          true
+        rescue StandardError => delivery_error
+          Rails.logger.error("[PasswordsController] Failed to deliver password reset email for user_id=#{user.id}: #{delivery_error.class}: #{delivery_error.message}")
+          false
+        end
+      end
+    rescue StandardError => reset_error
+      Rails.logger.error("[PasswordsController] Failed to build password reset email for user_id=#{user.id}: #{reset_error.class}: #{reset_error.message}")
+      false
+    end
+
     def set_user_by_token
       @user = User.find_by_password_reset_token!(params[:token])
     rescue ActiveSupport::MessageVerifier::InvalidSignature

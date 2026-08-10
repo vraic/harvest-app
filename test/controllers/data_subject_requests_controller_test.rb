@@ -96,6 +96,7 @@ class DataSubjectRequestsControllerTest < ActionDispatch::IntegrationTest
     get new_data_subject_request_url
 
     assert_response :success
+    assert_select "select[name='data_subject_request[account_id]']", count: 0
     assert_select "select[name='data_subject_request[subject_user_id]'] option" do |options|
       values = options.map { |option| option["value"] }.reject(&:blank?)
 

@@ -14,7 +14,7 @@ class UsersController < ApplicationController
 
   # GET /users/new
   def new
-    @user = User.new
+    @user = User.new(email_address: params[:email_address].to_s.strip.downcase.presence)
     @account = Account.find_by(id: params[:account_id]) if params[:account_id]
   end
 
@@ -25,11 +25,22 @@ class UsersController < ApplicationController
   # POST /users or /users.json
   def create
     @user = User.new(user_params)
+    is_signup = !authenticated?
+
+    if is_signup && !valid_signup_invite_code?
+      @user.errors.add(:base, "A valid invite code is required to sign up.")
+
+      respond_to do |format|
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @user.errors, status: :unprocessable_content }
+      end
+
+      return
+    end
 
     respond_to do |format|
       if @user.save
         # Handle account association if provided during signup
-        is_signup = !authenticated?
         if params[:account_id].present? && is_signup
           account = Account.find_by(id: params[:account_id])
           if account
@@ -126,5 +137,15 @@ class UsersController < ApplicationController
     # Only allow a list of trusted parameters through.
     def user_params
       params.require(:user).permit(:email_address, :password, :name)
+    end
+
+    def valid_signup_invite_code?
+      expected_code = ENV["SIGNUP_INVITE_CODE"].to_s.strip
+      provided_code = params[:signup_invite_code].to_s.strip
+
+      return false if expected_code.blank? || provided_code.blank?
+      return false unless expected_code.bytesize == provided_code.bytesize
+
+      ActiveSupport::SecurityUtils.secure_compare(provided_code, expected_code)
     end
 end

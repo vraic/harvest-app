@@ -40,6 +40,44 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to user_url(User.last)
   end
 
+  test "signup requires a valid invite code" do
+    sign_out
+
+    with_signup_invite_code("my-secret-code") do
+      assert_no_difference("User.count") do
+        post users_url, params: {
+          user: {
+            email_address: "signup-without-code@example.com",
+            password: "StrongPassword123!",
+            name: "Signup User"
+          }
+        }
+      end
+    end
+
+    assert_response :unprocessable_content
+    assert_select "div", /valid invite code/i
+  end
+
+  test "signup with valid invite code creates user" do
+    sign_out
+
+    with_signup_invite_code("my-secret-code") do
+      assert_difference("User.count") do
+        post users_url, params: {
+          user: {
+            email_address: "signup-with-code@example.com",
+            password: "StrongPassword123!",
+            name: "Invite Signup"
+          },
+          signup_invite_code: "my-secret-code"
+        }
+      end
+    end
+
+    assert_redirected_to security_setup_path
+  end
+
   test "should show user" do
     get user_url(@user)
     assert_response :success
@@ -80,4 +118,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Only global admins can permanently delete users.", flash[:alert]
     assert_not_nil User.find(users(:two).id)
   end
+
+  private
+    def with_signup_invite_code(code)
+      original_code = ENV["SIGNUP_INVITE_CODE"]
+      ENV["SIGNUP_INVITE_CODE"] = code
+
+      yield
+    ensure
+      ENV["SIGNUP_INVITE_CODE"] = original_code
+    end
 end

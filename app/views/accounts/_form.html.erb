@@ -44,7 +44,12 @@
     <% if Current.user.admin? %>
       <div>
         <%= form.label :owner_id, class: label_class %>
-        <%= form.select(:owner_id, User.all.order(:name).map{|u| [u.name.to_s, u.id]}, { selected: form.object.persisted? ? @account&.owner_id : params[:owner_id], include_blank: false }, class: input_class(account.errors[:owner_id].any?)) %>
+        <% owner_candidates = if account.persisted?
+          account.users.distinct.order(:name)
+        else
+          User.where(id: account.owner_id || Current.user.id).order(:name)
+        end %>
+        <%= form.select(:owner_id, owner_candidates.map { |u| [u.name.to_s, u.id] }, { selected: form.object.persisted? ? @account&.owner_id : params[:owner_id], include_blank: false }, class: input_class(account.errors[:owner_id].any?)) %>
       </div>
     <% else %>
       <%= form.hidden_field :owner_id, value: account.owner_id || Current.user.id %>

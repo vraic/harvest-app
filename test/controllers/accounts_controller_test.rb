@@ -36,6 +36,16 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "owner options are scoped to account users" do
+    get edit_account_url(@account)
+    assert_response :success
+
+    option_texts = css_select("select[name='account[owner_id]'] option").map { |node| node.text.strip }
+    expected_option_texts = @account.users.order(:name).pluck(:name)
+
+    assert_equal expected_option_texts, option_texts
+  end
+
   test "should update account" do
     patch account_url(@account), params: {
       account: {

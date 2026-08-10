@@ -27,9 +27,13 @@ class SidebarUserMenuTest < ApplicationSystemTestCase
 
     assert_selector "[data-dropdown-target='menu']", visible: true
     within "[data-dropdown-target='menu']" do
+      assert_link "Guides"
       assert_link "Settings"
       assert_link "Support"
       assert_button "Logout"
+
+      menu_entries = all("a", visible: :all).map { |link| link.text.strip }
+      assert_operator menu_entries.index("Guides"), :<, menu_entries.index("Settings")
     end
 
     # Test hiding by clicking outside (simulated by clicking elsewhere)
@@ -77,9 +81,13 @@ class SidebarUserMenuTest < ApplicationSystemTestCase
     click_on "user-menu-button-mobile"
 
     within "#sidebar" do # Mobile sidebar is in a dialog
+      assert_link "Guides"
       assert_link "Settings"
       assert_link "Support"
       assert_button "Logout"
+
+      menu_entries = all("[data-dropdown-target='menu'] a", visible: :all).map { |link| link.text.strip }
+      assert_operator menu_entries.index("Guides"), :<, menu_entries.index("Settings")
     end
   end
 end

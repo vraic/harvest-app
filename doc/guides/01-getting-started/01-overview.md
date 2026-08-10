@@ -1,51 +1,84 @@
 ---
 title: Getting started
-description: Start here to choose the best way to begin using Harvest.
+description: A simple guide for farmers to start using Harvest, built locally for island-based businesses.
 position: 1
 section: Getting started
-summary: Pick hosted, self-hosted, or local trial and understand what each route involves.
+summary: Learn what Harvest does for island-based agri-businesses, what to set up first, and a clear 90-day onboarding path.
 keywords:
   - start
   - setup
-  - hosting
+  - onboarding
   - beginner
 related:
-  - getting-started/hosted-harvest-je
-  - getting-started/self-hosted-with-kamal
-  - getting-started/local-development
+  - daily-operations/overview
+  - commerce-and-orders/overview
+  - store-admin-and-security/overview
 ---
 
 # Getting started
 
-Harvest keeps day-to-day farm and food-business records in one place.
+Harvest helps you run your agri-business from one system.
 
-It is fully open-source, so you can use it however you like:
+Harvest is locally developed for island-based businesses, so it fits local supply realities and day-to-day farm operations.
 
-- run it yourself
-- deploy it wherever you want
-- or use the fully hosted option at [harvest.je](https://harvest.je)
+Most farmers benefit from starting with B2B supplier ordering. One of the keys is to get stock buying and replenishment working well, then add online commerce later.
 
-## Choose your path
+This page gives you:
 
-Most teams pick one of these routes:
+1. What Harvest is for.
+2. What to do first.
+3. A simple 90-day plan.
 
-1. **Hosted**: quickest route, no server work. See [Hosted with harvest.je](/guides/getting-started/hosted-harvest-je).
-2. **Self-hosted**: full control on your own provider. See [Self-hosted with Kamal](/guides/getting-started/self-hosted-with-kamal).
-3. **Local trial**: run Harvest on your own computer first. See [Local development](/guides/getting-started/local-development).
+## What Harvest covers
 
-## What to prepare
+Harvest handles four core jobs:
 
-- A store name and basic business details.
-- A team member who can set up user accounts.
-- Time to review [daily operations docs](/guides/daily-operations/overview) after setup.
+1. **Supplier ordering**: create purchase orders, send them, and track deliveries.
+2. **Stock control**: track inventory so you know what to reorder.
+3. **Daily work**: tasks, reminders, and team handoffs.
+4. **Customers and sales**: customer records now, online store/checkout when you're ready.
 
-## Next steps
+## How Harvest helps your farm business
 
-After setup, continue with:
+You should notice value quickly on the farm and in the office:
 
-- [Dashboard and notifications](/guides/daily-operations/dashboard-and-notifications)
-- [Tasks and work planning](/guides/daily-operations/tasks-and-work-planning)
-- [Shop, cart, and orders](/guides/commerce-and-orders/overview)
-- [Data protection and retention](/guides/data-protection-and-retention/overview)
+- **Built for island businesses**: developed locally to match local suppliers, freight cycles, and practical workflows.
+- **Less chaos**: no more juggling spreadsheets, texts, and paper notes.
+- **Fewer stock-outs**: clearer supplier ordering and reorder timing.
+- **Better team clarity**: everyone sees the same tasks and order status.
 
-Need help choosing? Start with [harvest.je](https://harvest.je) or ask your technical partner to review self-hosting.
+Harvest will not fix bad process by itself, but it makes problems visible fast so you can fix them early.
+
+## Quick start checklist
+
+Do these steps first:
+
+1. Set up your business on Harvest
+2. Add your main suppliers
+3. Load your top products and stock levels
+5. Run regular supplier ordering in Harvest
+6. Add online commerce later
+
+## Suggested 90-day onboarding roadmap
+
+Getting fully onboarded takes time because of setup and data loading.
+
+### Days 1-30: Foundation
+
+- Set up your agri-business, users, and permissions.
+- Load key supplier, product, and stock data.
+- Start managing tasks, inventory and suppliers in Harvest.
+
+### Days 31-60: Stabilisation
+
+- Add more suppliers and products.
+- Standardise how your team handles approvals and exceptions.
+- Clean up bad or missing data.
+
+### Days 61-90: Full onboarding
+
+- Complete remaining data migration and cleanup.
+- Refine routines, reporting, and team ownership.
+- Add online sales workflows if you need them.
+
+Next, continue with [Daily operations](/guides/daily-operations/overview), then [Commerce and orders](/guides/commerce-and-orders/overview), and finally [Store admin and security](/guides/store-admin-and-security/overview).

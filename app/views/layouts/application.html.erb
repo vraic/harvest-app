@@ -111,6 +111,7 @@
                     </button>
 
                     <div data-dropdown-target="menu" class="hidden absolute bottom-full left-0 z-10 w-64 mb-2 ml-4 origin-bottom-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none dark:bg-gray-800 dark:ring-white/10" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button-mobile" tabindex="-1">
+                      <%= link_to "Guides", guides_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5", role: "menuitem", tabindex: "-1" %>
                       <%= link_to "Settings", settings_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5", role: "menuitem", tabindex: "-1" %>
                       <%= link_to "Support", support_requests_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5", role: "menuitem", tabindex: "-1" %>
                       <div class="border-t border-gray-100 dark:border-white/5 my-1"></div>
@@ -221,6 +222,7 @@
                 </button>
 
                 <div data-dropdown-target="menu" class="hidden absolute bottom-full left-0 z-10 w-64 mb-2 ml-4 origin-bottom-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none dark:bg-gray-800 dark:ring-white/10" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button-desktop" tabindex="-1">
+                  <%= link_to "Guides", guides_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5", role: "menuitem", tabindex: "-1" %>
                   <%= link_to "Settings", settings_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5", role: "menuitem", tabindex: "-1" %>
                   <%= link_to "Support", support_requests_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5", role: "menuitem", tabindex: "-1" %>
                   <div class="border-t border-gray-100 dark:border-white/5 my-1"></div>

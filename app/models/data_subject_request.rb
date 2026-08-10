@@ -49,6 +49,7 @@ class DataSubjectRequest < ApplicationRecord
   validates :decision_summary, presence: true, if: :completed_or_rejected?
   validates :completed_at, presence: true, if: :completed?
   validates :subject_user, presence: true, if: :offboarding_action_required?
+  validate :subject_user_belongs_to_account, if: :validate_subject_user_account_membership?
 
   scope :open_requests, -> { where.not(status: [ :completed, :rejected ]) }
   scope :overdue, -> { open_requests.where("due_on < ?", Date.current) }
@@ -142,5 +143,17 @@ class DataSubjectRequest < ApplicationRecord
   def subject_account(subject)
     AccountUser.unscoped.where(user_id: subject.id).includes(:account).first&.account ||
       Customer.with_deleted.find_by(user_id: subject.id)&.account
+  end
+
+  def subject_user_belongs_to_account
+    return if AccountUser.unscoped.exists?(account_id: account_id, user_id: subject_user_id)
+
+    errors.add(:subject_user, :invalid)
+  end
+
+  def validate_subject_user_account_membership?
+    subject_user_id.present? &&
+      account_id.present? &&
+      (new_record? || will_save_change_to_subject_user_id? || will_save_change_to_account_id?)
   end
 end

@@ -17,6 +17,25 @@ class DataSubjectRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "store manager index only shows their own requests" do
+    sign_in_as @store_manager
+
+    own_request = DataSubjectRequest.create!(
+      account: accounts(:one),
+      requester: @store_manager,
+      subject_user: users(:three),
+      request_type: :access,
+      request_summary: "Own request should be visible"
+    )
+
+    get data_subject_requests_url
+
+    assert_response :success
+    assert_select "a[href='#{data_subject_request_path(own_request)}']", text: "View"
+    assert_select "a[href='#{data_subject_request_path(@request_one)}']", count: 0
+    assert_select "td", text: @admin.name, count: 0
+  end
+
   test "store manager can create data subject request" do
     sign_in_as @store_manager
     subject = users(:three)
@@ -41,6 +60,67 @@ class DataSubjectRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_equal subject.name, request.subject_name
     assert_equal subject.email_address, request.subject_email
     assert_equal "legal_obligation", request.legal_basis
+  end
+
+  test "non-admin create always uses currently selected account" do
+    sign_in_as @store_manager
+
+    assert_difference("DataSubjectRequest.count") do
+      post data_subject_requests_url, params: {
+        data_subject_request: {
+          account_id: accounts(:two).id,
+          request_type: "access",
+          request_summary: "Should bind to current account",
+          due_on: 30.days.from_now.to_date,
+          subject_user_id: users(:three).id
+        }
+      }
+    end
+
+    request = DataSubjectRequest.order(:id).last
+    assert_equal accounts(:one).id, request.account_id
+  end
+
+  test "store manager cannot view another requester request in same account" do
+    sign_in_as @store_manager
+
+    get data_subject_request_url(@request_one)
+
+    assert_redirected_to root_path
+    assert_equal I18n.t("unauthorized"), flash[:alert]
+  end
+
+  test "new form subject user options are limited to current account users" do
+    sign_in_as @store_manager
+
+    get new_data_subject_request_url
+
+    assert_response :success
+    assert_select "select[name='data_subject_request[subject_user_id]'] option" do |options|
+      values = options.map { |option| option["value"] }.reject(&:blank?)
+
+      assert_includes values, users(:one).id.to_s
+      assert_includes values, users(:three).id.to_s
+      assert_not_includes values, users(:two).id.to_s
+    end
+  end
+
+  test "store manager cannot create request for subject user outside current account" do
+    sign_in_as @store_manager
+
+    assert_no_difference("DataSubjectRequest.count") do
+      post data_subject_requests_url, params: {
+        data_subject_request: {
+          request_type: "access",
+          request_summary: "Should fail for out-of-account subject",
+          due_on: 30.days.from_now.to_date,
+          subject_user_id: users(:two).id
+        }
+      }
+    end
+
+    assert_response :unprocessable_content
+    assert_select "div", /Subject user/
   end
 
   test "new form does not ask for subject name and email" do

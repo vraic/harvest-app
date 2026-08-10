@@ -30,6 +30,7 @@ class DataSubjectRequestsController < ApplicationController
 
     @data_subject_request = DataSubjectRequest.new(permitted_params)
     @data_subject_request.requester = Current.user
+    @data_subject_request.account = Current.account unless Current.user.admin?
     @data_subject_request.account ||= Current.account
     authorize @data_subject_request
 
@@ -74,17 +75,17 @@ class DataSubjectRequestsController < ApplicationController
   end
 
   def set_form_options
-    @available_accounts = if Current.user.admin?
-      Account.order(:name)
-    else
-      [ Current.account ].compact
-    end
-
     account = @data_subject_request&.account || Current.account
     @available_subject_users = if account
-      User.joins(:account_users).where(account_users: { account_id: account.id }).distinct.order(:name)
+      AccountUser.active
+        .where(account_id: account.id)
+        .includes(:user)
+        .map(&:user)
+        .compact
+        .uniq
+        .sort_by { |user| user.name.to_s }
     else
-      [ Current.user ].compact
+      []
     end
   end
 

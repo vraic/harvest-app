@@ -82,8 +82,8 @@ GEM
       rails (>= 6.0)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
-    ahoy_email (3.0.0)
-      actionmailer (>= 7.1)
+    ahoy_email (4.0.0)
+      actionmailer (>= 7.2)
       addressable (>= 2.8)
       nokogiri (>= 1.15)
       safely_block (>= 0.5)
@@ -558,7 +558,7 @@ CHECKSUMS
   acts_as_paranoid (0.11.0) sha256=8fae9e408f739d8ad840b02dde18beb364a897f6b57ee25ef1c52efa8bc906db
   acts_as_tenant (1.0.1) sha256=6944e4d64533337938a8817a6b4ff9b11189c9dcc0b1333bb89f3821a4c14c53
   addressable (2.9.0) sha256=7fdf6ac3660f7f4e867a0838be3f6cf722ace541dd97767fa42bc6cfa980c7af
-  ahoy_email (3.0.0) sha256=1cecc9b85bda03e2a57f2c0d8b15fd73630e6d40b154def4dc2e5c19c06aecbb
+  ahoy_email (4.0.0) sha256=d0dab85924f1cd325a45662e2a1f9d874703ab1dd86abf7f77d0d3af7e7c0737
   ahoy_matey (5.5.0) sha256=84280579c1e690233bd0bffa2bdde601b3c4cb0e0cc31684238ef37f1e8cdbc6
   anony (1.7.1) sha256=c29f43699b7b54da8c91e5d94da5ee18d08289eee5ddd97f145da9fab600167f
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383

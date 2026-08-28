@@ -117,5 +117,5 @@ gem "prawn", "~> 2.5"
 gem "prawn-table", "~> 0.2.2"
 gem "barby", "~> 0.7.0"
 
-gem "rubyzip", "~> 3.4"
+gem "rubyzip", "~> 3.5"
 gem "madmin"

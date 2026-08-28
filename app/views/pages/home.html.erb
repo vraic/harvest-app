@@ -6,163 +6,34 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <% end %>
 
-<div class="-mx-4 -my-10 min-h-screen bg-gradient-to-b from-[#fff9ef] via-[#f6ecda] to-[#e7d6bc] text-stone-900 sm:-mx-6 lg:-mx-8">
-  <div class="relative isolate overflow-hidden">
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.35),transparent_38%),radial-gradient(circle_at_12%_28%,rgba(194,120,57,0.22),transparent_30%),radial-gradient(circle_at_82%_16%,rgba(250,204,21,0.22),transparent_28%)]"></div>
-
-    <header class="relative border-b border-[#d6b587]/70">
-      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-5 lg:px-8">
-        <a href="#home" class="text-sm font-semibold uppercase tracking-[0.22em] text-amber-800">Harvest</a>
-        <nav class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-stone-700" aria-label="Homepage">
-          <a href="#features" class="transition hover:text-amber-900">Features</a>
-          <a href="#platform" class="transition hover:text-amber-900">Platform</a>
-          <a href="#overview" class="transition hover:text-amber-900">Overview</a>
-          <a href="#faq" class="transition hover:text-amber-900">Use cases</a>
-          <%= link_to "Guides", guides_path, class: "transition hover:text-amber-900" %>
-        </nav>
-        <%= link_to "Login", new_session_path, class: "inline-flex items-center rounded-full border border-amber-300 bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-900 shadow-sm transition hover:bg-amber-50" %>
-      </div>
-    </header>
-
-    <section id="home" class="relative mx-auto max-w-7xl px-6 pb-20 pt-16 sm:pt-24 lg:px-8 lg:pb-28">
-      <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-[0.22em] text-amber-800">Built on the island, for the island</p>
-          <h1 class="mt-5 text-5xl leading-[1.02] tracking-tight text-stone-900 sm:text-6xl lg:text-7xl" style="font-family: 'Instrument Serif', serif;">
-            One place to run daily farm operations.
-          </h1>
-          <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-700">
-            From first light in the field to final deliveries, Harvest helps farmers, growers, shops, wholesalers, and procurers keep tasks, stock, procurement, and customer orders flowing in one place.
-            This project is fully open-source, so you can deploy it wherever and however you want.
-          </p>
-          <div class="mt-10 flex flex-wrap items-center gap-3">
-            <%= link_to "Get started", new_session_path, class: "inline-flex items-center rounded-full bg-amber-700 px-6 py-3 text-sm font-semibold text-amber-50 shadow-lg shadow-amber-800/20 transition hover:bg-amber-600" %>
-            <a href="#features" class="inline-flex items-center rounded-full border border-amber-400/60 bg-white/40 px-6 py-3 text-sm font-semibold text-stone-800 transition hover:border-amber-600 hover:bg-white/70">Explore features</a>
-            <%= link_to "Read guides", guides_path, class: "inline-flex items-center rounded-full border border-amber-400/60 bg-white/40 px-6 py-3 text-sm font-semibold text-stone-800 transition hover:border-amber-600 hover:bg-white/70" %>
-            <a href="https://github.com/vraic/harvest-je" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full border border-amber-400/60 bg-white/40 px-6 py-3 text-sm font-semibold text-stone-800 transition hover:border-amber-600 hover:bg-white/70">
-              <svg aria-hidden="true" viewBox="0 0 16 16" class="h-4 w-4 fill-current">
-                <path d="M8 0C3.58 0 0 3.58 0 8a8.001 8.001 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52 0-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.66 7.66 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.001 8.001 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path>
-              </svg>
-              <span>View on GitHub</span>
-            </a>
-          </div>
-          <p class="mt-4 max-w-2xl text-sm leading-6 text-stone-600">
-            Need a fully-managed solution? Harvest is also available as a hosted, commercially supported service at <a href="https://harvest.je" target="_blank" rel="noopener noreferrer" class="font-semibold text-amber-900 underline decoration-amber-500/60 underline-offset-2 hover:text-amber-700">harvest.je</a>.
-          </p>
-        </div>
-        <div class="rounded-3xl border border-amber-200 bg-[#f4e6cd]/90 p-6 shadow-2xl shadow-amber-900/10 backdrop-blur">
-          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-amber-800">What it helps with</p>
-          <ul class="mt-5 space-y-4 text-sm text-stone-700">
-            <li class="rounded-2xl border border-amber-200 bg-[#fff6e4] px-4 py-3">Free up hours each week with a clear daily plan your team can follow.</li>
-            <li class="rounded-2xl border border-amber-200 bg-[#fff6e4] px-4 py-3">Digitise slow manual processes so notes, updates, and orders are all in one place.</li>
-            <li class="rounded-2xl border border-amber-200 bg-[#fff6e4] px-4 py-3">Get more done each day with faster handoffs between field, packing, and delivery work.</li>
-          </ul>
-        </div>
-      </div>
-
-      <dl id="overview" class="mt-14 grid gap-4 sm:grid-cols-3">
-        <div class="rounded-2xl border border-amber-200 bg-[#fff6e7] p-5 text-center">
-          <dt class="text-xs uppercase tracking-[0.14em] text-stone-600">Designed for daily use</dt>
-          <dd class="mt-2 text-2xl font-semibold text-stone-900">Simple workflows</dd>
-        </div>
-        <div class="rounded-2xl border border-amber-200 bg-[#fff6e7] p-5 text-center">
-          <dt class="text-xs uppercase tracking-[0.14em] text-stone-600">Commerce support</dt>
-          <dd class="mt-2 text-2xl font-semibold text-stone-900">B2C + B2B</dd>
-        </div>
-        <div class="rounded-2xl border border-amber-200 bg-[#fff6e7] p-5 text-center">
-          <dt class="text-xs uppercase tracking-[0.14em] text-stone-600">Built for farm teams</dt>
-          <dd class="mt-2 text-2xl font-semibold text-stone-900">Easy for everyone</dd>
-        </div>
-      </dl>
-    </section>
-  </div>
-
-  <section id="features" class="bg-[#f8f1e4] py-20 text-stone-900">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-3xl text-center">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-amber-800">Core capabilities</p>
-        <h2 class="mt-4 text-4xl tracking-tight text-stone-950" style="font-family: 'Instrument Serif', serif;">Core workflows for island agri-business teams.</h2>
-      </div>
-      <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div class="rounded-2xl border border-amber-200 bg-[#fffaf0] p-6 shadow-sm">
-          <h3 class="text-base font-semibold">Task command center</h3>
-          <p class="mt-3 text-sm leading-6 text-stone-600">Assign daily work, track progress, and keep farm, grower, and shop teams coordinated.</p>
-        </div>
-        <div class="rounded-2xl border border-amber-200 bg-[#fffaf0] p-6 shadow-sm">
-          <h3 class="text-base font-semibold">Buyer & supplier flows</h3>
-          <p class="mt-3 text-sm leading-6 text-stone-600">Run B2C ordering plus B2B procurement for chefs, wholesalers, restaurants, and other trade buyers.</p>
-        </div>
-        <div class="rounded-2xl border border-amber-200 bg-[#fffaf0] p-6 shadow-sm">
-          <h3 class="text-base font-semibold">Inventory intelligence</h3>
-          <p class="mt-3 text-sm leading-6 text-stone-600">Monitor produce, packaged stock, supplier coverage, and replenishment from one dashboard.</p>
-        </div>
-        <div class="rounded-2xl border border-amber-200 bg-[#fffaf0] p-6 shadow-sm">
-          <h3 class="text-base font-semibold">Staff onboarding</h3>
-          <p class="mt-3 text-sm leading-6 text-stone-600">Invite-based access with secure auth paths and clear first-login experiences.</p>
-        </div>
-        <div class="rounded-2xl border border-amber-200 bg-[#fffaf0] p-6 shadow-sm">
-          <h3 class="text-base font-semibold">Account controls</h3>
-          <p class="mt-3 text-sm leading-6 text-stone-600">Granular account context, support workflows, and business-level feature flags.</p>
-        </div>
-        <div class="rounded-2xl border border-amber-200 bg-[#fffaf0] p-6 shadow-sm">
-          <h3 class="text-base font-semibold">Live notifications</h3>
-          <p class="mt-3 text-sm leading-6 text-stone-600">In-app notification signals for orders and assignments scoped by account.</p>
-        </div>
-      </div>
+<div class="-mx-4 -my-10 min-h-screen bg-[#fbf6ec] text-stone-900 sm:-mx-6 lg:-mx-8">
+  <header id="home" class="border-b border-stone-200">
+    <div class="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-6 py-6 lg:px-0">
+      <a href="#home" class="text-lg font-semibold text-stone-900">Harvest</a>
+      <nav class="flex flex-wrap items-center gap-x-6 gap-y-2 text-base text-stone-600" aria-label="Homepage">
+        <%= link_to "Login", new_session_path, class: "text-stone-900 underline underline-offset-2 hover:text-amber-800" %>
+      </nav>
     </div>
-  </section>
+  </header>
 
-  <section id="platform" class="bg-[#efdfc7] py-20 text-stone-900">
-    <div class="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-2 lg:items-center lg:px-8">
-      <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-amber-800">Platform fit</p>
-        <h2 class="mt-4 text-4xl tracking-tight text-stone-950" style="font-family: 'Instrument Serif', serif;">Built for practical day-to-day operations.</h2>
-        <p class="mt-6 text-base leading-7 text-stone-600">The aim is simple: help agri-business teams on the island run operations and commerce clearly, without unnecessary complexity.</p>
-      </div>
-      <dl class="grid grid-cols-2 gap-4">
-        <div class="rounded-2xl border border-amber-300 bg-[#fff9ed] p-5">
-          <dt class="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">Role-aware UX</dt>
-          <dd class="mt-2 text-sm font-medium text-stone-900">Everyone gets a simple view of the work and information they need each day.</dd>
-        </div>
-        <div class="rounded-2xl border border-amber-300 bg-[#fff9ed] p-5">
-          <dt class="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">Secure by default</dt>
-          <dd class="mt-2 text-sm font-medium text-stone-900">Customer data stays private, access is permission-based, and every order is traceable.</dd>
-        </div>
-        <div class="rounded-2xl border border-amber-300 bg-[#fff9ed] p-5">
-          <dt class="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">Team productivity</dt>
-          <dd class="mt-2 text-sm font-medium text-stone-900">Tasks, orders, and inventory run from a single daily workflow.</dd>
-        </div>
-        <div class="rounded-2xl border border-amber-300 bg-[#fff9ed] p-5">
-          <dt class="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">Flexible commerce</dt>
-          <dd class="mt-2 text-sm font-medium text-stone-900">Support both direct customers and trade buyer relationships across the island's food network.</dd>
-        </div>
-      </dl>
-    </div>
-  </section>
+  <section class="mx-auto max-w-3xl px-6 pb-20 pt-20 lg:px-0">
+    <p class="text-lg font-semibold text-amber-800">What this is</p>
+    <p class="mt-4 text-2xl leading-9 text-stone-700">
+      Harvest is open-source software for the island's farmers, growers, and everyone who eats. It's built in the open by islanders as a community project.
+    </p>
 
-  <section id="faq" class="bg-gradient-to-r from-slate-950 via-stone-900 to-zinc-900 py-20 text-stone-100">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-3xl text-center">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sky-300">Practical wins</p>
-        <h2 class="mt-4 text-4xl tracking-tight text-stone-100" style="font-family: 'Instrument Serif', serif;">Where Harvest saves time first.</h2>
-      </div>
-      <div class="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
-        <div class="rounded-2xl border border-sky-300/25 bg-white/5 p-6 backdrop-blur-sm">
-          <h3 class="text-base font-semibold text-stone-100">Start the morning faster</h3>
-          <p class="mt-3 text-sm leading-6 text-stone-300">Set picking, packing, and delivery priorities in minutes so everyone starts with a clear plan.</p>
-        </div>
-        <div class="rounded-2xl border border-sky-300/25 bg-white/5 p-6 backdrop-blur-sm">
-          <h3 class="text-base font-semibold text-stone-100">Cut end-of-day admin</h3>
-          <p class="mt-3 text-sm leading-6 text-stone-300">Update work and stock as the day moves, instead of rewriting paper notes after hours.</p>
-        </div>
-        <div class="rounded-2xl border border-sky-300/25 bg-white/5 p-6 backdrop-blur-sm">
-          <h3 class="text-base font-semibold text-stone-100">Keep teams in sync</h3>
-          <p class="mt-3 text-sm leading-6 text-stone-300">Give field, packing, and office teams one shared view to avoid repeat calls and missed steps.</p>
-        </div>
-      </div>
-      <div class="mt-14 text-center">
-        <%= link_to "Login", new_session_path, class: "inline-flex items-center rounded-full border border-sky-200/70 bg-sky-100 px-6 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-black/20 transition hover:bg-sky-50" %>
-      </div>
+    <h1 class="mt-12 text-4xl leading-[1.1] tracking-tight text-stone-900 sm:text-5xl" style="font-family: 'Instrument Serif', serif;">
+      Harvest exists to inspire new ways of thinking and being, so that everyone can live life to the fullest.
+    </h1>
+    <p class="mt-8 text-2xl leading-9 text-stone-700">
+      That's why this project. Everything else is in service of it.
+    </p>
+    <div class="mt-10 flex flex-wrap items-center gap-6 text-lg">
+      <%= link_to "Get started", new_session_path, class: "font-semibold text-stone-900 underline underline-offset-4 hover:text-amber-800" %>
+      <a href="https://github.com/vraic/harvest-je" target="_blank" rel="noopener noreferrer" class="font-semibold text-stone-900 underline underline-offset-4 hover:text-amber-800">View the source</a>
     </div>
+    <p class="mt-6 text-base leading-7 text-stone-500">
+      Harvest has a fully managed, hosted offering at <a href="https://harvest.je" target="_blank" rel="noopener noreferrer" class="text-stone-700 underline underline-offset-2 hover:text-amber-800">harvest.je</a>.
+    </p>
   </section>
 </div>

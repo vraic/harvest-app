@@ -5,11 +5,10 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    assert_select "h1", "One place to run daily farm operations."
-    assert_select "nav[aria-label='Homepage'] a[href='#features']", text: "Features"
-    assert_select "nav[aria-label='Homepage'] a[href='#platform']", text: "Platform"
-    assert_select "nav[aria-label='Homepage'] a[href='#overview']", text: "Overview"
-    assert_select "nav[aria-label='Homepage'] a[href='#faq']", text: "Use cases"
+    assert_select "h1", "Harvest exists to inspire new ways of thinking and being, so that everyone can live life to the fullest."
+    assert_select "nav[aria-label='Homepage'] a[href='#invitation']", text: "An invitation"
+    assert_select "nav[aria-label='Homepage'] a[href='#look']", text: "Look inside"
+    assert_select "nav[aria-label='Homepage'] a[href='#questions']", text: "Hard questions"
     assert_select "a[href=?]", new_session_path, text: "Login", minimum: 1
     assert_select "a[href=?]", new_session_path, text: "Get started"
   end

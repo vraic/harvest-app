@@ -78,6 +78,7 @@ class AccountsController < ApplicationController
     @account = Account.new(account_params)
     @account.owner_id ||= Current.user&.id
     authorize @account
+    @tab = params[:tab] || "general"
 
     respond_to do |format|
       if @account.save

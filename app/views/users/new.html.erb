@@ -1,31 +1,9 @@
-<% if authenticated? %>
-  <% content_for :title, "New user" %>
+<% content_for :title, "New user" %>
 
-  <div class="md:w-2/3 w-full">
-    <h1 class="font-bold text-4xl">New user</h1>
+<div class="md:w-2/3 w-full">
+  <h1 class="font-bold text-4xl">New user</h1>
 
-    <%= render "form", user: @user %>
+  <%= render "form", user: @user %>
 
-    <%= link_to "Back to users", users_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  </div>
-<% else %>
-  <% content_for :title, @account ? "Sign up for #{@account.name}" : "Sign up" %>
-
-  <div class="flex min-h-full flex-col justify-center mt-28 py-12 sm:px-6 lg:px-8 max-w-full min-w-3xl mx-auto">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-      <h1 class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
-        <%= @account ? "Sign up for #{@account.name}" : "Create your account" %>
-      </h1>
-    </div>
-
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-      <div class="bg-white px-6 py-12 border-1 border-gray-300 sm:rounded-lg sm:px-12 dark:bg-gray-800/50 dark:shadow-none dark:outline dark:-outline-offset-1 dark:outline-white/10">
-        <%= render "form", user: @user %>
-        
-        <p class="mt-6 text-center text-sm/6 text-gray-500 dark:text-gray-400">
-          Already have an account? <%= link_to "Sign in", new_session_path, class: "font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>
-        </p>
-      </div>
-    </div>
-  </div>
-<% end %>
+  <%= link_to "Back to users", users_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+</div>

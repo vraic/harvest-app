@@ -1,0 +1,49 @@
+<%= form_with model: user, url: signup_path, class: "space-y-6" do |form| %>
+  <% if @account %>
+    <%= hidden_field_tag :account_id, @account.id %>
+  <% end %>
+
+  <% if user.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md dark:bg-red-950/40 dark:text-red-400">
+      <h2 class="font-semibold"><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+      <ul class="list-disc ml-6 mt-1">
+        <% user.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, class: label_class %>
+    <div class="mt-2">
+      <%= form.text_field :name, class: input_class(user.errors[:name].any?), autofocus: true %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :email_address, class: label_class %>
+    <div class="mt-2">
+      <%= form.text_field :email_address, class: input_class(user.errors[:email_address].any?) %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :password, class: label_class %>
+    <div class="mt-2">
+      <%= form.password_field :password, class: input_class(user.errors[:password].any?) %>
+    </div>
+  </div>
+
+  <div>
+    <%= label_tag :signup_invite_code, "Invite code", class: label_class %>
+    <div class="mt-2">
+      <%= password_field_tag :signup_invite_code, params[:signup_invite_code], class: input_class(user.errors[:base].any?) %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.submit "Sign up", class: primary_button_class("flex w-full justify-center") %>
+  </div>
+<% end %>

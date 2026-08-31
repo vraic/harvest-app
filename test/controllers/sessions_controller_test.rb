@@ -8,8 +8,71 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "identify without email redirects back to signin" do
+    post identify_session_path, params: { email_address: "   " }
+
+    assert_redirected_to new_session_path
+    assert_equal "Enter your email address.", flash[:alert]
+  end
+
+  test "identify for unknown email redirects to signup" do
+    assert_no_difference("User.count") do
+      assert_no_enqueued_emails do
+        post identify_session_path, params: { email_address: "signup-only@example.com" }
+      end
+    end
+
+    assert_redirected_to new_signup_path(email_address: "signup-only@example.com")
+    assert_equal "No account found for that email. Please sign up first.", flash[:alert]
+    assert_nil session[:otp_user_id]
+  end
+
+  test "identify for password account redirects to password step" do
+    @user.update!(prefers_email_login: false)
+
+    post identify_session_path, params: { email_address: @user.email_address }
+
+    assert_redirected_to password_session_path(email_address: @user.email_address)
+    assert_nil session[:otp_user_id]
+  end
+
+  test "identify for magic link account sends one-time code" do
+    @user.update!(prefers_email_login: true)
+
+    assert_enqueued_emails 1 do
+      post identify_session_path, params: { email_address: @user.email_address }
+    end
+
+    assert_redirected_to new_two_factor_verification_path
+    assert_equal @user.id, session[:otp_user_id]
+    assert_equal @user.id, session[:security_setup_user_id]
+    assert User.find(@user.id).email_otp_token.present?
+  end
+
+  test "password step renders for password account" do
+    @user.update!(prefers_email_login: false)
+
+    get password_session_path(email_address: @user.email_address)
+
+    assert_response :success
+  end
+
+  test "password step redirects to email step for magic link account" do
+    @user.update!(prefers_email_login: true)
+
+    get password_session_path(email_address: @user.email_address)
+
+    assert_redirected_to new_session_path
+  end
+
+  test "password step redirects to email step for unknown email" do
+    get password_session_path(email_address: "unknown@example.com")
+
+    assert_redirected_to new_session_path
+  end
+
   test "create with valid credentials and 2FA required redirects to 2FA" do
-    @user.update!(otp_required_for_login: true)
+    @user.update!(otp_required_for_login: true, prefers_email_login: false)
     post session_path, params: { email_address: @user.email_address, password: "password" }
 
     assert_redirected_to new_two_factor_verification_path
@@ -51,10 +114,11 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil cookies[:session_id]
   end
 
-  test "create with invalid credentials" do
+  test "create with invalid credentials redirects back to password step" do
     post session_path, params: { email_address: @user.email_address, password: "wrong" }
 
-    assert_redirected_to new_session_path
+    assert_redirected_to password_session_path(email_address: @user.email_address)
+    assert_equal "Try another email address or password.", flash[:alert]
     assert_nil cookies[:session_id]
   end
 
@@ -88,7 +152,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_redirected_to new_user_path(email_address: "signup-only@example.com")
+    assert_redirected_to new_signup_path(email_address: "signup-only@example.com")
     assert_equal "No account found for that email. Please sign up first.", flash[:alert]
     assert_nil session[:otp_user_id]
     assert_nil session[:security_setup_user_id]

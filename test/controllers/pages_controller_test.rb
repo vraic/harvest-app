@@ -33,4 +33,43 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to dashboard_path
   end
+
+  test "terms renders for unauthenticated visitors" do
+    get terms_path
+
+    assert_response :success
+    assert_select "h1", "Terms of Service"
+  end
+
+  test "terms renders for authenticated users" do
+    sign_in_as(users(:one))
+
+    get terms_path
+
+    assert_response :success
+    assert_select "h1", "Terms of Service"
+  end
+
+  test "privacy renders for unauthenticated visitors" do
+    get privacy_path
+
+    assert_response :success
+    assert_select "h1", "Privacy Policy"
+  end
+
+  test "privacy renders for authenticated users" do
+    sign_in_as(users(:one))
+
+    get privacy_path
+
+    assert_response :success
+    assert_select "h1", "Privacy Policy"
+  end
+
+  test "terms links to privacy policy" do
+    get terms_path
+
+    assert_response :success
+    assert_select "a[href=?]", privacy_path, text: "Privacy Policy"
+  end
 end

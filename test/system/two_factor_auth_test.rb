@@ -88,14 +88,10 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
   def sign_in_with_password(user, password)
     visit new_session_path
     fill_in "Email", with: user.email_address
-    click_button "Sign in with password"
-
-    unless page.has_field?("Password (optional)", wait: 3)
-      execute_script("document.querySelectorAll('[data-password-login-target=\"passwordFields\"]').forEach(el => el.classList.remove('hidden'))")
-    end
-
-    fill_in "Password (optional)", with: password
     click_button "Continue"
+
+    fill_in "Password", with: password
+    click_button "Sign in"
   end
 
   def verify_code_with_retry(max_attempts: 3)

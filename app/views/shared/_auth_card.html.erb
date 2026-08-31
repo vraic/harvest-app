@@ -1,0 +1,20 @@
+<div class="flex flex-1 w-full flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <h1 class="text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white"><%= title %></h1>
+    <% if local_assigns[:subtitle].present? %>
+      <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400"><%= subtitle %></p>
+    <% end %>
+  </div>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
+    <div class="bg-white px-6 py-12 border border-gray-200 shadow-sm sm:rounded-xl sm:px-12 dark:bg-gray-800/50 dark:border-white/10 dark:shadow-none">
+      <%= yield %>
+    </div>
+
+    <% if local_assigns[:footer].present? %>
+      <p class="mt-6 text-center text-sm/6 text-gray-500 dark:text-gray-400">
+        <%= footer %>
+      </p>
+    <% end %>
+  </div>
+</div>

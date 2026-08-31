@@ -23,17 +23,15 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     @logged_in_user = user
     visit new_session_url
     fill_in "Email", with: user.email_address
-
-    if page.has_button?("Sign in with password")
-      click_button "Sign in with password"
-    end
-
-    # We use a broader search and wait for the field to become interactable
-    find("input[name='password']", visible: :all).set("password")
     click_button "Continue"
 
+    if page.has_field?("Password", wait: 5)
+      fill_in "Password", with: "password"
+      click_button "Sign in"
+    end
+
     # We expect 2FA after signing in if enabled
-    if page.has_css?("h2", text: "Two-Factor Verification", wait: 10)
+    if page.has_css?("h1", text: "Two-Factor Verification", wait: 10)
       code = if user.otp_enabled?
         ROTP::TOTP.new(user.otp_secret).now
       else

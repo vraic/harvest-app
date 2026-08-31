@@ -1,30 +1,21 @@
-
-<div class="flex min-h-full flex-col justify-center mt-28 py-12 sm:px-6 lg:px-8 max-w-full min-w-3xl mx-auto">
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <h1 class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">Update your password</h1>
-  </div>
-
-  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-    <div class="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12 dark:bg-gray-800/50 dark:shadow-none dark:outline dark:-outline-offset-1 dark:outline-white/10">
-      <%= form_with url: password_path(params[:token]), class: "space-y-6" do |form| %>
-        <div>
-          <%= form.label :password, "New password", class: label_class %>
-          <div class="mt-2">
-            <%= form.password_field :password, required: true, autofocus: true, autocomplete: "new-password", placeholder: "Enter new password", maxlength: 72, class: input_class %>
-          </div>
-        </div>
-
-        <div>
-          <%= form.label :password_confirmation, "Confirm password", class: label_class %>
-          <div class="mt-2">
-            <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", placeholder: "Repeat new password", maxlength: 72, class: input_class %>
-          </div>
-        </div>
-
-        <div>
-          <%= form.submit "Save", class: primary_button_class("flex w-full justify-center") %>
-        </div>
-      <% end %>
+<%= render layout: "shared/auth_card", locals: { title: "Update your password" } do %>
+  <%= form_with url: password_path(params[:token]), class: "space-y-6" do |form| %>
+    <div>
+      <%= form.label :password, "New password", class: label_class %>
+      <div class="mt-2">
+        <%= form.password_field :password, required: true, autofocus: true, autocomplete: "new-password", placeholder: "Enter new password", maxlength: 72, class: input_class %>
+      </div>
     </div>
-  </div>
-</div>
+
+    <div>
+      <%= form.label :password_confirmation, "Confirm password", class: label_class %>
+      <div class="mt-2">
+        <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", placeholder: "Repeat new password", maxlength: 72, class: input_class %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.submit "Save", class: primary_button_class("flex w-full justify-center") %>
+    </div>
+  <% end %>
+<% end %>

@@ -1,33 +1,20 @@
-<div class="sm:mx-auto sm:w-full sm:max-w-md">
-  <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-    Two-Factor Verification
-  </h2>
-  <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-    <% if @user.otp_enabled? %>
-      Please enter the code from your authenticator app.
-    <% else %>
-      We've sent a verification code to your email address.
-    <% end %>
-  </p>
-</div>
+<% subtitle = @user.otp_enabled? ? "Please enter the code from your authenticator app." : "We've sent a verification code to your email address." %>
 
-<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-  <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 dark:bg-gray-800">
-    <%= form_with url: two_factor_verification_path, method: :post, class: "space-y-6", data: { turbo: false } do |f| %>
-      <div>
-        <%= f.label :otp_code, "Verification Code", class: label_class %>
-        <div class="mt-2">
-          <%= f.text_field :otp_code, autofocus: true, autocomplete: "one-time-code", inputmode: @user.otp_enabled? ? "numeric" : "text", class: input_class %>
-        </div>
+<% footer = capture do %>
+  <%= link_to "Back to sign in", new_session_path, class: "font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+<% end %>
+
+<%= render layout: "shared/auth_card", locals: { title: "Two-Factor Verification", subtitle: subtitle, footer: footer } do %>
+  <%= form_with url: two_factor_verification_path, method: :post, class: "space-y-6", data: { turbo: false } do |f| %>
+    <div>
+      <%= f.label :otp_code, "Verification Code", class: label_class %>
+      <div class="mt-2">
+        <%= f.text_field :otp_code, autofocus: true, autocomplete: "one-time-code", inputmode: @user.otp_enabled? ? "numeric" : "text", class: input_class %>
       </div>
-
-      <div>
-        <%= f.submit "Verify", class: primary_button_class("w-full justify-center") %>
-      </div>
-    <% end %>
-
-    <div class="mt-6 text-center">
-      <%= link_to "Back to Login", new_session_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400" %>
     </div>
-  </div>
-</div>
+
+    <div>
+      <%= f.submit "Verify", class: primary_button_class("flex w-full justify-center") %>
+    </div>
+  <% end %>
+<% end %>

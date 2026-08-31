@@ -1,0 +1,81 @@
+<% content_for :title, "Terms of Service" %>
+<% content_for :no_sidebar, true %>
+
+<div class="max-w-3xl mx-auto py-12">
+  <h1 class="font-bold text-4xl">Terms of Service</h1>
+  <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Last updated: [DATE]</p>
+
+  <div class="mt-8 space-y-8 text-gray-700 dark:text-gray-300">
+    <section>
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">1. Who we are</h2>
+      <p class="mt-2">
+        Harvest is an open source project built and maintained by a community of contributors. The hosted
+        service at this domain is operated by <strong>[COMPANY NAME] Ltd</strong>, a company registered in
+        England and Wales under company number <strong>[COMPANY NUMBER]</strong>, with its registered office
+        at <strong>[REGISTERED OFFICE ADDRESS]</strong> ("we", "us", "our"). This company acts as the single
+        legal vehicle for the open source collective behind Harvest, and is the party you contract with when
+        you use this hosted service.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">2. Acceptance of these terms</h2>
+      <p class="mt-2">
+        By creating an account or otherwise using this service, you agree to be bound by these Terms of
+        Service and our <%= link_to "Privacy Policy", privacy_path, class: "text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>.
+        If you do not agree to these terms, please do not use the service.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">3. Open source software</h2>
+      <p class="mt-2">
+        The Harvest codebase is open source and made available under the MIT License. Anyone is free to
+        download, self-host, and modify the software independently of this hosted service. These terms apply
+        only to your use of the hosted service provided by us, not to any self-hosted deployment.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">4. Accounts</h2>
+      <p class="mt-2">
+        You are responsible for maintaining the confidentiality of your account credentials and for all
+        activity that occurs under your account. You must provide accurate information when signing up and
+        keep it up to date.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">5. Acceptable use</h2>
+      <p class="mt-2">
+        You agree not to misuse the service, including attempting to gain unauthorised access to other
+        accounts or systems, disrupting the service, or using it for unlawful purposes.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">6. Liability</h2>
+      <p class="mt-2">
+        The service is provided "as is" without warranties of any kind, to the extent permitted by law.
+        Nothing in these terms limits or excludes our liability for death or personal injury caused by
+        negligence, fraud, or any other liability that cannot be limited or excluded under applicable UK law.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">7. Governing law</h2>
+      <p class="mt-2">
+        These terms are governed by the laws of England and Wales, and any disputes will be subject to the
+        exclusive jurisdiction of the courts of England and Wales.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">8. Contact us</h2>
+      <p class="mt-2">
+        If you have any questions about these terms, please contact us at
+        <a href="mailto:[LEGAL CONTACT EMAIL]" class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">[LEGAL CONTACT EMAIL]</a>.
+      </p>
+    </section>
+  </div>
+</div>

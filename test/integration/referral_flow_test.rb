@@ -29,6 +29,6 @@ class ReferralFlowTest < ActionDispatch::IntegrationTest
 
     customer = Customer.find_by(account: @account, user: @user)
     assert_not_nil customer, "Customer should have been created"
-    assert_equal "Welcome! You've been joined to #{@account.name}.", flash[:notice]
+    assert_equal "Joined account", flash[:notice]
   end
 end

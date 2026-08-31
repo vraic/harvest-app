@@ -49,7 +49,7 @@ class CustomerNewslettersTest < ApplicationSystemTestCase
 
     click_button "Subscribe"
 
-    assert_text "You have successfully subscribed to the newsletter."
+    assert_text "Subscribed"
     assert_text "New News"
     assert_no_text "Old News"
 

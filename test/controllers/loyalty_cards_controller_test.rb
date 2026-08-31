@@ -65,7 +65,7 @@ class LoyaltyCardsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to dashboard_path
-    assert_equal "You've successfully enrolled in the loyalty program!", flash[:notice]
+    assert_equal "Enrolled", flash[:notice]
   end
 
   test "should get wallet" do

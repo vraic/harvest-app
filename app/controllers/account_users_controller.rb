@@ -48,7 +48,7 @@ class AccountUsersController < ApplicationController
       if @account_user.save
         user.password = user.password_confirmation = nil
         UserMailer.account_invitation(user, @account).deliver_later
-        format.html { redirect_to edit_account_path(@account, tab: "staff"), notice: "Account user was successfully invited." }
+        format.html { redirect_to edit_account_path(@account, tab: "staff"), notice: "User invited" }
         format.json { render :show, status: :created, location: @account_user }
       else
         format.html { render :new, status: :unprocessable_content }
@@ -62,7 +62,7 @@ class AccountUsersController < ApplicationController
     authorize @account_user
     respond_to do |format|
       if @account_user.update(account_user_params)
-        format.html { redirect_to edit_account_path(@account_user.account, tab: "staff"), notice: "Account user was successfully updated.", status: :see_other }
+        format.html { redirect_to edit_account_path(@account_user.account, tab: "staff"), notice: "User updated", status: :see_other }
         format.json { render :show, status: :ok, location: @account_user }
       else
         format.html { render :edit, status: :unprocessable_content }
@@ -77,19 +77,19 @@ class AccountUsersController < ApplicationController
     account = @account_user.account
 
     if @account_user.user_id == Current.user.id
-      redirect_to edit_account_path(account, tab: "staff"), alert: "You cannot archive yourself."
+      redirect_to edit_account_path(account, tab: "staff"), alert: "Cannot archive yourself"
       return
     end
 
     if @account_user.store_manager? && account.account_users.active.store_manager.where.not(id: @account_user.id).none?
-      redirect_to edit_account_path(account, tab: "staff"), alert: "At least one store manager is required."
+      redirect_to edit_account_path(account, tab: "staff"), alert: "Store manager required"
       return
     end
 
     @account_user.archive!
 
     respond_to do |format|
-      format.html { redirect_to edit_account_path(account, tab: "staff"), notice: "Account user was successfully archived.", status: :see_other }
+      format.html { redirect_to edit_account_path(account, tab: "staff"), notice: "User archived", status: :see_other }
       format.json { head :no_content }
     end
   end

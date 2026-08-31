@@ -35,7 +35,7 @@ class TwoFactorVerificationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to dashboard_path
-    assert_equal "Signed in successfully.", flash[:notice]
+    assert_equal "Signed in", flash[:notice]
     assert_nil session[:otp_user_id]
     assert_not_nil cookies[:session_id]
   end
@@ -53,7 +53,7 @@ class TwoFactorVerificationsControllerTest < ActionDispatch::IntegrationTest
     post two_factor_verification_path, params: { otp_code: token }
 
     assert_redirected_to dashboard_path
-    assert_equal "Signed in successfully.", flash[:notice]
+    assert_equal "Signed in", flash[:notice]
     assert_nil session[:otp_user_id]
     assert_not_nil cookies[:session_id]
     assert_nil User.find(@user.id).email_otp_token
@@ -73,7 +73,7 @@ class TwoFactorVerificationsControllerTest < ActionDispatch::IntegrationTest
     post two_factor_verification_path, params: { otp_code: token }
 
     assert_redirected_to shop_path
-    assert_equal "Signed in successfully.", flash[:notice]
+    assert_equal "Signed in", flash[:notice]
     assert_nil session[:otp_user_id]
     assert_not_nil cookies[:session_id]
   end
@@ -92,7 +92,7 @@ class TwoFactorVerificationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     assert_match(%r{\A/passwords/.+/edit\z}, URI.parse(response.location).path)
-    assert_equal "Please reset your password to continue.", flash[:alert]
+    assert_equal "Password reset needed", flash[:alert]
     assert_nil session[:otp_user_id]
     assert_nil cookies[:session_id]
   end

@@ -7,9 +7,9 @@ class SupplierPricesController < ApplicationController
     authorize @supplier_price
 
     if @supplier_price.save
-      redirect_to @inventory_item, notice: "Supplier price was successfully set."
+      redirect_to @inventory_item, notice: "Price set"
     else
-      redirect_to @inventory_item, alert: "Could not set supplier price: #{@supplier_price.errors.full_messages.to_sentence}"
+      redirect_to @inventory_item, alert: "Save failed"
     end
   end
 
@@ -17,7 +17,7 @@ class SupplierPricesController < ApplicationController
     @supplier_price = @inventory_item.supplier_prices.find(params[:id])
     authorize @supplier_price
     @supplier_price.destroy!
-    redirect_to @inventory_item, notice: "Supplier price was successfully removed.", status: :see_other
+    redirect_to @inventory_item, notice: "Price removed", status: :see_other
   end
 
   private

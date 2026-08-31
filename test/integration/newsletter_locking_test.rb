@@ -29,7 +29,7 @@ class NewsletterLockingTest < ActionDispatch::IntegrationTest
     get edit_newsletter_url(@newsletter)
     assert_redirected_to newsletter_url(@newsletter)
     follow_redirect!
-    assert_match "This newsletter has already been sent", response.body
+    assert_match "Already sent", response.body
   end
 
   test "cannot update a sent newsletter" do
@@ -38,7 +38,7 @@ class NewsletterLockingTest < ActionDispatch::IntegrationTest
     patch newsletter_url(@newsletter), params: { newsletter: { subject: "New Subject" } }
     assert_redirected_to newsletter_url(@newsletter)
     follow_redirect!
-    assert_match "This newsletter has already been sent", response.body
+    assert_match "Already sent", response.body
 
     @newsletter.reload
     assert_equal "Test Newsletter", @newsletter.subject
@@ -53,7 +53,7 @@ class NewsletterLockingTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to newsletter_url(@newsletter)
     follow_redirect!
-    assert_match "This newsletter has already been sent", response.body
+    assert_match "Already sent", response.body
   end
 
   test "cannot destroy a sent newsletter" do
@@ -65,7 +65,7 @@ class NewsletterLockingTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to newsletter_url(@newsletter)
     follow_redirect!
-    assert_match "This newsletter has already been sent", response.body
+    assert_match "Already sent", response.body
   end
 
   test "uses prefixed IDs" do

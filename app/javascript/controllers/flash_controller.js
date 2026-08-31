@@ -25,7 +25,7 @@ export default class extends Controller {
 
     // Use a more robust way to hide before removal
     this.element.style.opacity = '0'
-    this.element.style.transform = 'translateY(-0.5rem)'
+    this.element.style.transform = 'translateY(0.5rem)'
     this.element.style.transition = 'opacity 300ms, transform 300ms'
     
     // Wait for transition to finish before removing

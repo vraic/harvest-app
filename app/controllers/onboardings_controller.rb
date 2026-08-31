@@ -12,7 +12,7 @@ class OnboardingsController < ApplicationController
       @user.update!(onboarded: true)
       redirect_to dashboard_path
     else
-      redirect_to onboarding_path, alert: "Please select an option."
+      redirect_to onboarding_path, alert: "Select an option"
     end
   end
 end

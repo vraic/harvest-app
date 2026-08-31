@@ -17,7 +17,7 @@ class TasksController < ApplicationController
     authorize @task
     @task.complete!
     respond_to do |format|
-      format.html { redirect_back fallback_location: tasks_path, notice: "Task was marked as completed." }
+      format.html { redirect_back fallback_location: tasks_path, notice: "Task completed" }
       format.json { render :show, status: :ok, location: @task }
     end
   end
@@ -26,7 +26,7 @@ class TasksController < ApplicationController
     authorize @task, :complete?
     @task.incomplete!
     respond_to do |format|
-      format.html { redirect_back fallback_location: tasks_path, notice: "Task was marked as incomplete." }
+      format.html { redirect_back fallback_location: tasks_path, notice: "Task reopened" }
       format.json { render :show, status: :ok, location: @task }
     end
   end
@@ -58,11 +58,11 @@ class TasksController < ApplicationController
 
     respond_to do |format|
       if @task.save
-        format.html { redirect_to tasks_path, notice: "Task was successfully created." }
+        format.html { redirect_to tasks_path, notice: "Task created" }
         format.json { render :show, status: :created, location: @task }
       else
         @users = policy_scope(User).order(:name)
-        flash.now[:alert] = @task.errors.full_messages.to_sentence
+        flash.now[:alert] = "Save failed"
         format.html { render :new, status: :unprocessable_content }
         format.json { render json: @task.errors, status: :unprocessable_content }
       end
@@ -74,11 +74,11 @@ class TasksController < ApplicationController
     authorize @task
     respond_to do |format|
       if @task.update(task_params)
-        format.html { redirect_to tasks_path, notice: "Task was successfully updated.", status: :see_other }
+        format.html { redirect_to tasks_path, notice: "Task updated", status: :see_other }
         format.json { render :show, status: :ok, location: @task }
       else
         @users = policy_scope(User).order(:name)
-        flash.now[:alert] = @task.errors.full_messages.to_sentence
+        flash.now[:alert] = "Update failed"
         format.html { render :edit, status: :unprocessable_content }
         format.json { render json: @task.errors, status: :unprocessable_content }
       end
@@ -91,7 +91,7 @@ class TasksController < ApplicationController
     @task.destroy!
 
     respond_to do |format|
-      format.html { redirect_to tasks_path, notice: "Task was successfully destroyed.", status: :see_other }
+      format.html { redirect_to tasks_path, notice: "Task deleted", status: :see_other }
       format.json { head :no_content }
     end
   end

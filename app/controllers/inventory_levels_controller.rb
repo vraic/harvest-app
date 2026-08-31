@@ -32,10 +32,10 @@ class InventoryLevelsController < ApplicationController
 
     respond_to do |format|
       if @inventory_level.save
-        format.html { redirect_to @inventory_item, notice: "Stock was successfully adjusted." }
+        format.html { redirect_to @inventory_item, notice: "Stock adjusted" }
         format.json { render :show, status: :created, location: @inventory_level }
       else
-        format.html { redirect_to @inventory_item, alert: "Failed to adjust stock: #{@inventory_level.errors.full_messages.join(', ')}", status: :unprocessable_content }
+        format.html { redirect_to @inventory_item, alert: "Stock adjustment failed", status: :unprocessable_content }
         format.json { render json: @inventory_level.errors, status: :unprocessable_content }
       end
     end
@@ -50,7 +50,7 @@ class InventoryLevelsController < ApplicationController
       from_level = @inventory_item.inventory_levels.find_by(location: from_location)
 
       if from_level.nil? || from_level.quantity < quantity
-        redirect_to @inventory_item, alert: "Insufficient stock at #{from_location.name}."
+        redirect_to @inventory_item, alert: "Insufficient stock"
         return
       end
 
@@ -61,9 +61,9 @@ class InventoryLevelsController < ApplicationController
       to_level.update!(quantity: (to_level.quantity || 0) + quantity)
     end
 
-    redirect_to @inventory_item, notice: "Successfully transferred stock."
+    redirect_to @inventory_item, notice: "Stock transferred"
   rescue => e
-    redirect_to @inventory_item, alert: "Transfer failed: #{e.message}"
+    redirect_to @inventory_item, alert: "Transfer failed"
   end
 
   # PATCH/PUT /inventory_levels/1 or /inventory_levels/1.json
@@ -71,7 +71,7 @@ class InventoryLevelsController < ApplicationController
     authorize @inventory_level
     respond_to do |format|
       if @inventory_level.update(inventory_level_params)
-        format.html { redirect_to @inventory_level.inventory_item, notice: "Stock was successfully updated.", status: :see_other }
+        format.html { redirect_to @inventory_level.inventory_item, notice: "Stock updated", status: :see_other }
         format.json { render :show, status: :ok, location: @inventory_level }
       else
         format.html { render :edit, status: :unprocessable_content }
@@ -86,7 +86,7 @@ class InventoryLevelsController < ApplicationController
     @inventory_level.destroy!
 
     respond_to do |format|
-      format.html { redirect_to @inventory_level.inventory_item, notice: "Inventory level was successfully destroyed.", status: :see_other }
+      format.html { redirect_to @inventory_level.inventory_item, notice: "Level deleted", status: :see_other }
       format.json { head :no_content }
     end
   end

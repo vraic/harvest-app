@@ -27,7 +27,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       if @user.save
         @user.password = @user.password_confirmation = nil
-        format.html { redirect_to @user, notice: "User was successfully created." }
+        format.html { redirect_to @user, notice: "User created" }
         format.json { render :show, status: :created, location: @user }
       else
         format.html { render :new, status: :unprocessable_content }
@@ -41,7 +41,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       if @user.update(user_params)
         @user.password = @user.password_confirmation = nil
-        format.html { redirect_to @user, notice: "User was successfully updated.", status: :see_other }
+        format.html { redirect_to @user, notice: "User updated", status: :see_other }
         format.json { render :show, status: :ok, location: @user }
       else
         format.html { render :edit, status: :unprocessable_content }
@@ -53,21 +53,21 @@ class UsersController < ApplicationController
   # DELETE /users/1 or /users/1.json
   def destroy
     if @user.admin?
-      redirect_to users_path, alert: "Cannot delete admin users."
+      redirect_to users_path, alert: "Cannot delete admin"
       return
     end
 
     @user.destroy!
 
     respond_to do |format|
-      format.html { redirect_to users_path, notice: "User was archived.", status: :see_other }
+      format.html { redirect_to users_path, notice: "User archived", status: :see_other }
       format.json { head :no_content }
     end
   end
 
   def anonymise
     if @user.admin?
-      redirect_to users_path, alert: "Cannot anonymise admin users."
+      redirect_to users_path, alert: "Cannot anonymise admin"
       return
     end
 
@@ -75,26 +75,26 @@ class UsersController < ApplicationController
     @user.destroy! unless @user.deleted?
 
     respond_to do |format|
-      format.html { redirect_to users_path, notice: "User was anonymised.", status: :see_other }
+      format.html { redirect_to users_path, notice: "User anonymised", status: :see_other }
       format.json { head :no_content }
     end
   end
 
   def really_destroy
     unless Current.user.admin?
-      redirect_to users_path, alert: "Only global admins can permanently delete users."
+      redirect_to users_path, alert: "Admins only"
       return
     end
 
     if @user.admin?
-      redirect_to users_path, alert: "Cannot delete admin users."
+      redirect_to users_path, alert: "Cannot delete admin"
       return
     end
 
     @user.destroy_fully!
 
     respond_to do |format|
-      format.html { redirect_to users_path, notice: "User was permanently deleted.", status: :see_other }
+      format.html { redirect_to users_path, notice: "User deleted", status: :see_other }
       format.json { head :no_content }
     end
   end

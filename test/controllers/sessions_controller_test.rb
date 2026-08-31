@@ -12,7 +12,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     post identify_session_path, params: { email_address: "   " }
 
     assert_redirected_to new_session_path
-    assert_equal "Enter your email address.", flash[:alert]
+    assert_equal "Enter your email", flash[:alert]
   end
 
   test "identify for unknown email redirects to signup" do
@@ -23,7 +23,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to new_signup_path(email_address: "signup-only@example.com")
-    assert_equal "No account found for that email. Please sign up first.", flash[:alert]
+    assert_equal "Account not found", flash[:alert]
     assert_nil session[:otp_user_id]
   end
 
@@ -118,7 +118,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     post session_path, params: { email_address: @user.email_address, password: "wrong" }
 
     assert_redirected_to password_session_path(email_address: @user.email_address)
-    assert_equal "Try another email address or password.", flash[:alert]
+    assert_equal "Try again", flash[:alert]
     assert_nil cookies[:session_id]
   end
 
@@ -131,7 +131,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_nil session[:otp_user_id]
     assert_nil session[:security_setup_user_id]
     assert_nil cookies[:session_id]
-    assert_equal "Please reset your password to continue.", flash[:alert]
+    assert_equal "Password reset needed", flash[:alert]
   end
 
   test "create without password sends one-time code for existing user" do
@@ -153,7 +153,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to new_signup_path(email_address: "signup-only@example.com")
-    assert_equal "No account found for that email. Please sign up first.", flash[:alert]
+    assert_equal "Account not found", flash[:alert]
     assert_nil session[:otp_user_id]
     assert_nil session[:security_setup_user_id]
   end
@@ -162,7 +162,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     post session_path, params: { email_address: "   " }
 
     assert_redirected_to new_session_path
-    assert_equal "Enter your email address.", flash[:alert]
+    assert_equal "Enter your email", flash[:alert]
   end
 
   test "destroy" do

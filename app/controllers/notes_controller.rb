@@ -10,9 +10,9 @@ class NotesController < ApplicationController
     authorize @note
 
     if @note.save
-      redirect_to @notable, notice: "Note was successfully created."
+      redirect_to @notable, notice: "Note added"
     else
-      redirect_to @notable, alert: "Note could not be created: #{@note.errors.full_messages.join(', ')}"
+      redirect_to @notable, alert: "Note failed"
     end
   end
 

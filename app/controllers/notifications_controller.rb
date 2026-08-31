@@ -12,6 +12,6 @@ class NotificationsController < ApplicationController
   private
 
   def ensure_staff_access!
-    redirect_to shop_path, alert: "Access denied." unless staff?
+    redirect_to shop_path, alert: "Access denied" unless staff?
   end
 end

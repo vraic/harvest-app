@@ -25,7 +25,7 @@ class SignupFlowTest < ApplicationSystemTestCase
     fill_in "Address", with: "123 Farm Lane"
     click_button "Create Account"
 
-    assert_text "Account was successfully created"
+    assert_text "Account created"
 
     # 3. Check for Supplier tab in edit account page
     visit edit_account_path(Account.last)

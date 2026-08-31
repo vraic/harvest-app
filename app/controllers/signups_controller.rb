@@ -25,7 +25,7 @@ class SignupsController < ApplicationController
 
       start_new_session_for(@user)
       @user.password = @user.password_confirmation = nil
-      redirect_to security_setup_path, notice: "Account created successfully."
+      redirect_to security_setup_path, notice: "Account created"
     else
       render :new, status: :unprocessable_content
     end

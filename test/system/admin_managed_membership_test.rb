@@ -23,7 +23,7 @@ class AdminManagedMembershipTest < ApplicationSystemTestCase
       end
     end
 
-    assert_text "You have successfully joined Account Two"
+    assert_text "Joined Account Two"
 
     # Verify we are still managing Account One and see Account Two joined
     within "#stores-grid" do
@@ -39,7 +39,7 @@ class AdminManagedMembershipTest < ApplicationSystemTestCase
       end
     end
 
-    assert_text "You have successfully joined Account Three"
+    assert_text "Joined Account Three"
 
     # Verify we are still managing Account One and see both stores joined
     within "#stores-grid" do

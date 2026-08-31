@@ -31,7 +31,7 @@ class InventoryGroupsController < ApplicationController
 
     respond_to do |format|
       if @inventory_group.save
-        format.html { redirect_to @inventory_group, notice: "Inventory group was successfully created." }
+        format.html { redirect_to @inventory_group, notice: "Group created" }
         format.json { render :show, status: :created, location: @inventory_group }
       else
         format.html { render :new, status: :unprocessable_content }
@@ -45,7 +45,7 @@ class InventoryGroupsController < ApplicationController
     authorize @inventory_group
     respond_to do |format|
       if @inventory_group.update(inventory_group_params)
-        format.html { redirect_to @inventory_group, notice: "Inventory group was successfully updated.", status: :see_other }
+        format.html { redirect_to @inventory_group, notice: "Group updated", status: :see_other }
         format.json { render :show, status: :ok, location: @inventory_group }
       else
         format.html { render :edit, status: :unprocessable_content }
@@ -60,7 +60,7 @@ class InventoryGroupsController < ApplicationController
     @inventory_group.destroy!
 
     respond_to do |format|
-      format.html { redirect_to inventory_groups_path, notice: "Inventory group was successfully destroyed.", status: :see_other }
+      format.html { redirect_to inventory_groups_path, notice: "Group deleted", status: :see_other }
       format.json { head :no_content }
     end
   end

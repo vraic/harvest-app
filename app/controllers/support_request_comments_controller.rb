@@ -10,18 +10,18 @@ class SupportRequestCommentsController < ApplicationController
     authorize @comment
 
     if @comment.save
-      redirect_to @support_request, notice: "Comment added."
+      redirect_to @support_request, notice: "Comment added"
     else
-      redirect_to @support_request, alert: "Failed to add comment."
+      redirect_to @support_request, alert: "Comment failed"
     end
   end
 
   def update
     authorize @comment
     if @comment.update(comment_params)
-      redirect_to @support_request, notice: "Comment updated."
+      redirect_to @support_request, notice: "Comment updated"
     else
-      redirect_to @support_request, alert: "Failed to update comment."
+      redirect_to @support_request, alert: "Update failed"
     end
   end
 

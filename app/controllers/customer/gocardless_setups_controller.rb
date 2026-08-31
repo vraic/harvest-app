@@ -11,9 +11,9 @@ class Customer::GocardlessSetupsController < ApplicationController
       gocardless_configured_at: Time.current
     )
 
-    redirect_to new_order_path, notice: "GoCardless is now configured for future orders."
+    redirect_to new_order_path, notice: "GoCardless configured"
   rescue ActiveRecord::RecordInvalid
-    redirect_to new_order_path, alert: "Unable to configure GoCardless."
+    redirect_to new_order_path, alert: "GoCardless setup failed"
   end
 
   private

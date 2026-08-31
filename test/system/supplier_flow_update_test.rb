@@ -44,7 +44,7 @@ class SupplierFlowUpdateTest < ApplicationSystemTestCase
     select @other_account.name, from: "Applying to Supply"
     click_on "Send Supplier Request"
 
-    assert_text "Supplier request was successfully sent."
+    assert_text "Request sent"
 
     # Go back to edit account to see it in the table
     visit edit_account_path(@account, tab: "stores_we_supply")
@@ -62,7 +62,7 @@ class SupplierFlowUpdateTest < ApplicationSystemTestCase
     visit edit_account_path(@account)
 
     # Should be redirected with unauthorized
-    assert_text "not authorized"
+    assert_text "Not authorized"
     assert_current_path dashboard_path
   end
 

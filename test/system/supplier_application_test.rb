@@ -18,7 +18,7 @@ class SupplierApplicationTest < ApplicationSystemTestCase
     fill_in "Address", with: "123 Green Lane"
     click_on "Create Account"
 
-    assert_text "Account was successfully created"
+    assert_text "Account created"
 
     # 3. Go to edit account and Stores We Supply tab
     @new_store = Account.find_by!(name: "My New Farm Shop")
@@ -30,7 +30,7 @@ class SupplierApplicationTest < ApplicationSystemTestCase
 
     click_on "Send Supplier Request"
 
-    assert_text "Supplier request was successfully sent."
+    assert_text "Request sent"
 
     # Verify in DB
     request = SupplierRequest.last
@@ -53,7 +53,7 @@ class SupplierApplicationTest < ApplicationSystemTestCase
     select @account_to_supply.name, from: "Applying to Supply"
 
     click_on "Send Supplier Request"
-    assert_text "Supplier request was successfully sent."
+    assert_text "Request sent"
   end
 
   test "user with multiple stores can choose which one to apply from" do
@@ -77,7 +77,7 @@ class SupplierApplicationTest < ApplicationSystemTestCase
     assert_text "Store Beta"
 
     click_on "Send Supplier Request"
-    assert_text "Supplier request was successfully sent."
+    assert_text "Request sent"
 
     assert_equal @store2, SupplierRequest.last.sender_account
   end
@@ -107,6 +107,6 @@ class SupplierApplicationTest < ApplicationSystemTestCase
     assert_text "My Management Store"
 
     click_on "Send Supplier Request"
-    assert_text "Supplier request was successfully sent."
+    assert_text "Request sent"
   end
 end

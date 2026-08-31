@@ -58,7 +58,7 @@ class CustomerInterfaceTest < ApplicationSystemTestCase
       click_on "Unsubscribe"
     end
 
-    assert_text "You have unsubscribed from #{accounts(:two).name}"
+    assert_text "Unsubscribed"
   end
 
   test "shop filtering based on classification" do

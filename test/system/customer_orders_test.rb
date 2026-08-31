@@ -19,7 +19,7 @@ class CustomerOrdersTest < ApplicationSystemTestCase
     # Quick add to cart from shop page
     # Find the link to the product and then the add to cart button in the same card
     find("h3", text: @item.display_name).find(:xpath, "ancestor::div[contains(@class, 'group')][1]").click_on "Add to cart"
-    assert_text "#{@item.name} added to cart"
+    assert_text "Added to cart"
 
     # Verify cart appears in sidebar with count
     assert_selector "#desktop-sidebar-cart-link[href='#{cart_path}']"
@@ -47,7 +47,7 @@ class CustomerOrdersTest < ApplicationSystemTestCase
 
     click_on "Place Orders"
 
-    assert_text "Orders successfully created"
+    assert_text "Orders created"
 
     order = Order.last
     assert_equal @customer_user.customers.find_by(account: @account), order.customer
@@ -75,11 +75,11 @@ class CustomerOrdersTest < ApplicationSystemTestCase
 
     # Add item from Account 1
     find("h3", text: @item.display_name).find(:xpath, "ancestor::div[contains(@class, 'group')][1]").click_on "Add to cart"
-    assert_text "#{@item.name} added to cart"
+    assert_text "Added to cart"
 
     # Add item from Account 2
     find("h3", text: item_two.display_name).find(:xpath, "ancestor::div[contains(@class, 'group')][1]").click_on "Add to cart"
-    assert_text "#{item_two.name} added to cart"
+    assert_text "Added to cart"
 
     visit cart_path
     assert_text "2"
@@ -99,7 +99,7 @@ class CustomerOrdersTest < ApplicationSystemTestCase
 
     assert_difference "Order.count", 2 do
       click_on "Place Orders"
-      assert_text "Orders successfully created"
+      assert_text "Orders created"
     end
 
     order1 = Order.find_by(account: @account)
@@ -122,7 +122,7 @@ class CustomerOrdersTest < ApplicationSystemTestCase
     # Add item
     visit shop_path
     find("h3", text: @item.display_name).find(:xpath, "ancestor::div[contains(@class, 'group')][1]").click_on "Add to cart"
-    assert_text "#{@item.name} added to cart"
+    assert_text "Added to cart"
 
     # Go to cart
     visit cart_path

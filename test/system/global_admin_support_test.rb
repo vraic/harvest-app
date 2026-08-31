@@ -22,7 +22,7 @@ class GlobalAdminSupportTest < ApplicationSystemTestCase
     click_on "New Support Request"
     fill_in "How can we help?", with: "We need help with inventory management."
     click_on "Submit Request"
-    assert_text "Support request was successfully created."
+    assert_text "Request created"
     assert_text "Pending"
 
     # Logout
@@ -38,14 +38,14 @@ class GlobalAdminSupportTest < ApplicationSystemTestCase
     within "##{dom_id support_request}" do
       click_on "Accept"
     end
-    assert_text "Support request accepted"
+    assert_text "Request accepted"
     assert_text "Expires:"
 
     # 3. Global admin joins the account
     within "##{dom_id support_request}" do
       click_on "Join Account"
     end
-    assert_text "Joined Account One as a support team member."
+    assert_text "Joined support session"
     assert_text "Acting on behalf of: Account One"
 
     # 4. Global admin performs an audited action in the account
@@ -56,7 +56,7 @@ class GlobalAdminSupportTest < ApplicationSystemTestCase
     click_on "Edit"
     fill_in "Name", with: "Updated Item Name"
     click_on "Update Inventory item"
-    assert_text "Inventory item was successfully updated."
+    assert_text "Item updated"
 
     # 5. Verify audit exists
     visit audits_account_path(@account)
@@ -65,7 +65,7 @@ class GlobalAdminSupportTest < ApplicationSystemTestCase
 
     # 6. Global admin leaves the account
     click_on "Leave Account"
-    assert_text "Left support session for Account One."
+    assert_text "Left support session"
     assert_no_text "Acting on behalf of: Account One"
   end
 
@@ -77,7 +77,7 @@ class GlobalAdminSupportTest < ApplicationSystemTestCase
     select "Account One", from: "Select Account"
     fill_in "How can we help?", with: "Admin needs access for maintenance."
     click_on "Submit Request"
-    assert_text "Support request was successfully created."
+    assert_text "Request created"
 
     logout
 
@@ -87,7 +87,7 @@ class GlobalAdminSupportTest < ApplicationSystemTestCase
     visit support_requests_path
     assert_text "Admin needs access for maintenance."
     click_on "Accept"
-    assert_text "Support request accepted"
+    assert_text "Request accepted"
 
     logout
 
@@ -132,6 +132,6 @@ class GlobalAdminSupportTest < ApplicationSystemTestCase
     # Force reveal hidden elements
     page.execute_script("document.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'))")
     click_on "+72h"
-    assert_text "Authorization extended until"
+    assert_text "Authorization extended"
   end
 end

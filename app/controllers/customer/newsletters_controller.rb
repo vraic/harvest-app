@@ -30,7 +30,7 @@ class Customer::NewslettersController < ApplicationController
       @customer = Customer.find_by(account_id: @newsletter.account_id, user_id: Current.user.id)
 
       if @customer.nil? || !@customer.subscribed_to_newsletter? || (@newsletter.sent_at.present? && @newsletter.sent_at < @customer.subscribed_at)
-        redirect_to customer_newsletters_path, alert: "You are not authorized to view this newsletter."
+        redirect_to customer_newsletters_path, alert: "Not authorized"
       end
     end
   end
@@ -41,9 +41,9 @@ class Customer::NewslettersController < ApplicationController
       @customer = Customer.find_by(account_id: account_id, user_id: Current.user.id)
 
       if @customer&.update(subscribed_to_newsletter: true)
-        redirect_to customer_newsletters_path, notice: "You have successfully subscribed to the newsletter."
+        redirect_to customer_newsletters_path, notice: "Subscribed"
       else
-        redirect_to customer_newsletters_path, alert: "There was an error subscribing you to the newsletter."
+        redirect_to customer_newsletters_path, alert: "Subscription failed"
       end
     end
   end
@@ -53,9 +53,9 @@ class Customer::NewslettersController < ApplicationController
       @customer = Customer.find(params[:id])
 
       if @customer.user_id == Current.user.id && @customer.update(subscribed_to_newsletter: false)
-        redirect_to customer_newsletters_path, notice: "You have unsubscribed from #{@customer.account.name} newsletter."
+        redirect_to customer_newsletters_path, notice: "Unsubscribed"
       else
-        redirect_to customer_newsletters_path, alert: "There was an error unsubscribing you."
+        redirect_to customer_newsletters_path, alert: "Unsubscribe failed"
       end
     end
   end

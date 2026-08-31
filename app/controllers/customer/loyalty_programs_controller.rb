@@ -16,7 +16,7 @@ class Customer::LoyaltyProgramsController < ApplicationController
       @loyalty_card = @customer&.loyalty_card
 
       if @loyalty_card.nil?
-        redirect_to customer_loyalty_programs_path, alert: "You are not enrolled in this loyalty program."
+        redirect_to customer_loyalty_programs_path, alert: "Not enrolled"
         return
       end
 
@@ -35,10 +35,10 @@ class Customer::LoyaltyProgramsController < ApplicationController
       )
 
       if @customer.loyalty_card.present?
-        redirect_to customer_loyalty_programs_path, alert: "You are already enrolled in this loyalty program."
+        redirect_to customer_loyalty_programs_path, alert: "Already enrolled"
       else
         @loyalty_card = LoyaltyCard.create!(customer: @customer, loyalty_program: @loyalty_program)
-        redirect_to customer_loyalty_program_path(@loyalty_program), notice: "You have successfully enrolled in the #{@loyalty_program.account.name} loyalty program!"
+        redirect_to customer_loyalty_program_path(@loyalty_program), notice: "Enrolled"
       end
     end
   end

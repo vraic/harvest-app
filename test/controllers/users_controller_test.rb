@@ -77,7 +77,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
     delete really_destroy_user_url(users(:two))
     assert_redirected_to users_url
-    assert_equal "Only global admins can permanently delete users.", flash[:alert]
+    assert_equal "Admins only", flash[:alert]
     assert_not_nil User.find(users(:two).id)
   end
 end

@@ -67,7 +67,7 @@ class PagesController < ApplicationController
     )
 
     # Also redirect to refresh or set notice
-    flash[:notice] = "Welcome! You've been joined to #{account.name}."
+    flash[:notice] = "Joined account"
     cookies.delete(:referral)
   end
 end

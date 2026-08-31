@@ -14,7 +14,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
 
     follow_redirect!
-    assert_notice "reset instructions sent"
+    assert_notice "Reset email sent"
   end
 
   test "create for an unknown user redirects but sends no mail" do
@@ -23,7 +23,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
 
     follow_redirect!
-    assert_notice "reset instructions sent"
+    assert_notice "Reset email sent"
   end
 
   test "create shows an error when reset instructions cannot be sent" do
@@ -44,7 +44,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_password_path
 
     follow_redirect!
-    assert_notice "send password reset instructions"
+    assert_notice "Try again"
   end
 
   test "edit" do
@@ -57,7 +57,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_password_path
 
     follow_redirect!
-    assert_notice "reset link is invalid"
+    assert_notice "Reset link expired"
   end
 
   test "update" do
@@ -71,7 +71,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_not @user.reload.force_password_reset?
 
     follow_redirect!
-    assert_notice "Password has been reset"
+    assert_notice "Password reset"
   end
 
   test "update with non matching passwords" do
@@ -82,7 +82,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     end
 
     follow_redirect!
-    assert_notice "Passwords did not match"
+    assert_notice "Passwords didn't match"
   end
 
   private

@@ -22,7 +22,7 @@ class InventoryManagementTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to inventory_item_path(@item)
     follow_redirect!
-    assert_match "Stock was successfully adjusted", response.body
+    assert_match "Stock adjusted", response.body
     assert_match "25 units", response.body # Ribeye is per unit in fixture one
   end
 
@@ -45,6 +45,6 @@ class InventoryManagementTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to inventory_item_path(@item)
     follow_redirect!
-    assert_match "Successfully transferred stock", response.body
+    assert_match "Stock transferred", response.body
   end
 end

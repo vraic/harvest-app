@@ -14,7 +14,7 @@ class SettingsTest < ApplicationSystemTestCase
 
     click_on "Save", match: :first
 
-    assert_text "Personal information updated"
+    assert_text "Info updated"
     @user.reload
     assert_equal "Jane Smith", @user.name
     assert_equal "jane@example.com", @user.email_address
@@ -31,7 +31,7 @@ class SettingsTest < ApplicationSystemTestCase
       click_on "Save"
     end
 
-    assert_text "Password updated successfully"
+    assert_text "Password updated"
     assert @user.reload.authenticate("ComplexPassword123!")
   end
 
@@ -45,7 +45,7 @@ class SettingsTest < ApplicationSystemTestCase
     fill_in "Your password", with: "password"
     click_on "Log out other sessions"
 
-    assert_text "Other sessions logged out"
+    assert_text "Sessions logged out"
     assert_equal 1, @user.sessions.count
   end
 

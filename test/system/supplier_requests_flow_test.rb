@@ -24,7 +24,7 @@ class SupplierRequestsFlowTest < ApplicationSystemTestCase
     select "Account Two", from: "Applying to Supply"
     click_on "Send Supplier Request"
 
-    assert_text "Supplier request was successfully sent."
+    assert_text "Request sent"
 
     # Verify the request exists
     request = SupplierRequest.last
@@ -48,7 +48,7 @@ class SupplierRequestsFlowTest < ApplicationSystemTestCase
     select "Account Two", from: "Applying to Supply"
     click_on "Send Supplier Request"
 
-    assert_text "Supplier request was successfully sent."
+    assert_text "Request sent"
 
     # 2. Account Two approves the request
     select_account("Account Two")
@@ -59,7 +59,7 @@ class SupplierRequestsFlowTest < ApplicationSystemTestCase
         click_on "Approve"
       end
     end
-    assert_text "Supplier request was approved."
+    assert_text "Request approved"
 
     # 3. Check Suppliers in Account Two (Account One should be there as a supplier)
     visit suppliers_path

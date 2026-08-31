@@ -14,7 +14,7 @@ class AccountStaffManagementTest < ApplicationSystemTestCase
     fill_in "Name", with: "My New Store"
     click_on "Create Account"
 
-    assert_text "Account was successfully created."
+    assert_text "Account created"
 
     # Check if user is manager in staff tab
     visit edit_account_path(Account.last, tab: "staff")
@@ -38,7 +38,7 @@ class AccountStaffManagementTest < ApplicationSystemTestCase
     select "Store Staff", from: "User role"
     click_on "Create Account user"
 
-    assert_text "Account user was successfully invited."
+    assert_text "User invited"
     assert_text @staff_email
     assert_text "Store Staff"
 
@@ -53,7 +53,7 @@ class AccountStaffManagementTest < ApplicationSystemTestCase
     select "Store Manager", from: "User role"
     click_on "Update Account user"
 
-    assert_text "Account user was successfully updated."
+    assert_text "User updated"
     within "tr##{dom_id(staff_account_user)}" do
       assert_text "Store Manager"
     end
@@ -65,7 +65,7 @@ class AccountStaffManagementTest < ApplicationSystemTestCase
       end
     end
 
-    assert_text "Account user was successfully archived."
+    assert_text "User archived"
     assert_text "Archived Staff"
   end
 
@@ -81,7 +81,7 @@ class AccountStaffManagementTest < ApplicationSystemTestCase
     select "Store Staff", from: "User role"
     click_on "Create Account user"
 
-    assert_text "Account user was successfully invited."
+    assert_text "User invited"
     assert_text "Existing User"
     assert_text "Store Staff"
   end

@@ -46,7 +46,7 @@ class CustomersController < ApplicationController
 
     respond_to do |format|
       if @customer.save
-        format.html { redirect_to @customer, notice: "Customer was successfully created." }
+        format.html { redirect_to @customer, notice: "Customer created" }
         format.json { render :show, status: :created, location: @customer }
       else
         format.html { render :new, status: :unprocessable_content }
@@ -60,7 +60,7 @@ class CustomersController < ApplicationController
     authorize @customer
     respond_to do |format|
       if @customer.update(customer_params)
-        format.html { redirect_to @customer, notice: "Customer was successfully updated.", status: :see_other }
+        format.html { redirect_to @customer, notice: "Customer updated", status: :see_other }
         format.json { render :show, status: :ok, location: @customer }
       else
         format.html { render :edit, status: :unprocessable_content }
@@ -82,10 +82,10 @@ class CustomersController < ApplicationController
         actor: Current.user
       )
 
-      notice = @customer.retention_hold_active? ? "Customer marked to be retained." : "Customer retention hold removed."
+      notice = @customer.retention_hold_active? ? "Hold enabled" : "Hold removed"
       redirect_to customer_show_path_for_redirect, notice:, status: :see_other
     else
-      redirect_to customer_show_path_for_redirect, alert: @customer.errors.full_messages.to_sentence, status: :see_other
+      redirect_to customer_show_path_for_redirect, alert: "Update failed", status: :see_other
     end
   end
 
@@ -95,7 +95,7 @@ class CustomersController < ApplicationController
     @customer.destroy!
 
     respond_to do |format|
-      format.html { redirect_to customers_index_path_for_redirect, notice: "Customer was archived.", status: :see_other }
+      format.html { redirect_to customers_index_path_for_redirect, notice: "Customer archived", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -106,7 +106,7 @@ class CustomersController < ApplicationController
     @customer.destroy! unless @customer.deleted?
 
     respond_to do |format|
-      format.html { redirect_to customers_index_path_for_redirect, notice: "Customer was anonymised.", status: :see_other }
+      format.html { redirect_to customers_index_path_for_redirect, notice: "Customer anonymised", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -116,7 +116,7 @@ class CustomersController < ApplicationController
     @customer.destroy_fully!
 
     respond_to do |format|
-      format.html { redirect_to customers_index_path_for_redirect, notice: "Customer was permanently deleted.", status: :see_other }
+      format.html { redirect_to customers_index_path_for_redirect, notice: "Customer deleted", status: :see_other }
       format.json { head :no_content }
     end
   end

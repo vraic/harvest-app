@@ -6,7 +6,7 @@ class SettingsController < ApplicationController
 
   def update
     if @user.update(user_params)
-      redirect_to settings_path, notice: "Personal information updated."
+      redirect_to settings_path, notice: "Info updated"
     else
       render :show, status: :unprocessable_content
     end
@@ -16,7 +16,7 @@ class SettingsController < ApplicationController
     if @user.authenticate(params[:current_password])
       if @user.update(password_params)
         @user.password = @user.password_confirmation = nil
-        redirect_to settings_path, notice: "Password updated successfully."
+        redirect_to settings_path, notice: "Password updated"
       else
         render :show, status: :unprocessable_content
       end
@@ -28,7 +28,7 @@ class SettingsController < ApplicationController
 
   def logout_sessions
     @user.sessions.where.not(id: Current.session.id).destroy_all
-    redirect_to settings_path, notice: "Other sessions logged out."
+    redirect_to settings_path, notice: "Sessions logged out"
   end
 
   def destroy
@@ -43,7 +43,7 @@ class SettingsController < ApplicationController
     end
 
     reset_session
-    redirect_to root_path, notice: "Account archived. Personal data is retained only where legally required and purged under policy."
+    redirect_to root_path, notice: "Account archived"
   end
 
   private

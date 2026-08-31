@@ -16,9 +16,9 @@ class CartsController < ApplicationController
     current_cart.set_quantity(product.id, quantity)
 
     respond_to do |format|
-      format.html { redirect_to cart_path, notice: "Cart updated." }
+      format.html { redirect_to cart_path, notice: "Cart updated" }
       format.turbo_stream {
-        flash.now[:notice] = "Cart updated."
+        flash.now[:notice] = "Cart updated"
         @cart = current_cart
       }
     end
@@ -33,8 +33,8 @@ class CartsController < ApplicationController
     current_cart.add_item(product.id, quantity)
 
     respond_to do |format|
-      format.html { redirect_back fallback_location: shop_path, notice: "#{product.name} added to cart." }
-      format.turbo_stream { flash.now[:notice] = "#{product.name} added to cart." }
+      format.html { redirect_back fallback_location: shop_path, notice: "Added to cart" }
+      format.turbo_stream { flash.now[:notice] = "Added to cart" }
     end
   end
 
@@ -45,14 +45,14 @@ class CartsController < ApplicationController
     current_cart.remove_item(product.id)
 
     respond_to do |format|
-      format.html { redirect_back fallback_location: cart_path, notice: "#{product.name} removed from cart." }
-      format.turbo_stream { flash.now[:notice] = "#{product.name} removed from cart." }
+      format.html { redirect_back fallback_location: cart_path, notice: "Removed from cart" }
+      format.turbo_stream { flash.now[:notice] = "Removed from cart" }
     end
   end
 
   def destroy
     session[:cart] = nil
-    redirect_to shop_path, notice: "Cart cleared."
+    redirect_to shop_path, notice: "Cart cleared"
   end
 
   private
@@ -69,15 +69,15 @@ class CartsController < ApplicationController
 
     return unless removed
 
-    flash.now[:alert] = "Some cart items were removed because the store is not available for shopping."
+    flash.now[:alert] = "Items removed"
   end
 
   def ensure_storefront_access!(product, fallback_location:)
     return true if storefront_accessible_account?(product.account)
 
     respond_to do |format|
-      format.html { redirect_back fallback_location: fallback_location, alert: "This store is not available for shopping." }
-      format.turbo_stream { redirect_back fallback_location: fallback_location, alert: "This store is not available for shopping." }
+      format.html { redirect_back fallback_location: fallback_location, alert: "Store unavailable" }
+      format.turbo_stream { redirect_back fallback_location: fallback_location, alert: "Store unavailable" }
     end
 
     false

@@ -19,7 +19,7 @@ class AccountSettingsTest < ApplicationSystemTestCase
 
     click_on "Save Payment Settings"
 
-    assert_text "Account was successfully updated."
+    assert_text "Account updated"
 
     @account.reload
     assert_equal "live_12345678", @account.gocardless_access_token
@@ -79,7 +79,7 @@ class AccountSettingsTest < ApplicationSystemTestCase
 
     click_on "Save Retention Settings"
 
-    assert_text "Account was successfully updated."
+    assert_text "Account updated"
 
     @account.reload
     assert_equal 8, @account.inactivity_retention_years_override

@@ -51,7 +51,7 @@ class ShopBrowsingTest < ApplicationSystemTestCase
       end
     end
 
-    assert_text "added to cart"
+    assert_text "Added to cart"
 
     visit checkout_path
 
@@ -61,7 +61,7 @@ class ShopBrowsingTest < ApplicationSystemTestCase
 
     click_on "Place Orders"
 
-    assert_text "Orders successfully created"
+    assert_text "Orders created"
 
     # Verify Customer record was created
     ActsAsTenant.without_tenant do

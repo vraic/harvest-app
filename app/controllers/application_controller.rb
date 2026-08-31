@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
     return if Current.user&.admin? # Admins can have nil account (Global view)
 
     if Current.account.nil?
-      redirect_to dashboard_path, alert: "Please select a store to continue."
+      redirect_to dashboard_path, alert: "Select a store"
     end
   end
 
@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
             logger.warn "SECURITY: Admin #{user.id} attempted to access account #{account.id} without active support request"
             account = nil
             session.delete(:managed_account_id)
-            flash[:alert] = "Access denied. No active support authorization for this account."
+            flash[:alert] = "Access denied"
           end
         end
 

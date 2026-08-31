@@ -42,7 +42,7 @@ class SuppliersController < ApplicationController
 
     respond_to do |format|
       if @supplier.errors.none? && @supplier.save
-        format.html { redirect_to @supplier, notice: "Supplier was successfully created." }
+        format.html { redirect_to @supplier, notice: "Supplier created" }
         format.json { render :show, status: :created, location: @supplier }
       else
         format.html { render :new, status: :unprocessable_content }
@@ -55,7 +55,7 @@ class SuppliersController < ApplicationController
     authorize @supplier
     respond_to do |format|
       if @supplier.update(supplier_params)
-        format.html { redirect_to @supplier, notice: "Supplier was successfully updated.", status: :see_other }
+        format.html { redirect_to @supplier, notice: "Supplier updated", status: :see_other }
         format.json { render :show, status: :ok, location: @supplier }
       else
         format.html { render :edit, status: :unprocessable_content }
@@ -77,10 +77,10 @@ class SuppliersController < ApplicationController
         actor: Current.user
       )
 
-      notice = @supplier.retention_hold_active? ? "Supplier marked to be retained." : "Supplier retention hold removed."
+      notice = @supplier.retention_hold_active? ? "Hold enabled" : "Hold removed"
       redirect_to supplier_path(@supplier), notice:, status: :see_other
     else
-      redirect_to supplier_path(@supplier), alert: @supplier.errors.full_messages.to_sentence, status: :see_other
+      redirect_to supplier_path(@supplier), alert: "Update failed", status: :see_other
     end
   end
 
@@ -88,7 +88,7 @@ class SuppliersController < ApplicationController
     authorize @supplier
     @supplier.destroy!
     respond_to do |format|
-      format.html { redirect_to suppliers_path, notice: "Supplier was archived.", status: :see_other }
+      format.html { redirect_to suppliers_path, notice: "Supplier archived", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -98,7 +98,7 @@ class SuppliersController < ApplicationController
     @supplier.anonymise!
     @supplier.destroy! unless @supplier.deleted?
     respond_to do |format|
-      format.html { redirect_to suppliers_path, notice: "Supplier was anonymised.", status: :see_other }
+      format.html { redirect_to suppliers_path, notice: "Supplier anonymised", status: :see_other }
       format.json { head :no_content }
     end
   end

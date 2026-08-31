@@ -1,0 +1,5 @@
+<div id="flash" aria-live="assertive" class="pointer-events-none fixed inset-0 z-[100] flex items-end px-4 py-6 sm:p-6">
+  <div id="flash-container" class="flex w-full flex-col items-start space-y-2">
+    <%= render "layouts/flash" if flash.any? %>
+  </div>
+</div>

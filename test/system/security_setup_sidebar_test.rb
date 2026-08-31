@@ -2,7 +2,7 @@ require "application_system_test_case"
 
 class SecuritySetupSidebarTest < ApplicationSystemTestCase
   setup do
-    @user = User.create!(name: "Security User", email_address: "security@example.com", password: "Password123!@#Strong", password_confirmation: "Password123!@#Strong")
+    @user = User.create!(name: "Security User", email_address: "security@example.com", password: "Password123!@#Strong", password_confirmation: "Password123!@#Strong", prefers_email_login: true)
   end
 
   test "sidebar is hidden on security setup page" do
@@ -12,7 +12,7 @@ class SecuritySetupSidebarTest < ApplicationSystemTestCase
     # We'll use the UI flow
     visit new_session_path
     fill_in "Email", with: @user.email_address
-    click_button "Continue" # Email only login
+    click_button "Continue" # Magic link login
 
     # Get OTP
     token = nil

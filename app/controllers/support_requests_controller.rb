@@ -23,7 +23,7 @@ class SupportRequestsController < ApplicationController
     authorize @support_request
 
     if @support_request.save
-      redirect_to support_requests_path, notice: "Support request was successfully created."
+      redirect_to support_requests_path, notice: "Request created"
     else
       @accounts = Account.all if Current.user.admin?
       render :new, status: :unprocessable_content
@@ -35,17 +35,17 @@ class SupportRequestsController < ApplicationController
 
     if params[:support_request] && params[:support_request][:status] == "accepted"
       @support_request.grant_authorization!
-      notice = "Support request accepted. Authorization granted for 72 hours."
+      notice = "Request accepted"
     elsif params[:support_request] && params[:support_request][:status] == "extension_requested"
       duration = params[:duration].to_i
       unit = params[:unit] # hours, days, weeks
       # Validate and update message with extension details maybe?
       # For now just set status.
       @support_request.update!(status: :extension_requested)
-      notice = "Extension requested."
+      notice = "Extension requested"
     else
       @support_request.update!(support_request_params)
-      notice = "Support request updated."
+      notice = "Request updated"
     end
 
     redirect_to support_requests_path, notice: notice
@@ -66,13 +66,13 @@ class SupportRequestsController < ApplicationController
     end
 
     @support_request.update!(expires_at: new_expiry, status: :accepted)
-    redirect_to support_requests_path, notice: "Authorization extended until #{new_expiry.to_fs(:short)}."
+    redirect_to support_requests_path, notice: "Authorization extended"
   end
 
   def destroy
     authorize @support_request
     @support_request.destroy!
-    redirect_to support_requests_path, notice: "Support request was successfully destroyed.", status: :see_other
+    redirect_to support_requests_path, notice: "Request deleted", status: :see_other
   end
 
   private

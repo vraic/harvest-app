@@ -21,7 +21,7 @@ class DashboardMembershipsTest < ApplicationSystemTestCase
       end
     end
 
-    assert_text "You have successfully joined #{@store_to_join.name}"
+    assert_text "Joined #{@store_to_join.name}"
 
     # Now check dashboard again (should be redirected there)
     assert_current_path dashboard_path

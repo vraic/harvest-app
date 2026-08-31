@@ -10,11 +10,7 @@ class StoreMembershipsController < ApplicationController
     end
 
     if already_member
-      message = if Current.user.admin? && Current.account
-        "#{Current.account.name} is already a member of #{account.name}."
-      else
-        "You are already a member of #{account.name}."
-      end
+      message = "Already a member"
       redirect_to dashboard_path, alert: message
       return
     end
@@ -35,6 +31,6 @@ class StoreMembershipsController < ApplicationController
     end
 
     Current.user.reload
-    redirect_to dashboard_path, notice: "You have successfully joined #{account.name}."
+    redirect_to dashboard_path, notice: "Joined #{account.name}"
   end
 end

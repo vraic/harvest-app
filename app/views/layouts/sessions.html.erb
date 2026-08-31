@@ -23,11 +23,9 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gray-50 dark:bg-gray-900">
-    <main class="container mx-auto px-5 flex flex-col">
-      <div class="mt-8">
-        <%= render "layouts/flash" if flash.any? %>
-      </div>
+  <body class="bg-gray-50 dark:bg-gray-900 h-full">
+    <%= render "layouts/flash_container" %>
+    <main class="container mx-auto px-5 flex min-h-screen flex-col">
       <%= yield %>
     </main>
   </body>

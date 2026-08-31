@@ -115,7 +115,11 @@ Rails.application.routes.draw do
       delete :really_destroy
     end
   end
-  resource :session
+  resource :signup, only: [ :new, :create ]
+  resource :session do
+    post :identify
+    get :password
+  end
   resources :store_memberships, only: [ :create ]
   resource :managed_account, only: [ :update, :destroy ]
   resources :passwords, param: :token
@@ -146,6 +150,8 @@ Rails.application.routes.draw do
   end
 
   get "dashboard" => "pages#dashboard"
+  get "terms" => "pages#terms", as: :terms
+  get "privacy" => "pages#privacy", as: :privacy
   root "pages#home"
 
   if Rails.env.test?

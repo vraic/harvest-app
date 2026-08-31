@@ -48,7 +48,7 @@ class CustomerExperienceTest < ApplicationSystemTestCase
     # We use match: :first because there might be multiple buttons if multiple programs exist
     click_on "Enrol Now", match: :first
 
-    assert_text "You have successfully enrolled"
+    assert_text "Enrolled"
     assert_text "Account One Loyalty"
     assert_text "Current Balance"
     assert_text "Recent Activity"

@@ -1,7 +1,7 @@
 class PasswordsController < ApplicationController
   allow_unauthenticated_access
   before_action :set_user_by_token, only: %i[ edit update ]
-  rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_password_path, alert: "Try again later." }
+  rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_password_path, alert: "Try again later" }
 
   layout "sessions"
 
@@ -11,15 +11,15 @@ class PasswordsController < ApplicationController
   def create
     if user = User.find_by(email_address: params[:email_address])
       if send_password_reset_instructions(user)
-        redirect_to new_session_path, notice: "Password reset instructions sent (if user with that email address exists)."
+        redirect_to new_session_path, notice: "Reset email sent"
       else
-        redirect_to new_password_path, alert: "Couldn't send password reset instructions right now. Please try again."
+        redirect_to new_password_path, alert: "Try again"
       end
 
       return
     end
 
-    redirect_to new_session_path, notice: "Password reset instructions sent (if user with that email address exists)."
+    redirect_to new_session_path, notice: "Reset email sent"
   end
 
   def edit
@@ -29,9 +29,9 @@ class PasswordsController < ApplicationController
     if @user.update(params.permit(:password, :password_confirmation).merge(force_password_reset: false))
       @user.password = @user.password_confirmation = nil
       @user.sessions.destroy_all
-      redirect_to new_session_path, notice: "Password has been reset."
+      redirect_to new_session_path, notice: "Password reset"
     else
-      redirect_to edit_password_path(params[:token]), alert: "Passwords did not match."
+      redirect_to edit_password_path(params[:token]), alert: "Passwords didn't match"
     end
   end
 
@@ -61,6 +61,6 @@ class PasswordsController < ApplicationController
     def set_user_by_token
       @user = User.find_by_password_reset_token!(params[:token])
     rescue ActiveSupport::MessageVerifier::InvalidSignature
-      redirect_to new_password_path, alert: "Password reset link is invalid or has expired."
+      redirect_to new_password_path, alert: "Reset link expired"
     end
 end

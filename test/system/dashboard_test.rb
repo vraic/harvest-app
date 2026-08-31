@@ -30,7 +30,7 @@ class DashboardTest < ApplicationSystemTestCase
       click_button "Visit Shop"
     end
 
-    assert_text "You have successfully joined #{@account.name}."
+    assert_text "Joined #{@account.name}"
     assert_text "Active" # Should show as active now
     assert_text "customer" # Should show the customer label
   end

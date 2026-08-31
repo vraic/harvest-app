@@ -51,13 +51,13 @@ class OrdersController < ApplicationController
   def awaiting_collection
     authorize @order, :update?
     @order.awaiting_collection!
-    redirect_to @order, notice: "Order is now awaiting collection."
+    redirect_to @order, notice: "Awaiting collection"
   end
 
   def complete
     authorize @order, :update?
     @order.complete!
-    redirect_to @order, notice: "Order has been completed."
+    redirect_to @order, notice: "Order completed"
   end
 
   # GET /orders/1 or /orders/1.json
@@ -116,7 +116,7 @@ class OrdersController < ApplicationController
     respond_to do |format|
       if persist_order_with_payment
         session[:cart] = nil if customer?
-        format.html { redirect_to @order, notice: "Order was successfully created." }
+        format.html { redirect_to @order, notice: "Order created" }
         format.json { render :show, status: :created, location: @order }
       else
         @order.order_items.build if @order.order_items.empty?
@@ -131,7 +131,7 @@ class OrdersController < ApplicationController
     authorize @order
     respond_to do |format|
       if @order.update(order_params)
-        format.html { redirect_to @order, notice: "Order was successfully updated.", status: :see_other }
+        format.html { redirect_to @order, notice: "Order updated", status: :see_other }
         format.json { render :show, status: :ok, location: @order }
       else
         format.html { render :edit, status: :unprocessable_content }
@@ -146,7 +146,7 @@ class OrdersController < ApplicationController
     @order.destroy!
 
     respond_to do |format|
-      format.html { redirect_to orders_path, notice: "Order was successfully destroyed.", status: :see_other }
+      format.html { redirect_to orders_path, notice: "Order deleted", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -170,7 +170,7 @@ class OrdersController < ApplicationController
       return unless customer?
       return if storefront_accessible_account?(Current.account)
 
-      redirect_to dashboard_path, alert: "This store is not available for customer shopping."
+      redirect_to dashboard_path, alert: "Store unavailable"
     end
 
     def persist_order_with_payment

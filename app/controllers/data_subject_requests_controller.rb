@@ -36,7 +36,7 @@ class DataSubjectRequestsController < ApplicationController
 
     if @data_subject_request.save
       @data_subject_request.evidence_files.attach(evidence_files) if evidence_files.any?
-      redirect_to data_subject_request_path(@data_subject_request), notice: "Data rights request submitted."
+      redirect_to data_subject_request_path(@data_subject_request), notice: "Request submitted"
     else
       set_form_options
       render :new, status: :unprocessable_content
@@ -57,7 +57,7 @@ class DataSubjectRequestsController < ApplicationController
         @data_subject_request.apply_offboarding_action!(actor: Current.user)
       end
 
-      redirect_to data_subject_request_path(@data_subject_request), notice: "Data rights request updated."
+      redirect_to data_subject_request_path(@data_subject_request), notice: "Request updated"
     else
       set_form_options
       render :show, status: :unprocessable_content

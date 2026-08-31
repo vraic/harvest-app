@@ -60,10 +60,10 @@ class InventoryItemsController < ApplicationController
 
     respond_to do |format|
       if @inventory_item.save
-        format.html { redirect_to @inventory_item.parent || @inventory_item, notice: "Inventory item was successfully created." }
+        format.html { redirect_to @inventory_item.parent || @inventory_item, notice: "Item created" }
         format.json { render :show, status: :created, location: @inventory_item }
       else
-        flash.now[:alert] = @inventory_item.errors.full_messages.to_sentence
+        flash.now[:alert] = "Save failed"
         format.html { render :new, status: :unprocessable_content }
         format.json { render json: @inventory_item.errors, status: :unprocessable_content }
       end
@@ -75,10 +75,10 @@ class InventoryItemsController < ApplicationController
     authorize @inventory_item
     respond_to do |format|
       if @inventory_item.update(inventory_item_params)
-        format.html { redirect_to @inventory_item.parent || @inventory_item, notice: "Inventory item was successfully updated.", status: :see_other }
+        format.html { redirect_to @inventory_item.parent || @inventory_item, notice: "Item updated", status: :see_other }
         format.json { render :show, status: :ok, location: @inventory_item }
       else
-        flash.now[:alert] = @inventory_item.errors.full_messages.to_sentence
+        flash.now[:alert] = "Update failed"
         format.html { render :edit, status: :unprocessable_content }
         format.json { render json: @inventory_item.errors, status: :unprocessable_content }
       end
@@ -92,7 +92,7 @@ class InventoryItemsController < ApplicationController
     @inventory_item.destroy!
 
     respond_to do |format|
-      format.html { redirect_to parent || inventory_items_path, notice: "Inventory item was successfully destroyed.", status: :see_other }
+      format.html { redirect_to parent || inventory_items_path, notice: "Item deleted", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -103,7 +103,7 @@ class InventoryItemsController < ApplicationController
     @inventory_item.destroy_fully!
 
     respond_to do |format|
-      format.html { redirect_to parent || inventory_items_path, notice: "Inventory item was permanently deleted.", status: :see_other }
+      format.html { redirect_to parent || inventory_items_path, notice: "Item permanently deleted", status: :see_other }
       format.json { head :no_content }
     end
   end

@@ -8,7 +8,7 @@ class SecuritySetupsController < ApplicationController
 
     if params[:choice] == "email_login"
       @user.update!(prefers_email_login: true, security_choice_made: true)
-      redirect_to onboarding_path, notice: "You’ll continue signing in with one-time email codes."
+      redirect_to onboarding_path, notice: "Email login enabled"
     else
       redirect_to password_security_setup_path
     end
@@ -23,7 +23,7 @@ class SecuritySetupsController < ApplicationController
 
     if @user.update(password_params.merge(prefers_email_login: false, security_choice_made: true))
       @user.password = @user.password_confirmation = nil
-      redirect_to two_factor_security_setup_path, notice: "Password saved successfully."
+      redirect_to two_factor_security_setup_path, notice: "Password saved"
     else
       render :password, status: :unprocessable_content
     end

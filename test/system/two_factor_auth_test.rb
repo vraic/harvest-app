@@ -32,13 +32,13 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
       click_on "Verify and Enable 2FA"
     end
 
-    assert_text "2FA has been enabled via OTP"
+    assert_text "2FA enabled"
     assert @user.reload.otp_enabled?
 
     # Cleanup: disable 2FA
     visit settings_path
     click_on "Disable 2FA"
-    assert_text "2FA has been disabled"
+    assert_text "2FA disabled"
     refute @user.reload.otp_enabled?
   end
 
@@ -88,14 +88,10 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
   def sign_in_with_password(user, password)
     visit new_session_path
     fill_in "Email", with: user.email_address
-    click_button "Sign in with password"
-
-    unless page.has_field?("Password (optional)", wait: 3)
-      execute_script("document.querySelectorAll('[data-password-login-target=\"passwordFields\"]').forEach(el => el.classList.remove('hidden'))")
-    end
-
-    fill_in "Password (optional)", with: password
     click_button "Continue"
+
+    fill_in "Password", with: password
+    click_button "Sign in"
   end
 
   def verify_code_with_retry(max_attempts: 3)
@@ -114,7 +110,7 @@ class TwoFactorAuthTest < ApplicationSystemTestCase
       end
 
       return if has_no_current_path?(new_two_factor_verification_path, wait: 10)
-      next if attempt < max_attempts - 1 && page.has_text?("Invalid verification code.", wait: 2)
+      next if attempt < max_attempts - 1 && page.has_text?("Invalid code", wait: 2)
     end
 
     assert_no_current_path new_two_factor_verification_path, wait: 10

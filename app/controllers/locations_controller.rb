@@ -31,10 +31,10 @@ class LocationsController < ApplicationController
 
     respond_to do |format|
       if @location.save
-        format.html { redirect_to @location, notice: "Location was successfully created." }
+        format.html { redirect_to @location, notice: "Location created" }
         format.json { render :show, status: :created, location: @location }
       else
-        flash.now[:alert] = @location.errors.full_messages.to_sentence
+        flash.now[:alert] = "Save failed"
         format.html { render :new, status: :unprocessable_content }
         format.json { render json: @location.errors, status: :unprocessable_content }
       end
@@ -46,10 +46,10 @@ class LocationsController < ApplicationController
     authorize @location
     respond_to do |format|
       if @location.update(location_params)
-        format.html { redirect_to @location, notice: "Location was successfully updated.", status: :see_other }
+        format.html { redirect_to @location, notice: "Location updated", status: :see_other }
         format.json { render :show, status: :ok, location: @location }
       else
-        flash.now[:alert] = @location.errors.full_messages.to_sentence
+        flash.now[:alert] = "Update failed"
         format.html { render :edit, status: :unprocessable_content }
         format.json { render json: @location.errors, status: :unprocessable_content }
       end
@@ -62,7 +62,7 @@ class LocationsController < ApplicationController
     @location.destroy!
 
     respond_to do |format|
-      format.html { redirect_to locations_path, notice: "Location was successfully destroyed.", status: :see_other }
+      format.html { redirect_to locations_path, notice: "Location deleted", status: :see_other }
       format.json { head :no_content }
     end
   end

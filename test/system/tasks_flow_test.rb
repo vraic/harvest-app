@@ -21,7 +21,7 @@ class TasksFlowTest < ApplicationSystemTestCase
 
     click_button "Create Task"
 
-    assert_text "Task was successfully created"
+    assert_text "Task created"
     assert_text "Real-time task"
     assert_text users(:one).name
   end

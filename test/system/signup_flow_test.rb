@@ -6,12 +6,12 @@ class SignupFlowTest < ApplicationSystemTestCase
     ENV["SIGNUP_INVITE_CODE"] = "system-test-invite"
 
     # 1. Signup
-    visit new_user_url
+    visit new_signup_url
     fill_in "Name", with: "New Store Owner"
     fill_in "Email", with: "owner@example.com"
     fill_in "Password", with: "ComplexPassword123!"
     fill_in "Invite code", with: "system-test-invite"
-    click_button "Create User"
+    click_button "Sign up"
 
     assert_text "How would you like to sign in?"
     click_on "Continue with email codes"
@@ -25,7 +25,7 @@ class SignupFlowTest < ApplicationSystemTestCase
     fill_in "Address", with: "123 Farm Lane"
     click_button "Create Account"
 
-    assert_text "Account was successfully created"
+    assert_text "Account created"
 
     # 3. Check for Supplier tab in edit account page
     visit edit_account_path(Account.last)

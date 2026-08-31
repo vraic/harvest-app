@@ -16,7 +16,7 @@ class SupportRequestConversationTest < ApplicationSystemTestCase
     fill_in "Type your message here...", with: "I have some more details."
     click_on "Send Message"
 
-    assert_text "Comment added."
+    assert_text "Comment added"
     assert_text "I have some more details."
     assert_text @store_manager.name
 
@@ -30,7 +30,7 @@ class SupportRequestConversationTest < ApplicationSystemTestCase
     fill_in "Type your message here...", with: "Thank you, we are looking into it."
     click_on "Send Message"
 
-    assert_text "Comment added."
+    assert_text "Comment added"
     assert_text "Thank you, we are looking into it."
     assert_text "#{@admin.name} (Support Staff)"
 
@@ -42,7 +42,7 @@ class SupportRequestConversationTest < ApplicationSystemTestCase
       click_on "Save"
     end
 
-    assert_text "Comment updated."
+    assert_text "Comment updated"
     assert_text "Actually, we fixed it."
     assert_no_text "Thank you, we are looking into it."
   end

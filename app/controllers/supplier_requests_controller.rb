@@ -45,7 +45,7 @@ class SupplierRequestsController < ApplicationController
     authorize @supplier_request
 
     if @supplier_request.save
-      redirect_to supplier_requests_path, notice: "Supplier request was successfully sent."
+      redirect_to supplier_requests_path, notice: "Request sent"
     else
       render :new, status: :unprocessable_content
     end
@@ -54,16 +54,16 @@ class SupplierRequestsController < ApplicationController
   def update
     authorize @supplier_request
     if @supplier_request.update(status: params[:status])
-      redirect_to supplier_requests_path, notice: "Supplier request was #{params[:status]}."
+      redirect_to supplier_requests_path, notice: "Request #{params[:status]}"
     else
-      redirect_to supplier_requests_path, alert: "Could not update supplier request."
+      redirect_to supplier_requests_path, alert: "Update failed"
     end
   end
 
   def destroy
     authorize @supplier_request
     @supplier_request.destroy!
-    redirect_to supplier_requests_path, notice: "Supplier request was cancelled/removed.", status: :see_other
+    redirect_to supplier_requests_path, notice: "Request removed", status: :see_other
   end
 
   private

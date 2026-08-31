@@ -73,7 +73,7 @@ class GlobalAdminTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     assert_nil session[:managed_account_id]
     follow_redirect!
-    assert_match "Access denied. No active support authorization for this account.", response.body
+    assert_match "Access denied", response.body
   end
 
   test "admin can switch to an account after business override support request is confirmed" do

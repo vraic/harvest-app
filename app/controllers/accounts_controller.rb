@@ -15,7 +15,7 @@ class AccountsController < ApplicationController
     # Already exists, ignore
   ensure
     session[:managed_account_id] = @account.id
-    redirect_to dashboard_path, notice: "Joined #{@account.name} as a support team member."
+    redirect_to dashboard_path, notice: "Joined support session"
   end
 
   def leave
@@ -29,9 +29,9 @@ class AccountsController < ApplicationController
     session[:managed_account_id] = "none"
 
     notice = if Current.user.admin?
-      "Left support session for #{@account.name}."
+      "Left support session"
     else
-      "Stopped managing #{@account.name}."
+      "Stopped managing account"
     end
 
     redirect_to root_path, notice: notice
@@ -78,15 +78,16 @@ class AccountsController < ApplicationController
     @account = Account.new(account_params)
     @account.owner_id ||= Current.user&.id
     authorize @account
+    @tab = params[:tab] || "general"
 
     respond_to do |format|
       if @account.save
         session[:managed_account_id] = @account.id
 
         if Current.user&.admin?
-          format.html { redirect_to params[:return_to] || @account, notice: "Account was successfully created." }
+          format.html { redirect_to params[:return_to] || @account, notice: "Account created" }
         else
-          format.html { redirect_to params[:return_to] || dashboard_path, notice: "Account was successfully created." }
+          format.html { redirect_to params[:return_to] || dashboard_path, notice: "Account created" }
         end
         format.json { render :show, status: :created, location: @account }
       else
@@ -102,7 +103,7 @@ class AccountsController < ApplicationController
     @tab = params[:tab] || "general"
     respond_to do |format|
       if @account.update(account_params)
-        format.html { redirect_to @account, notice: "Account was successfully updated.", status: :see_other }
+        format.html { redirect_to @account, notice: "Account updated", status: :see_other }
         format.json { render :show, status: :ok, location: @account }
       else
         @account.build_loyalty_program unless @account.loyalty_program
@@ -118,7 +119,7 @@ class AccountsController < ApplicationController
     @account.destroy!
 
     respond_to do |format|
-      format.html { redirect_to accounts_path, notice: "Account was successfully destroyed.", status: :see_other }
+      format.html { redirect_to accounts_path, notice: "Account deleted", status: :see_other }
       format.json { head :no_content }
     end
   end

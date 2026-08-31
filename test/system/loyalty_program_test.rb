@@ -31,7 +31,7 @@ class LoyaltyProgramTest < ApplicationSystemTestCase
     fill_in "Redemption value per point", with: "0.10"
     click_on "Save Loyalty Settings"
 
-    assert_text "Account was successfully updated."
+    assert_text "Account updated"
 
     # 2. Customer enrolls
     logout
@@ -42,7 +42,7 @@ class LoyaltyProgramTest < ApplicationSystemTestCase
     assert_text "Join our Loyalty Program!"
     click_on "Enroll Now"
 
-    assert_text "You've successfully enrolled in the loyalty program!"
+    assert_text "Enrolled"
     assert_text "Current Balance: 0 points"
 
     # 3. Customer earns points (simulated by manager marking order complete)
@@ -68,7 +68,7 @@ class LoyaltyProgramTest < ApplicationSystemTestCase
     visit order_path(order)
     click_on "Mark as Ready"
     click_on "Mark as Collected"
-    assert_text "Order has been completed."
+    assert_text "Order completed"
     logout
 
     # 4. Customer checks balance and redeems points

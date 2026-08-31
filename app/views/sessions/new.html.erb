@@ -1,60 +1,18 @@
+<% footer = capture do %>
+  Need an account? <%= link_to "Sign up", new_signup_path, class: "font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+<% end %>
 
-<div class="mt-28 flex min-h-full w-full flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <h1 class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">Sign in to Harvest</h1>
-  </div>
-
-  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-    <div class="bg-white px-6 py-12 border-1 border-gray-300 sm:rounded-lg sm:px-12 dark:bg-gray-800/50 dark:shadow-none dark:outline dark:-outline-offset-1 dark:outline-white/10">
-      <%= form_with url: session_path, class: "space-y-4", data: { controller: "password-login", turbo: false } do |form| %>
-        <div>
-          <%= form.label :email_address, "Email", class: label_class %>
-          <div class="mt-2">
-            <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: input_class %>
-          </div>
-        </div>
-
-        <div class="hidden" data-password-login-target="passwordFields">
-          <%= form.label :password, "Password (optional)", class: label_class %>
-          <div class="mt-2">
-            <%= form.password_field :password, autocomplete: "current-password", placeholder: "Leave blank to sign in with a one-time email code", maxlength: 72, class: input_class %>
-          </div>
-        </div>
-
-        <div class="hidden flex items-center justify-between" data-password-login-target="passwordFields">
-          <div class="text-sm/6">
-            <%= link_to "Forgot password?", new_password_path, class: "font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>
-          </div>
-        </div>
-
-        <div>
-          <%= form.submit "Continue", class: primary_button_class("flex w-full justify-center") %>
-        </div>
-
-        <div data-password-login-target="toggleSection">
-          <div class="relative mt-6">
-            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-              <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
-            </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="bg-white px-2 text-gray-500 dark:bg-gray-800/50 dark:text-gray-400">OR</span>
-            </div>
-          </div>
-
-          <%= button_tag "Sign in with password",
-              type: "button",
-              class: secondary_button_class("mt-6 flex w-full justify-center"),
-              data: { action: "click->password-login#showPassword" } %>
-        </div>
-      <% end %>
-
-      <p class="mt-6 text-center text-sm/6 text-gray-500 dark:text-gray-400">
-        Need an account? <%= link_to "Sign up", new_user_path, class: "font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>
-      </p>
+<%= render layout: "shared/auth_card", locals: { title: "Sign in to Harvest", footer: footer } do %>
+  <%= form_with url: identify_session_path, class: "space-y-6", data: { turbo: false } do |form| %>
+    <div>
+      <%= form.label :email_address, "Email", class: label_class %>
+      <div class="mt-2">
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: input_class %>
+      </div>
     </div>
 
-    <p class="mt-10 text-center text-sm/6 text-gray-500 dark:text-gray-400">
-      By continuing, I agree to the service <br><a href="" class="underline">terms</a>, <a href="" class="underline">privacy policy</a> and <a href="" class="underline">cookie policy</a>
-    </p>
-  </div>
-</div>
+    <div>
+      <%= form.submit "Continue", class: primary_button_class("flex w-full justify-center") %>
+    </div>
+  <% end %>
+<% end %>

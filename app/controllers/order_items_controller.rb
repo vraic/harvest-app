@@ -25,7 +25,7 @@ class OrderItemsController < ApplicationController
 
     respond_to do |format|
       if @order_item.save
-        format.html { redirect_to @order_item, notice: "Order item was successfully created." }
+        format.html { redirect_to @order_item, notice: "Order item created" }
         format.json { render :show, status: :created, location: @order_item }
       else
         format.html { render :new, status: :unprocessable_content }
@@ -38,7 +38,7 @@ class OrderItemsController < ApplicationController
   def update
     respond_to do |format|
       if @order_item.update(order_item_params)
-        format.html { redirect_to @order_item, notice: "Order item was successfully updated.", status: :see_other }
+        format.html { redirect_to @order_item, notice: "Order item updated", status: :see_other }
         format.json { render :show, status: :ok, location: @order_item }
       else
         format.html { render :edit, status: :unprocessable_content }
@@ -52,7 +52,7 @@ class OrderItemsController < ApplicationController
     @order_item.destroy!
 
     respond_to do |format|
-      format.html { redirect_to order_items_path, notice: "Order item was successfully destroyed.", status: :see_other }
+      format.html { redirect_to order_items_path, notice: "Order item deleted", status: :see_other }
       format.json { head :no_content }
     end
   end

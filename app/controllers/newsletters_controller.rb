@@ -32,7 +32,7 @@ class NewslettersController < ApplicationController
     @newsletter = Newsletter.new(newsletter_params)
 
     if @newsletter.save
-      redirect_to @newsletter, notice: "Newsletter was successfully created."
+      redirect_to @newsletter, notice: "Newsletter created"
     else
       render :new, status: :unprocessable_entity
     end
@@ -40,7 +40,7 @@ class NewslettersController < ApplicationController
 
   def update
     if @newsletter.update(newsletter_params)
-      redirect_to @newsletter, notice: "Newsletter was successfully updated."
+      redirect_to @newsletter, notice: "Newsletter updated"
     else
       render :edit, status: :unprocessable_entity
     end
@@ -48,13 +48,13 @@ class NewslettersController < ApplicationController
 
   def destroy
     @newsletter.destroy
-    redirect_to newsletters_url, notice: "Newsletter was successfully destroyed."
+    redirect_to newsletters_url, notice: "Newsletter deleted"
   end
 
   def deliver
     NewsletterDeliveryJob.perform_later(@newsletter)
     @newsletter.update(sent_at: Time.current)
-    redirect_to @newsletter, notice: "Newsletter delivery has been started."
+    redirect_to @newsletter, notice: "Delivery started"
   end
 
   private
@@ -65,7 +65,7 @@ class NewslettersController < ApplicationController
 
   def ensure_not_sent
     if @newsletter.sent?
-      redirect_to @newsletter, alert: "This newsletter has already been sent and cannot be modified or re-delivered."
+      redirect_to @newsletter, alert: "Already sent"
     end
   end
 

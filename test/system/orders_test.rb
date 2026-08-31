@@ -39,7 +39,7 @@ class OrdersTest < ApplicationSystemTestCase
 
     click_on "Create Order"
 
-    assert_text "Order was successfully created"
+    assert_text "Order created"
   end
 
   private

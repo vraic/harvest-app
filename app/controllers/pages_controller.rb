@@ -1,5 +1,5 @@
 class PagesController < ApplicationController
-  allow_unauthenticated_access only: :home
+  allow_unauthenticated_access only: %i[ home terms privacy ]
 
   def home
     if authenticated?
@@ -9,6 +9,12 @@ class PagesController < ApplicationController
         redirect_to dashboard_path
       end
     end
+  end
+
+  def terms
+  end
+
+  def privacy
   end
 
   def dashboard
@@ -61,7 +67,7 @@ class PagesController < ApplicationController
     )
 
     # Also redirect to refresh or set notice
-    flash[:notice] = "Welcome! You've been joined to #{account.name}."
+    flash[:notice] = "Joined account"
     cookies.delete(:referral)
   end
 end

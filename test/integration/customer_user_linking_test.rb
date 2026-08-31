@@ -82,7 +82,7 @@ class CustomerUserLinkingTest < ActionDispatch::IntegrationTest
   test "public signup creates user and logs in" do
     with_signup_invite_code("linking-secret") do
       assert_difference "User.count", 1 do
-        post users_path, params: {
+        post signup_path, params: {
           user: { name: "Alice", email_address: "alice@example.com", password: "ComplexPassword123!" },
           signup_invite_code: "linking-secret"
         }
@@ -97,7 +97,7 @@ class CustomerUserLinkingTest < ActionDispatch::IntegrationTest
       assert_difference "User.count", 1 do
         assert_difference "Customer.count", 1 do
           assert_difference "AccountUser.count", 1 do
-            post users_path, params: {
+            post signup_path, params: {
               user: { name: "Alice", email_address: "alice@example.com", password: "ComplexPassword123!" },
               account_id: @account_a.id,
               signup_invite_code: "linking-secret"

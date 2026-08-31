@@ -43,9 +43,9 @@ class LoyaltyCardsController < ApplicationController
     authorize @loyalty_card
 
     if @loyalty_card.save
-      redirect_to dashboard_path, notice: "You've successfully enrolled in the loyalty program!"
+      redirect_to dashboard_path, notice: "Enrolled"
     else
-      redirect_to dashboard_path, alert: "Failed to enroll in the loyalty program."
+      redirect_to dashboard_path, alert: "Enrollment failed"
     end
   end
 

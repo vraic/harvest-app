@@ -21,7 +21,7 @@ class InventoryFlowTest < ApplicationSystemTestCase
     select "Meat", from: "Group"
     click_button "Create Inventory item"
 
-    assert_text "Inventory item was successfully created"
+    assert_text "Item created"
     assert_text "Test Product"
     assert_text "£19.99"
 
@@ -36,7 +36,7 @@ class InventoryFlowTest < ApplicationSystemTestCase
     fill_in "inventory_item_weight_unit", with: "g"
     click_button "Create Inventory item"
 
-    assert_text "Inventory item was successfully created"
+    assert_text "Item created"
     assert_text "Small Pack"
     assert_text "£9.99"
 
@@ -45,7 +45,7 @@ class InventoryFlowTest < ApplicationSystemTestCase
     fill_in "New Total Quantity", with: "50"
     click_on "Update Stock"
 
-    assert_text "Stock was successfully adjusted"
+    assert_text "Stock adjusted"
     assert_text "50"
 
     # Move stock
@@ -54,7 +54,7 @@ class InventoryFlowTest < ApplicationSystemTestCase
     fill_in "Quantity to Move", with: "10"
     click_on "Transfer"
 
-    assert_text "Successfully transferred stock"
+    assert_text "Stock transferred"
     assert_text "40" # Remaining in Storage Room
     assert_text "10" # New on Shop Floor
   end

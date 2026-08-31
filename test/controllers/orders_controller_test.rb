@@ -69,7 +69,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to dashboard_path
     follow_redirect!
-    assert_match "This store is not available for customer shopping.", response.body
+    assert_match "Store unavailable", response.body
   ensure
     account.update!(is_b2c: original_b2c, is_b2b: original_b2b)
   end
@@ -89,7 +89,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to dashboard_path
     follow_redirect!
-    assert_match "This store is not available for customer shopping.", response.body
+    assert_match "Store unavailable", response.body
   ensure
     account.update!(is_b2c: original_b2c, is_b2b: original_b2b)
   end
@@ -117,7 +117,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to dashboard_path
     follow_redirect!
-    assert_match "This store is not available for customer shopping.", response.body
+    assert_match "Store unavailable", response.body
   ensure
     Current.session = session if defined?(session) && session
     customer_membership&.destroy!

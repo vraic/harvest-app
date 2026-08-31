@@ -29,7 +29,7 @@
 
 en:
   hello: "Hello world"
-  unauthorized: "You are not authorized to perform this action."
+  unauthorized: "Not authorized"
   number:
     currency:
       format:

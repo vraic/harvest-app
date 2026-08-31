@@ -33,12 +33,12 @@ class TwoFactorVerificationsController < ApplicationController
       end
 
       if @user.force_password_reset?
-        redirect_to target_url, alert: "Please reset your password to continue.", status: :see_other
+        redirect_to target_url, alert: "Password reset needed", status: :see_other
       else
-        redirect_to target_url, notice: "Signed in successfully.", status: :see_other
+        redirect_to target_url, notice: "Signed in", status: :see_other
       end
     else
-      flash.now[:alert] = "Invalid verification code."
+      flash.now[:alert] = "Invalid code"
       render :new, status: :unprocessable_content
     end
   end

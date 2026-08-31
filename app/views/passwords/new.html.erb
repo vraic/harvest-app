@@ -1,23 +1,18 @@
+<% footer = capture do %>
+  <%= link_to "Back to sign in", new_session_path, class: "font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>
+<% end %>
 
-<div class="flex min-h-full flex-col justify-center mt-28 py-12 sm:px-6 lg:px-8 max-w-full min-w-3xl mx-auto">
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <h1 class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">Forgot your password?</h1>
-  </div>
-
-  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-    <div class="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12 dark:bg-gray-800/50 dark:shadow-none dark:outline dark:-outline-offset-1 dark:outline-white/10">
-      <%= form_with url: passwords_path, class: "space-y-6" do |form| %>
-        <div>
-          <%= form.label :email_address, "Email address", class: label_class %>
-          <div class="mt-2">
-            <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: input_class %>
-          </div>
-        </div>
-
-        <div>
-          <%= form.submit "Email reset instructions", class: primary_button_class("flex w-full justify-center") %>
-        </div>
-      <% end %>
+<%= render layout: "shared/auth_card", locals: { title: "Forgot your password?", footer: footer } do %>
+  <%= form_with url: passwords_path, class: "space-y-6" do |form| %>
+    <div>
+      <%= form.label :email_address, "Email address", class: label_class %>
+      <div class="mt-2">
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: input_class %>
+      </div>
     </div>
-  </div>
-</div>
+
+    <div>
+      <%= form.submit "Email reset instructions", class: primary_button_class("flex w-full justify-center") %>
+    </div>
+  <% end %>
+<% end %>

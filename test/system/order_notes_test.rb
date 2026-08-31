@@ -18,7 +18,7 @@ class OrderNotesTest < ApplicationSystemTestCase
     fill_in "Add staff note...", with: "Customer called to say they will be 10 minutes late."
     click_on "Save Note"
 
-    assert_text "Note was successfully created."
+    assert_text "Note added"
     assert_text "Customer called to say they will be 10 minutes late."
     assert_text @admin.name
     assert_no_text "No staff notes yet."

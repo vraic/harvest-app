@@ -12,7 +12,7 @@ class ManagedAccountsController < ApplicationController
           flash[:notice] = "Now managing #{account.name}"
         else
           session.delete(:managed_account_id)
-          flash[:alert] = "Access denied. No active support authorization for this account."
+          flash[:alert] = "Access denied"
         end
       else
         session.delete(:managed_account_id)
@@ -41,10 +41,10 @@ class ManagedAccountsController < ApplicationController
         session[:managed_account_id] = account.id
         flash[:notice] = "Switched to #{account.name}"
       else
-        flash[:alert] = "You do not have access to that account."
+        flash[:alert] = "No access to account"
       end
     else
-      flash[:alert] = "Please select an account."
+      flash[:alert] = "Select an account"
     end
 
     redirect_to params[:return_to] || dashboard_path, status: :see_other

@@ -28,7 +28,7 @@ class NewslettersSystemTest < ApplicationSystemTestCase
     # Deliver it
     click_on "Deliver Now"
 
-    assert_text "Newsletter delivery has been started"
+    assert_text "Delivery started"
     assert_no_link "Edit"
     assert_no_button "Deliver Now"
 

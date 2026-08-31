@@ -30,7 +30,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to shop_path
     follow_redirect!
-    assert_match "Access denied.", response.body
+    assert_match "Access denied", response.body
   end
 
   test "admin without selected account sees no notifications instead of error" do

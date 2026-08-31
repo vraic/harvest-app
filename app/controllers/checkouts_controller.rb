@@ -6,7 +6,7 @@ class CheckoutsController < ApplicationController
   def show
     @cart = current_cart
     if @cart.empty?
-      redirect_to shop_path, alert: "Your cart is empty."
+      redirect_to shop_path, alert: "Cart empty"
       return
     end
 
@@ -24,7 +24,7 @@ class CheckoutsController < ApplicationController
   def create
     @cart = current_cart
     if @cart.empty?
-      redirect_to shop_path, alert: "Your cart is empty."
+      redirect_to shop_path, alert: "Cart empty"
       return
     end
 
@@ -95,9 +95,9 @@ class CheckoutsController < ApplicationController
 
     if errors.empty? && orders.any?
       session[:cart] = nil
-      redirect_to orders_path, notice: "Orders successfully created."
+      redirect_to orders_path, notice: "Orders created"
     else
-      flash.now[:alert] = "Unable to complete checkout: #{errors.to_sentence}"
+      flash.now[:alert] = "Checkout failed"
       @grouped_items = @cart.grouped_items
       @orders_data = @grouped_items.map do |account, items|
         {
@@ -125,7 +125,7 @@ class CheckoutsController < ApplicationController
 
     return unless removed
 
-    message = "Some cart items were removed because the store is not available for shopping."
+    message = "Items removed"
     if action_name == "show"
       flash.now[:alert] = message
     else

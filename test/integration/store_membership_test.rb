@@ -21,7 +21,7 @@ class StoreMembershipTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     follow_redirect!
     assert_equal @account.id, session[:managed_account_id]
-    assert_match /You have successfully joined #{@account.name}/, response.body
+    assert_match /Joined #{@account.name}/, response.body
 
     # Verify they are now a member and shown as customer
     get dashboard_path
@@ -39,6 +39,6 @@ class StoreMembershipTest < ActionDispatch::IntegrationTest
     post store_memberships_path, params: { account_id: @account.id }
     assert_redirected_to dashboard_path
     follow_redirect!
-    assert_match /You are already a member of #{@account.name}/, response.body
+    assert_match "Already a member", response.body
   end
 end
